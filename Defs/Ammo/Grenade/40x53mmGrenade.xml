@@ -88,7 +88,8 @@
     <statBases>
       <MarketValue>2.35</MarketValue>
     </statBases>
-    <ammoClass>Smoke</ammoClass><generateAllowChance>0</generateAllowChance>
+    <ammoClass>Smoke</ammoClass>
+    <generateAllowChance>0</generateAllowChance>
     <comps>
 	  <li Class="CombatExtended.CompProperties_ExplosiveCE">
 		<damageAmountBase>5</damageAmountBase>
