@@ -122,9 +122,9 @@ namespace CombatExtended
         public void PrepareTexture(WeaponPlatformDef parent)
         {
             this.parent = parent;                       
-            this.meshTop = CE_MeshMaker.NewPlaneMesh(offset: this.drawOffset, scale: this.drawScale, CE_MeshMaker.DEPTH_TOP);
+            this.meshTop = CE_MeshMaker.NewPlaneMesh(offset: this.drawOffset, scale: this.drawScale, CE_MeshMaker.DEPTH_SUPER);
             this.meshBot = CE_MeshMaker.NewPlaneMesh(offset: this.drawOffset, scale: this.drawScale, CE_MeshMaker.DEPTH_BOT);
-            this.meshFlipTop = CE_MeshMaker.NewPlaneMesh(offset: this.drawOffset, scale: this.drawScale, CE_MeshMaker.DEPTH_TOP, true);
+            this.meshFlipTop = CE_MeshMaker.NewPlaneMesh(offset: this.drawOffset, scale: this.drawScale, CE_MeshMaker.DEPTH_SUPER, true);
             this.meshFlipBot = CE_MeshMaker.NewPlaneMesh(offset: this.drawOffset, scale: this.drawScale, CE_MeshMaker.DEPTH_BOT, true);          
         }
 

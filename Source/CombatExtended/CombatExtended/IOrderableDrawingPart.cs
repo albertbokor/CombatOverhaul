@@ -6,8 +6,8 @@ namespace CombatExtended
     public struct IOrderableDrawingPart : IComparable<IOrderableDrawingPart>
     {
         public Mesh mesh;
-        public Material mat;
-        public readonly int priority;
+        public Material mat;        
+        public readonly int priority;        
 
         public IOrderableDrawingPart(Mesh mesh, Material mat, int priority)
         {

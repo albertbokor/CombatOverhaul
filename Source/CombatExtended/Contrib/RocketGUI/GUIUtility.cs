@@ -172,8 +172,7 @@ namespace CombatExtended.RocketGUI
                 if (highlight != null)
                     GUI.color = _hColor;
                 if (color != null && color.HasValue)
-                    GUI.color = color.Value;
-                DrawTexture(inRect, weaponTex, colorMat);
+                    GUI.color = color.Value;                
                 if (parts != null)
                 {
                     foreach (WeaponPlatformDef.WeaponGraphicPart part in parts)
@@ -182,7 +181,8 @@ namespace CombatExtended.RocketGUI
                             GUI.DrawTexture(inRect, part.UIPartTex, ScaleMode.StretchToFill);
                     }
                 }
-                foreach (AttachmentLink link in attachments)
+                DrawTexture(inRect, weaponTex, colorMat);
+                foreach (AttachmentLink link in attachments.OrderBy(a => a.drawPriority))
                 {
                     if (link.HasAttachmentMat && (highlight == null || link.CompatibleWith(highlight)))
                         DrawTex(inRect, link, link.UIAttachmentTex, colorMat);

@@ -7,25 +7,30 @@ namespace CombatExtended
 	[StaticConstructorOnStartup]
     public static class CE_MeshMaker
     {
-		public const float DEPTH_TOP = -0.000f;
-		public const float DEPTH_MID = -0.015f;
-		public const float DEPTH_BOT = -0.030f;
+		public const float DEPTH_SUPER = -0.0000f;
+		public const float DEPTH_TOP = -0.0075f;
+		public const float DEPTH_MID = -0.0150f;
+		public const float DEPTH_BOT = -0.0300f;
 
+		public readonly static Mesh plane10Super;
 		public readonly static Mesh plane10Top;
 		public readonly static Mesh plane10Mid;
 		public readonly static Mesh plane10Bot;
 
-		public readonly static Mesh plane10FlipTop;
+		public readonly static Mesh plane10FlipSuper;
+		public readonly static Mesh plane10FlipTop;		
 		public readonly static Mesh plane10FlipMid;
 		public readonly static Mesh plane10FlipBot;
 
 		static CE_MeshMaker()
         {
-            plane10Top = NewPlaneMesh(Vector2.zero, Vector2.one,  depth: 0.00f);
+			plane10Super = NewPlaneMesh(Vector2.zero, Vector2.one, depth: 0.01f);
+			plane10Top = NewPlaneMesh(Vector2.zero, Vector2.one,  depth: 0.00f);
             plane10Mid = NewPlaneMesh(Vector2.zero, Vector2.one, depth: -0.01f);
             plane10Bot = NewPlaneMesh(Vector2.zero, Vector2.one, depth: -0.02f);
 
-            plane10FlipTop = NewPlaneMesh(Vector2.zero, Vector2.one, depth: -0.00f, flipped: true);
+			plane10FlipSuper = NewPlaneMesh(Vector2.zero, Vector2.one, depth: 0.01f, flipped: true);
+			plane10FlipTop = NewPlaneMesh(Vector2.zero, Vector2.one, depth: -0.00f, flipped: true);
             plane10FlipMid = NewPlaneMesh(Vector2.zero, Vector2.one, depth: -0.01f, flipped: true);
             plane10FlipBot = NewPlaneMesh(Vector2.zero, Vector2.one, depth: -0.02f, flipped: true);
         }
