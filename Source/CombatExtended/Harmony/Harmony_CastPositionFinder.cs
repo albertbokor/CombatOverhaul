@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using CombatExtended.AI;
@@ -26,12 +27,14 @@ namespace CombatExtended.HarmonyCE
         private static DangerTracker dangerTracker;
         private static LightingTracker lightingTracker;
         private static List<CompProjectileInterceptor> interceptors;
+        private static Stopwatch stopwatch = new Stopwatch();
 
         [HarmonyPatch(typeof(CastPositionFinder), nameof(CastPositionFinder.TryFindCastPosition))]
         public static class CastPositionFinder_TryFindCastPosition_Patch
         {
             public static void Prefix(CastPositionRequest newReq)
             {
+                stopwatch.Start();
                 //newReq.ma
                 verb = newReq.verb;
                 range = verb.EffectiveRange;                
@@ -54,6 +57,8 @@ namespace CombatExtended.HarmonyCE
 
             public static void Postfix()
             {
+                stopwatch.Stop();
+                stopwatch.Reset();
                 pawn = null;
                 verb = null;
                 map = null;
@@ -82,7 +87,7 @@ namespace CombatExtended.HarmonyCE
                         else
                             __result += 8;
                     }
-                }                
+                }
                 float sightCost = 0;
                 if (sightReader != null)
                     sightCost += 6 - Mathf.Min(sightReader.GetSightCoverRating(c), 6);                
