@@ -146,9 +146,9 @@ namespace CombatExtended
         }
         
         protected abstract bool Skip(IThingSightRecord record);        
-        protected abstract int GetSightRange(IThingSightRecord record);                
+        protected abstract int GetSightRange(IThingSightRecord record);
 
-        protected virtual UInt64 GetFlags(IThingSightRecord record) => 0;        
+        protected virtual UInt64 GetFlags(IThingSightRecord record) => record.thing.GetCombatFlags();
         protected virtual bool Valid(T thing)
         {
             if (thing == null)

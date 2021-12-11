@@ -284,6 +284,25 @@ namespace CombatExtended
             return Vector2.zero;
         }
 
+        public UInt64 GetFlagsAt(IntVec3 cell) => GetFlagsAt(cellIndices.CellToIndex(cell));
+        public UInt64 GetFlagsAt(int index)
+        {
+            if (index >= 0 && index < mapCellNum)
+            {
+                SightRecord record = sightArray[index];
+                if (record.expireAt - CycleNum > 0)
+                {
+                    if (record.count > record.countPrev)
+                        return record.casterFlags;
+                    else
+                        return record.casterFlagsPrev;
+                }
+                else if (record.expireAt - CycleNum == 0)
+                    return record.casterFlags;
+            }
+            return 0;
+        }
+
         public Vector2 GetDirectionAt(IntVec3 cell, out float enemies) => GetDirectionAt(cellIndices.CellToIndex(cell), out enemies);
         public Vector2 GetDirectionAt(int index, out float enemies)
         {
@@ -370,7 +389,7 @@ namespace CombatExtended
             sig++;
             this.center = center;
             this.range = range * 1.5f;
-            this.currentCasterFlags = 0;
+            this.currentCasterFlags = casterFlags;
         }
 
         public void NextCycle()
@@ -405,6 +424,9 @@ namespace CombatExtended
                 _builder.AppendFormat("<color=orange>{0}</color> {1}\n" +
                     "<color=grey>cur</color>  {2} " +
                     "<color=grey>prev</color> {3}", "Direction", GetDirectionAt(index), record.direction, record.direction);
+                _builder.AppendFormat("<color=orange>{0}</color> {1}\n" +
+                    "<color=grey>cur</color>  {2} " +
+                    "<color=grey>prev</color> {3}", "Flags", GetDirectionAt(index), record.direction, record.direction);
                 return _builder.ToString();
             }
             return "<color=red>Out of bounds</color>";

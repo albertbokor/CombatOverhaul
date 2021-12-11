@@ -24,7 +24,7 @@ namespace CombatExtended.AI
         }
 
         private const int CELLSAHEAD = 3;
-
+        
         private const float FOCUSWEIGHT = 0.4f;
         private const float VISIONWEIGHT = 0.4f;
         private const float HEARINGWEIGHT = 0.2f;
@@ -33,7 +33,9 @@ namespace CombatExtended.AI
         private bool _disabled = false;
         
         private int _cooldownTick = -1;
-        private IntVec3 _lastCell;       
+        private IntVec3 _lastCell;
+       
+        private UInt64 prevFlags;
 
         public override int Priority => 1200;
         private float Vision
@@ -99,12 +101,18 @@ namespace CombatExtended.AI
             {
                 return;
             }
-            Pawn pawn = SelPawn;
+            Pawn pawn = SelPawn;            
             if (_lastCell == pawn.Position)
             {
                 _lastCell = IntVec3.Invalid;
                 _cooldownTick = GenTicks.TicksGame + 30;
                 return;
+            }            
+            SightTracker.SightReader reader = MapSightReader;            
+            if (pawn.Downed || reader == null)
+            {
+                _lastCell = IntVec3.Invalid;
+                _cooldownTick = GenTicks.TicksGame + 1800;
             }
             PawnPath path = pawn.pather?.curPath ?? null;
             if (path == null || !pawn.pather.moving)
@@ -118,70 +126,105 @@ namespace CombatExtended.AI
                 _cooldownTick = GenTicks.TicksGame + GenTicks.TickRareInterval;
                 return;
             }
-            if (path.NodesLeftCount <= CELLSAHEAD + 9)
+            Verb verb;
+            if (pawn.mindState != null && pawn.mindState.enemyTarget != null)
             {
+                verb = pawn.equipment.PrimaryEq?.PrimaryVerb ?? null;
+                if (verb != null)
+                {
+                    float range = verb.EffectiveRange;
+                    if (range > 2.5f && range * range > SelPawn.Position.DistanceToSquared(pawn.mindState.enemyTarget.Position))
+                    {
+                        UInt64 selFlags = SelPawn.GetCombatFlags();
+
+                        IntVec3 firstPos = pawn.mindState.enemyTarget.Position;
+                        IntVec3 secondPos = SelPawn.Position + firstPos;
+                        secondPos.x /= 2;
+                        secondPos.z /= 2;
+                        if ((reader.GetFriendlyFlags(firstPos) & selFlags) != 0 && (reader.GetFriendlyFlags(secondPos) & selFlags) != 0)
+                        {
+                            if (verb.CanHitTarget(pawn.mindState.enemyTarget))
+                            {
+                                Job job = JobMaker.MakeJob(JobDefOf.Wait_Combat, expiryInterval: Rand.Range(300, 1800));
+                                if (job != null)
+                                {
+                                    SelPawn.jobs.StopAll();
+                                    SelPawn.jobs.StartJob(job, JobCondition.InterruptForced);
+                                }
+                                _cooldownTick = GenTicks.TicksGame + 900;
+                                return;
+                            }
+                            _cooldownTick = GenTicks.TicksGame + GenTicks.TickRareInterval;
+                            return;
+                        }
+                    }
+                }
+            }
+            UInt64 curFlags = reader.GetFlags(pawn.Position);
+            if(curFlags == 0)
+            {                
+                _cooldownTick = GenTicks.TicksGame + 60;
+                prevFlags = 0;
                 return;
             }
             float vision = Vision, hearing = Hearing, focus = Focus;
-            float awarness = vision * VISIONWEIGHT + focus * FOCUSWEIGHT + hearing * HEARINGWEIGHT;
-            if (awarness < AWARENESSMIN)
+            float awarness = Mathf.Clamp01(vision * VISIONWEIGHT + focus * FOCUSWEIGHT + hearing * HEARINGWEIGHT);
+            if(awarness <= AWARENESSMIN)
             {
                 _cooldownTick = GenTicks.TicksGame + GenTicks.TickRareInterval;
                 return;
             }
-            Map map = Map;
-            Pawn enemy = null;
-            for (int k = 0; k < 8; k += 2)
+            if (curFlags == prevFlags && !Rand.Chance(awarness))
             {
-                IntVec3 center = path.nodes[path.curNodeIndex - CELLSAHEAD - k];
-                IntVec3 cell;
-                for (int i = 0; i < offsets.Length; i++)
-                {
-                    cell = center + offsets[i];
-                    if (cell.InBounds(map))
-                    {                        
-                        Pawn other = cell.GetFirstPawn(map);
-                        if ((other?.HostileTo(SelPawn) ?? false) && !other.Downed && !other.WorkTagIsDisabled(WorkTags.Violent))
-                        {
-                            enemy = other;
-                            break;
-                        }
-                    }
-                }
-                if (enemy != null)
-                    break;
+                _cooldownTick = GenTicks.TicksGame + 60;
+                return;
             }
-            if (enemy != null)
-            {
-                Verb attackVerb = CurrentWeapon.GetComp<CompEquippable>()?.PrimaryVerb ?? null;
-                if (attackVerb == null || !(CurrentWeaponCompAmmo?.CanBeFiredNow ?? true))
-                {
-                    _cooldownTick = GenTicks.TicksGame + GenTicks.TickLongInterval;
-                    return;
-                }
-                float range = attackVerb.EffectiveRange;
+            IntVec3 position = SelPawn.Position;
+            prevFlags = curFlags;
 
-                if (attackVerb.verbProps.warmupTime < 0.5f && Rand.Chance(awarness / 2f))
+            float searchRadius = reader.GetDirection(position).magnitude + 30 * awarness;
+            if (searchRadius <= 4)
+            {
+                _cooldownTick = GenTicks.TicksGame + GenTicks.TickRareInterval;
+                return;
+            }
+            Pawn nearest = null;
+            float min = 1e5f;
+            foreach (Pawn enemy in position.PawnsInRange(Map, searchRadius).Where(p => (p.GetCombatFlags() & prevFlags) != 0))
+            {
+                float d = enemy.Position.DistanceToSquared(position);
+                if (d < min)
                 {
-                    Job job = JobMaker.MakeJob(JobDefOf.Wait_Combat, Rand.Range(300, 500), checkOverrideOnExpiry: true);
-                    if (job != null)
-                    {                        
-                        pawn.jobs.StopAll();
-                        pawn.jobs.StartJob(job, JobCondition.InterruptForced);
-                    }
-                    _cooldownTick = GenTicks.TicksGame + GenTicks.TickRareInterval * 2;
-                }
-                if (attackVerb.verbProps.warmupTime >= 0.5f && Rand.Chance(awarness / 2f))
-                {
-                    Job job = SuppressionUtility.GetRunForCoverJob(pawn, enemy.Position);
-                    if (job != null)
-                    {                        
-                        pawn.jobs.StopAll();
-                        pawn.jobs.StartJob(job, JobCondition.InterruptForced);
-                    }
-                    _cooldownTick = GenTicks.TicksGame + GenTicks.TickRareInterval * 3;
+                    nearest = enemy;
+                    min = d;
                 }                
             }
-        }        
+            if (nearest == null)
+            {
+                _cooldownTick = GenTicks.TicksGame + 80;
+                return;
+            }
+            verb = pawn.equipment.PrimaryEq?.PrimaryVerb ?? null;
+            if (verb != null && verb.EffectiveRange * verb.EffectiveRange * 0.25f < min && min > 100)
+            {
+                Job job = SuppressionUtility.GetRunForCoverJob(SelPawn, nearest.Position);
+                if (job != null)
+                {
+                    SelPawn.jobs.StopAll();
+                    SelPawn.jobs.StartJob(job, JobCondition.InterruptForced);
+                }
+                _cooldownTick = GenTicks.TicksGame + 1200;
+            }
+            else
+            {
+                Job job = JobMaker.MakeJob(JobDefOf.Wait_Combat, expiryInterval: Rand.Range(300, 1800));
+                if (job != null)
+                {
+                    SelPawn.jobs.StopAll();
+                    SelPawn.jobs.StartJob(job, JobCondition.InterruptForced);
+                }
+                _cooldownTick = GenTicks.TicksGame + 1200;
+            }
+        }
     }
 }

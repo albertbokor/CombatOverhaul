@@ -84,6 +84,31 @@ namespace CombatExtended
                 return value;
             }
 
+            public bool CheckFlags(IntVec3 cell, UInt64 flags) => CheckFlags(indices.CellToIndex(cell), flags);
+            public bool CheckFlags(int index, UInt64 flags) => (flags & GetFlags(index)) == flags;
+
+            public UInt64 GetFlags(IntVec3 cell) => GetFlags(indices.CellToIndex(cell));
+            public UInt64 GetFlags(int index)
+            {
+                UInt64 value = 0;
+                if (hostile != null)
+                    value |= hostile.GetFlagsAt(index);
+                if (turrets != null)
+                    value |= turrets.GetFlagsAt(index);
+                if (universal != null)
+                    value |= universal.GetFlagsAt(index);
+                return value;
+            }
+
+            public UInt64 GetFriendlyFlags(IntVec3 cell) => GetFriendlyFlags(indices.CellToIndex(cell));
+            public UInt64 GetFriendlyFlags(int index)
+            {
+                UInt64 value = 0;
+                if (friendly != null)
+                    value |= friendly.GetFlagsAt(index);                
+                return value;
+            }
+
             public Vector2 GetDirection(IntVec3 cell) => GetDirection(indices.CellToIndex(cell));
             public Vector2 GetDirection(int index)
             {

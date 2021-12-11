@@ -975,6 +975,8 @@ namespace CombatExtended
             return tracker.TryGetReader(pawn, out reader);
         }
 
+        public static UInt64 GetCombatFlags(this Thing thing) => ((UInt64)1) << ((thing.thingIDNumber + (thing.Faction?.def.shortHash ?? 0)) % 64);      
+
         public static FactionStrengthTracker GetStrengthTracker(this Faction faction) => Find.World.GetComponent<WorldStrengthTracker>().GetFactionTracker(faction);
     }
 }

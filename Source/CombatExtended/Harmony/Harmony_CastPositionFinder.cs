@@ -19,8 +19,10 @@ namespace CombatExtended.HarmonyCE
         private static float range;        
         private static Verb verb;
         private static Pawn pawn;
+        private static Thing target;
         private static Map map;
-        private static IntVec3 target;
+        private static UInt64 targetFlags;
+        private static IntVec3 targetPosition;
         private static float warmupTime;
         private static SightTracker.SightReader sightReader;
         private static TurretTracker turretTracker;
@@ -41,7 +43,9 @@ namespace CombatExtended.HarmonyCE
                 pawn = newReq.caster;
                 warmupTime = verb?.verbProps.warmupTime ?? 1;
                 map = newReq.caster?.Map;
-                target = newReq.target.Position;
+                target = newReq.target;
+                targetPosition = newReq.target.Position;
+                targetFlags = newReq.target.GetCombatFlags();
                 interceptors = map.listerThings.ThingsInGroup(ThingRequestGroup.ProjectileInterceptor)
                                                .Select(t => t.TryGetComp<CompProjectileInterceptor>())
                                                .ToList();
@@ -71,9 +75,9 @@ namespace CombatExtended.HarmonyCE
         
         [HarmonyPatch(typeof(CastPositionFinder), nameof(CastPositionFinder.CastPositionPreference))]
         public static class CastPositionFinder_CastPositionPreference_Patch
-        {         
+        {                        
             public static void Postfix(IntVec3 c, ref float __result)
-            {
+            {                
                 if (__result == -1)
                     return;
 
@@ -105,7 +109,7 @@ namespace CombatExtended.HarmonyCE
                     //
                     //__result += (warmupTime - c.DistanceToSquared(target) / rangeSqr) * 4f;
                     __result -= c.PawnsInRange(map, 8).Count(c => c.Faction == pawn.Faction) * 2.0f;
-                    __result -= Mathf.Abs(rangeSqr * 0.75f - c.DistanceToSquared(target)) / (rangeSqr * 0.75f) * 8;
+                    __result -= Mathf.Abs(rangeSqr * 0.75f - c.DistanceToSquared(targetPosition)) / (rangeSqr * 0.75f) * 8;
                 }                
             }
         }
