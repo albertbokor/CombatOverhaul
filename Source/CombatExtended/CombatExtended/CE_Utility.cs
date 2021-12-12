@@ -974,9 +974,62 @@ namespace CombatExtended
             SightTracker tracker = pawn.Map.GetComponent<SightTracker>();
             return tracker.TryGetReader(pawn, out reader);
         }
-
-        public static UInt64 GetCombatFlags(this Thing thing) => ((UInt64)1) << ((thing.thingIDNumber + (thing.Faction?.def.shortHash ?? 0)) % 64);      
+              
+        public static UInt64 GetCombatFlags(this Thing thing)
+        {
+            return ((UInt64)1) << (thing.thingIDNumber % 64);
+        }
 
         public static FactionStrengthTracker GetStrengthTracker(this Faction faction) => Find.World.GetComponent<WorldStrengthTracker>().GetFactionTracker(faction);
+
+        public static IntVec3 LerpTo(this IntVec3 first, IntVec3 other, float t)
+        {
+            if (t <= 0)
+                return first;
+            if (t >= 1.0f)
+                return other;
+            return new IntVec3((int)(first.x * (1 - t) + other.x * t), 0, (int)(first.z * (1 - t) + other.z * t));
+        }
+
+        public static Verb GetWeaponVerbWithFallback(this Pawn pawn)
+        {
+            Verb verb;
+            if (pawn.equipment != null)
+            {
+                CompEquippable equippable = pawn.equipment.PrimaryEq;
+                if (equippable != null && (verb = equippable.PrimaryVerb) != null && verb.Available())
+                    return verb;
+            }
+            if (pawn.verbTracker != null && (verb = pawn.verbTracker?.PrimaryVerb ?? null) != null && verb.Available())
+                return verb;
+            if ((verb = pawn.CurrentEffectiveVerb)?.Available() ?? false)
+                return verb;
+            return null;
+        }
+
+        public static bool CanAttackEnemyNowFast(this Pawn pawn, Thing enemy, Verb verb = null, SightTracker.SightReader reader = null)
+        {
+            if (verb == null && (verb = pawn.GetWeaponVerbWithFallback()) == null)
+                return false;
+            if (reader == null && !pawn.GetSightReader(out reader))
+                return verb.CanHitTargetFrom(pawn.Position, enemy);
+
+            if (pawn.Position.DistanceToSquared(enemy.Position) * 0.64f <= verb.EffectiveRange * verb.EffectiveRange)
+                return false;
+
+            UInt64 selFlags = pawn.GetCombatFlags();
+            if ((reader.GetFriendlyFlags(enemy.Position) & selFlags) != selFlags)
+                return false;
+
+            IntVec3 selPos = pawn.Position;
+            IntVec3 enemyPos = enemy.Position;
+            for (int i = 1; i < 6; i++)
+            {
+                IntVec3 pos = enemyPos.LerpTo(selPos, i / 6f);
+                if ((reader.GetFriendlyFlags(pos) & selFlags) != selFlags)
+                    return false;
+            }
+            return GenSight.LineOfSight(enemyPos, selPos, pawn.Map);
+        }
     }
 }

@@ -51,7 +51,7 @@ namespace CombatExtended.AI
             {
                 if (_NVEfficiency == -1 || GenTicks.TicksGame - _NVEfficiencyAge > GenTicks.TickRareInterval)
                 {
-                    _NVEfficiency = SelPawn.GetStatValue(CE_StatDefOf.NightVisionEfficiency);
+                    _NVEfficiency = selPawn.GetStatValue(CE_StatDefOf.NightVisionEfficiency);
                     _NVEfficiencyAge = GenTicks.TicksGame;
                 }
                 return _NVEfficiency;
@@ -86,7 +86,7 @@ namespace CombatExtended.AI
         {
             get
             {
-                return !(SelPawn.Faction?.IsPlayer ?? false);
+                return !(selPawn.Faction?.IsPlayer ?? false);
             }
         }
 
@@ -94,7 +94,7 @@ namespace CombatExtended.AI
         {
             get
             {
-                if (SelPawn.factionInt != null && factionLastFlare.TryGetValue(SelPawn.factionInt, out int ticks)
+                if (selPawn.factionInt != null && factionLastFlare.TryGetValue(selPawn.factionInt, out int ticks)
                     && GenTicks.TicksGame - ticks < COOLDOWN_FACTION_TICKS) return true;
                 return false;
             }
@@ -128,7 +128,7 @@ namespace CombatExtended.AI
             if (!UsedAOEWeaponRecently && !(verb.EquipmentSource?.def.IsAOEWeapon() ?? false))
             {
                 TargetType targetType = TargetType.None;
-                float distance = castTarg.Cell.DistanceTo(SelPawn.Position);
+                float distance = castTarg.Cell.DistanceTo(selPawn.Position);
 
                 if (castTarg.HasThing &&
                     (TargetingPawns(castTarg.Thing, distance, out targetType) || TargetingTurrets(castTarg.Thing, distance, out targetType) || Rand.Chance(0.1f)))
@@ -142,14 +142,14 @@ namespace CombatExtended.AI
                         lastOpportunisticSwitch = GenTicks.TicksGame;
 
                         var nextVerb = weapon.def.verbs.First(v => !v.IsMeleeAttack);
-                        var targtPos = AI_Utility.FindAttackedClusterCenter(SelPawn, castTarg.Cell, weapon.def.verbs.Max(v => v.range), 4, (pos) =>
+                        var targtPos = AI_Utility.FindAttackedClusterCenter(selPawn, castTarg.Cell, weapon.def.verbs.Max(v => v.range), 4, (pos) =>
                         {
-                            return GenSight.LineOfSight(SelPawn.Position, pos, Map, skipFirstCell: true);
+                            return GenSight.LineOfSight(selPawn.Position, pos, Map, skipFirstCell: true);
                         });
                         var job = JobMaker.MakeJob(CE_JobDefOf.OpportunisticAttack, weapon, targtPos.IsValid ? targtPos : castTarg.Cell);
                         job.maxNumStaticAttacks = 1;
 
-                        SelPawn.jobs.StartJob(job, JobCondition.InterruptForced);
+                        selPawn.jobs.StartJob(job, JobCondition.InterruptForced);
                         return true;
                     }
                 }
@@ -157,7 +157,7 @@ namespace CombatExtended.AI
             bool TargetingPawns(Thing thing, float distance, out TargetType targetType)
             {
                 targetType = TargetType.None;
-                if (thing is Pawn pawn && (distance > 8 || SelPawn.HiddingBehindCover(pawn.positionInt)) && TargetIsSquad(pawn))
+                if (thing is Pawn pawn && (distance > 8 || selPawn.HiddingBehindCover(pawn.positionInt)) && TargetIsSquad(pawn))
                 {
                     targetType = TargetType.Pawn;
                     return true;
@@ -167,7 +167,7 @@ namespace CombatExtended.AI
             bool TargetingTurrets(Thing thing, float distance, out TargetType targetType)
             {
                 targetType = TargetType.None;
-                if (thing is Building_Turret && (distance > 8 || SelPawn.HiddingBehindCover(thing.positionInt)))
+                if (thing is Building_Turret && (distance > 8 || selPawn.HiddingBehindCover(thing.positionInt)))
                 {
                     targetType = TargetType.Turret;
                     return true;
@@ -179,33 +179,33 @@ namespace CombatExtended.AI
 
         public bool TryFlare(Verb verb, LocalTargetInfo castTarg, LocalTargetInfo destTarg)
         {
-            if (!FlaredRecently && !FlaredRecentlyByFaction && !Map.VisibilityGoodAt(SelPawn, castTarg.Cell, NightVisionEfficiency))
+            if (!FlaredRecently && !FlaredRecentlyByFaction && !Map.VisibilityGoodAt(selPawn, castTarg.Cell, NightVisionEfficiency))
             {
                 if (!(verb?.EquipmentSource?.def.IsIlluminationDevice() ?? false) && CompInventory.TryFindFlare(out ThingWithComps flareGun, checkAmmo: true))
                 {
                     float range = flareGun.def.verbs.Max(v => v.range);
                     VerbProperties nextVerb = flareGun.def.verbs.First(v => !v.IsMeleeAttack);
-                    if (range >= castTarg.Cell.DistanceTo(SelPawn.Position))
+                    if (range >= castTarg.Cell.DistanceTo(selPawn.Position))
                     {
                         lastOpportunisticSwitch = GenTicks.TicksGame;
 
-                        IntVec3 targtPos = AI_Utility.FindAttackedClusterCenter(SelPawn, castTarg.Cell, flareGun.def.verbs.Max(v => v.range), 8, (pos) =>
+                        IntVec3 targtPos = AI_Utility.FindAttackedClusterCenter(selPawn, castTarg.Cell, flareGun.def.verbs.Max(v => v.range), 8, (pos) =>
                         {
                             return !nextVerb.requireLineOfSight || !pos.Roofed(Map);
                         });
                         Job job = JobMaker.MakeJob(CE_JobDefOf.OpportunisticAttack, flareGun, targtPos.IsValid ? targtPos : castTarg.Cell);
                         job.maxNumStaticAttacks = 1;
 
-                        SelPawn.jobs.StartJob(job, JobCondition.InterruptForced);
+                        selPawn.jobs.StartJob(job, JobCondition.InterruptForced);
                         return true;
                     }
                 }
             }
-            if ((verb?.EquipmentSource?.def.IsIlluminationDevice() ?? false) && !(SelPawn.jobs?.curDriver is IJobDriver_Tactical))
+            if ((verb?.EquipmentSource?.def.IsIlluminationDevice() ?? false) && !(selPawn.jobs?.curDriver is IJobDriver_Tactical))
             {
                 if (CompInventory.TryFindViableWeapon(out ThingWithComps weapon))
                 {
-                    SelPawn.jobs.StartJob(JobMaker.MakeJob(CE_JobDefOf.EquipFromInventory, weapon), JobCondition.InterruptForced);
+                    selPawn.jobs.StartJob(JobMaker.MakeJob(CE_JobDefOf.EquipFromInventory, weapon), JobCondition.InterruptForced);
                     return true;
                 }
             }
@@ -218,8 +218,8 @@ namespace CombatExtended.AI
             if (verb.EquipmentSource?.def.IsIlluminationDevice() ?? false)
             {
                 lastFlared = GenTicks.TicksGame;
-                if (SelPawn.Faction != null)
-                    factionLastFlare[SelPawn.Faction] = lastFlared;
+                if (selPawn.Faction != null)
+                    factionLastFlare[selPawn.Faction] = lastFlared;
             }
             if (verb.EquipmentSource?.def.IsAOEWeapon() ?? false)
                 lastUsedAEOWeapon = GenTicks.TicksGame;
@@ -241,7 +241,7 @@ namespace CombatExtended.AI
             {
                 if (other.Faction == null)
                     continue;
-                if (other.Faction.HostileTo(SelPawn.Faction))
+                if (other.Faction.HostileTo(selPawn.Faction))
                 {
                     hostiles += 1;
                     continue;

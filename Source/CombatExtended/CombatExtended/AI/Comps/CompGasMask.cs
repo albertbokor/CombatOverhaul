@@ -30,11 +30,11 @@ namespace CombatExtended.AI
 
         public void UpdateGasMask()
         {
-            if (SelPawn.Faction.IsPlayerSafe())
+            if (selPawn.Faction.IsPlayerSafe())
                 return;
-            if (!SelPawn.Spawned)
+            if (!selPawn.Spawned)
                 return;
-            if (SelPawn.Downed || SelPawn.apparel?.wornApparel == null)
+            if (selPawn.Downed || selPawn.apparel?.wornApparel == null)
                 return;
             if (ticks % 4 == 0)
                 CheckForMask();
@@ -45,9 +45,9 @@ namespace CombatExtended.AI
         public void Notify_ShouldEquipGasMask()
         {
             if (lastSmokeTick < GenTicks.TicksGame
-                && !SelPawn.Faction.IsPlayerSafe()
-                && !SelPawn.Downed
-                && SelPawn.apparel?.wornApparel != null)
+                && !selPawn.Faction.IsPlayerSafe()
+                && !selPawn.Downed
+                && selPawn.apparel?.wornApparel != null)
             {
                 WearMask();
                 lastSmokeTick = GenTicks.TicksGame + SMOKE_TICKS_OFFSET;
@@ -75,15 +75,15 @@ namespace CombatExtended.AI
             }
             if (mask != null)
             {
-                SelPawn.inventory.innerContainer.Remove(mask);
-                SelPawn.apparel.Wear(mask);
+                selPawn.inventory.innerContainer.Remove(mask);
+                selPawn.apparel.Wear(mask);
             }
         }
 
         private void RemoveMask()
         {
             Apparel mask = null;
-            foreach (Apparel apparel in SelPawn.apparel.wornApparel)
+            foreach (Apparel apparel in selPawn.apparel.wornApparel)
             {
                 if (apparel.def.apparel?.tags?.Contains(GASMASK_TAG) ?? false)
                 {
@@ -93,8 +93,8 @@ namespace CombatExtended.AI
             }
             if (mask != null)
             {
-                SelPawn.apparel.Remove(mask);
-                SelPawn.inventory.innerContainer.TryAddOrTransfer(mask);
+                selPawn.apparel.Remove(mask);
+                selPawn.inventory.innerContainer.TryAddOrTransfer(mask);
             }
             maskEquiped = false;
         }
@@ -102,7 +102,7 @@ namespace CombatExtended.AI
         private void CheckForMask()
         {
             maskEquiped = false;
-            foreach (Apparel apparel in SelPawn.apparel.wornApparel)
+            foreach (Apparel apparel in selPawn.apparel.wornApparel)
             {
                 if (apparel.def.apparel?.tags?.Contains(GASMASK_TAG) ?? false)
                 {

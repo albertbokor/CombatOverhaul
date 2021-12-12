@@ -116,11 +116,11 @@ namespace CombatExtended.HarmonyCE
                     }
                     result += 10 - attackers.Count * 3.5f;
                 }                
-                if (target.Thing is Pawn other && searcher.Thing is Pawn pawn)
-                {
-                    if ((pawn.pather?.moving ?? false) && pawn.EdgingCloser(other))
-                        result += (verb.EffectiveRange * verb.EffectiveRange - distSqr) / (verb.EffectiveRange * verb.EffectiveRange + 1f) * 10;
-                }                
+                //if (target.Thing is Pawn other && searcher.Thing is Pawn pawn)
+                //{
+                //    if ((pawn.pather?.moving ?? false) && pawn.EdgingCloser(other))
+                //        result += (verb.EffectiveRange * verb.EffectiveRange - distSqr) / (verb.EffectiveRange * verb.EffectiveRange + 1f) * 10;
+                //}
                 if (target.Thing != null && (verb.IsMeleeAttack || verb.EffectiveRange <= 25))
                 {                                                                
                     if (sightReader != null)

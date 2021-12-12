@@ -25,7 +25,7 @@ namespace CombatExtended.AI
             {
                 if (_NVEfficiency == -1 || GenTicks.TicksGame - _NVEfficiencyAge > GenTicks.TickRareInterval)
                 {
-                    _NVEfficiency = SelPawn.GetStatValue(CE_StatDefOf.NightVisionEfficiency);
+                    _NVEfficiency = selPawn.GetStatValue(CE_StatDefOf.NightVisionEfficiency);
                     _NVEfficiencyAge = GenTicks.TicksGame;
                 }
                 return _NVEfficiency;
@@ -36,7 +36,7 @@ namespace CombatExtended.AI
         {
             get
             {
-                return !(SelPawn.Faction?.IsPlayer ?? false);
+                return !(selPawn.Faction?.IsPlayer ?? false);
             }
         }
 
@@ -96,7 +96,7 @@ namespace CombatExtended.AI
                     fireModes.TrySetFireMode(FireMode.AutoFire);
                     return;
                 }
-                float shotDist = castTarg.Cell.DistanceTo(SelPawn.Position);
+                float shotDist = castTarg.Cell.DistanceTo(selPawn.Position);
 
                 if (projProps.pelletCount > 1 && shotDist < 20)
                 {
@@ -108,7 +108,7 @@ namespace CombatExtended.AI
 
                 if (castTarg.Thing is Pawn target)
                 {
-                    if (SelPawn.EdgingCloser(target))
+                    if (selPawn.EdgingCloser(target))
                     {
                         if (shotDist <= 15)
                         {
@@ -126,7 +126,7 @@ namespace CombatExtended.AI
                     float range = Mathf.Max(verb.EffectiveRange, 1);
                     float recoilFactor = verbShoot.RecoilAmount * (0.6f + shotDist / range);
 
-                    if (shotDist / range > 0.5f && !Map.VisibilityGoodAt(SelPawn, castTarg.Cell, nightVisionEfficiency: NightVisionEfficiency))
+                    if (shotDist / range > 0.5f && !Map.VisibilityGoodAt(selPawn, castTarg.Cell, nightVisionEfficiency: NightVisionEfficiency))
                     {
                         fireModes.TrySetAimMode(AimMode.AimedShot);
                         fireModes.TrySetFireMode(FireMode.BurstFire);

@@ -177,19 +177,19 @@ namespace CombatExtended
                     continue;
                 if (cover is Gas)
                     coverLOSRating += 5;
-                else if (cover.def.Fillage == FillCategory.Partial)
-                    coverLOSRating += 12;
+                else if (cover.def.Fillage == FillCategory.Partial) 
+                    coverLOSRating += cover.def.category == ThingCategory.Plant ? 6 : 12;
             }
             cellRating += Mathf.Min(coverLOSRating, 25);
 
             //Check time to path to that location
             if (!pawn.Position.Equals(cell))
-            {                
+            {
                 // float pathCost = pawn.Map.pathFinder.FindPath(pawn.Position, cell, TraverseMode.NoPassClosedDoors).TotalCost;
-                float pathCost = (pawn.Position - cell).LengthHorizontal;
-                if (!GenSight.LineOfSight(pawn.Position, cell, pawn.Map))
-                    pathCost *= 5;
-                cellRating = cellRating / pathCost;
+                float pathCost = Mathf.Abs(cell.x - pawn.Position.x) + 0.5f * Mathf.Abs(cell.z - pawn.Position.z);
+                if (!GenSight.LineOfSight(pawn.Position, cell, pawn.Map))                
+                    pathCost *= 2;                
+                cellRating = cellRating - pathCost;
             }
             for (int i = 0; i < interceptors.Count; i++)
             {

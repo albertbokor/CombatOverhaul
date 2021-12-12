@@ -290,13 +290,8 @@ namespace CombatExtended
             if (index >= 0 && index < mapCellNum)
             {
                 SightRecord record = sightArray[index];
-                if (record.expireAt - CycleNum > 0)
-                {
-                    if (record.count > record.countPrev)
-                        return record.casterFlags;
-                    else
-                        return record.casterFlagsPrev;
-                }
+                if (record.expireAt - CycleNum > 0)                                 
+                    return record.casterFlagsPrev | record.casterFlags;                
                 else if (record.expireAt - CycleNum == 0)
                     return record.casterFlags;
             }
@@ -384,7 +379,7 @@ namespace CombatExtended
         /// <param name="center">Center of casting.</param>
         /// <param name="range">Expected range of casting.</param>
         /// <param name="casterFlags">caster's Flags</param>
-        public void Next(IntVec3 center, float range, UInt64 casterFlags = 0)
+        public void Next(IntVec3 center, float range, UInt64 casterFlags)
         {
             sig++;
             this.center = center;
@@ -423,10 +418,11 @@ namespace CombatExtended
                 _builder.AppendLine();
                 _builder.AppendFormat("<color=orange>{0}</color> {1}\n" +
                     "<color=grey>cur</color>  {2} " +
-                    "<color=grey>prev</color> {3}", "Direction", GetDirectionAt(index), record.direction, record.direction);
+                    "<color=grey>prev</color> {3}", "Direction", GetDirectionAt(index), record.direction, record.directionPrev);
+                _builder.AppendLine();
                 _builder.AppendFormat("<color=orange>{0}</color> {1}\n" +
-                    "<color=grey>cur</color>  {2} " +
-                    "<color=grey>prev</color> {3}", "Flags", GetDirectionAt(index), record.direction, record.direction);
+                    "<color=grey>cur</color>\n{2}\n" +
+                    "<color=grey>prev</color>\n{3}", "Flags", Convert.ToString((long)GetFlagsAt(index), 2).Replace("1", "<color=green>1</color>"), Convert.ToString((long)record.casterFlags, 2).Replace("1", "<color=green>1</color>"), Convert.ToString((long)record.casterFlagsPrev, 2).Replace("1", "<color=green>1</color>"));
                 return _builder.ToString();
             }
             return "<color=red>Out of bounds</color>";

@@ -24,7 +24,7 @@ namespace CombatExtended.AI
             // if out of ammo 
             if (verb.EquipmentSource == CurrentWeapon && !gun.HasAmmo)
             {
-                CompInventory.SwitchToNextViableWeapon(true, useAOE: !SelPawn.Faction.IsPlayer, stopJob: false);
+                CompInventory.SwitchToNextViableWeapon(true, useAOE: !selPawn.Faction.IsPlayer, stopJob: false);
                 return false;
             }
 

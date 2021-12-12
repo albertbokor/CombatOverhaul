@@ -60,6 +60,30 @@ namespace CombatExtended
             }
         }
 
+        public virtual ThingWithComps CurrentWeapon
+        {
+            get
+            {
+                return SelPawn.equipment.Primary;
+            }
+        }
+
+        private ThingWithComps _currentWeapon = null;
+        private CompEquippable _compEquippable = null;
+        public virtual CompEquippable CurrentWeaponEq
+        {
+            get
+            {
+                if (_currentWeapon != CurrentWeapon)
+                {
+                    _currentWeapon = CurrentWeapon;
+                    if (_currentWeapon != null)
+                        _compEquippable = _currentWeapon.GetComp<CompEquippable>();
+                }
+                return _compEquippable;
+            }
+        }       
+
         private CompInventory _compInventory = null;
         public virtual CompInventory CompInventory
         {
@@ -68,7 +92,87 @@ namespace CombatExtended
                 if (_compInventory == null) _compInventory = SelPawn.TryGetComp<CompInventory>();
                 return _compInventory;
             }
-        }        
+        }
+
+        private CompAmmoUser _AmmoUser_CompAmmoUser = null;
+        private ThingWithComps _AmmoUser_ThingWithComps = null;
+        public virtual CompAmmoUser CurrentWeaponCompAmmo
+        {
+            get
+            {
+                if (_AmmoUser_ThingWithComps == CurrentWeapon)
+                    return _AmmoUser_CompAmmoUser;
+
+                _AmmoUser_ThingWithComps = CurrentWeapon;
+
+                if (_AmmoUser_ThingWithComps == null)
+                    return _AmmoUser_CompAmmoUser = null;
+
+                return _AmmoUser_CompAmmoUser = _AmmoUser_ThingWithComps.TryGetComp<CompAmmoUser>();
+            }
+        }
+
+        private Map _sightReaderMap = null;
+        private Faction _sightGridFaction = null;
+        private SightTracker.SightReader _sightReader = null;
+        public SightTracker.SightReader MapSightReader
+        {
+            get
+            {
+                if (!SelPawn.Spawned || SelPawn.Faction == null)
+                {
+                    _sightReaderMap = null;
+                    _sightReader = null;
+                    return null;
+                }
+                if (_sightReaderMap != SelPawn.Map || _sightGridFaction != SelPawn.Faction)
+                {
+                    _sightGridFaction = SelPawn.Faction;
+                    _sightReaderMap = SelPawn.Map;
+                    SelPawn.GetSightReader(out _sightReader);
+                }
+                return _sightReader;
+            }
+        }
+
+        private Map _turretTrackerMap = null;
+        private Faction _sturretTrackerFaction = null;
+        private TurretTracker _turretTracker = null;
+        public TurretTracker MapTurretTracker
+        {
+            get
+            {
+                if (!SelPawn.Spawned || SelPawn.Faction == null || SelPawn.Faction == SelPawn.Map.ParentFaction)
+                {
+                    _turretTracker = null;
+                    _turretTrackerMap = null;
+                    return null;
+                }
+                if (_turretTrackerMap != SelPawn.Map || _sturretTrackerFaction != SelPawn.Faction)
+                {
+                    _sturretTrackerFaction = SelPawn.Faction;
+                    _turretTrackerMap = SelPawn.Map;
+                    _turretTracker = _turretTrackerMap.GetComponent<TurretTracker>();
+                }
+                return _turretTracker;
+            }
+        }
+
+        public Verb CurrentPrimaryVerb
+        {
+            get
+            {
+                Verb verb;
+                CompEquippable equippable = CurrentWeaponEq;
+                if (equippable != null && (verb = equippable.PrimaryVerb) != null && verb.Available())
+                    return verb;
+                if (SelPawn.verbTracker != null && (verb = SelPawn.verbTracker?.PrimaryVerb ?? null) != null && verb.Available())
+                    return verb;
+                if ((verb = SelPawn.CurrentEffectiveVerb)?.Available() ?? false)
+                    return verb;
+                return null;
+            }
+        }
 
         public bool DraftedColonist
         {
@@ -171,13 +275,12 @@ namespace CombatExtended
             try
             {                
                 Scribe_Collections.Look(ref _tacticalComps, "tacticalComps", LookMode.Deep);
+                this.ValidateComps();
             }
             catch (Exception er)
             {
                 Log.Error($"CE: Error scribing {parent} {er}");
-            }
-            finally
-            {
+                this._tacticalComps.Clear();
                 this.ValidateComps();
             }
         }
@@ -275,7 +378,7 @@ namespace CombatExtended
                 ICompTactics comp;
                 if ((comp = _tacticalComps.FirstOrFallback(t => t.GetType() == type)) == null)
                     _tacticalComps.Add(comp = (ICompTactics)Activator.CreateInstance(type, new object[0]));
-                comp.Initialize(SelPawn);
+                comp.Initialize(this);
             }
             _tacticalComps.SortBy(t => -1f * t.Priority);
         }

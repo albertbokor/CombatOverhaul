@@ -41,39 +41,39 @@ namespace CombatExtended.AI
 
         public override Job TryGiveTacticalJob()
         {
-            if (SelPawn.Faction.IsPlayerSafe())
+            if (selPawn.Faction.IsPlayerSafe())
                 return null;
-            if (TendJobIssuedRecently || TendJobCheckedRecently || SelPawn.jobs?.curJob?.def == CE_JobDefOf.TendSelf)
+            if (TendJobIssuedRecently || TendJobCheckedRecently || selPawn.jobs?.curJob?.def == CE_JobDefOf.TendSelf)
             {
                 return null;
             }
-            if (!SelPawn.RaceProps.Humanlike || !SelPawn.health.HasHediffsNeedingTend())
-            {
-                lastTendJobCheckedAt = GenTicks.TicksGame;
-                return null;
-            }
-            if (!SelPawn.health.capacities.CapableOf(PawnCapacityDefOf.Manipulation))
+            if (!selPawn.RaceProps.Humanlike || !selPawn.health.HasHediffsNeedingTend())
             {
                 lastTendJobCheckedAt = GenTicks.TicksGame;
                 return null;
             }
-            if (HealthUtility.TicksUntilDeathDueToBloodLoss(SelPawn) > BLEEDRATE_MAX_TICKS)
+            if (!selPawn.health.capacities.CapableOf(PawnCapacityDefOf.Manipulation))
             {
                 lastTendJobCheckedAt = GenTicks.TicksGame;
                 return null;
             }
-            if (SelPawn.WorkTagIsDisabled(WorkTags.Caring))
+            if (HealthUtility.TicksUntilDeathDueToBloodLoss(selPawn) > BLEEDRATE_MAX_TICKS)
             {
                 lastTendJobCheckedAt = GenTicks.TicksGame;
                 return null;
             }
-            if (SelPawn.Position.PawnsInRange(Map, 45).Any(p => p.HostileTo(SelPawn) && !SelPawn.HiddingBehindCover(p)))
+            if (selPawn.WorkTagIsDisabled(WorkTags.Caring))
+            {
+                lastTendJobCheckedAt = GenTicks.TicksGame;
+                return null;
+            }
+            if (selPawn.Position.PawnsInRange(Map, 45).Any(p => p.HostileTo(selPawn) && !selPawn.HiddingBehindCover(p)))
             {
                 lastTendJobCheckedAt = GenTicks.TicksGame - COOLDOWN_TEND_JOB_CHECK / 2;
-                return SuppressionUtility.GetRunForCoverJob(SelPawn);
+                return SuppressionUtility.GetRunForCoverJob(selPawn);
             }
             lastTendJobAt = GenTicks.TicksGame;
-            Job job = JobMaker.MakeJob(CE_JobDefOf.TendSelf, SelPawn);
+            Job job = JobMaker.MakeJob(CE_JobDefOf.TendSelf, selPawn);
             job.endAfterTendedOnce = false;
             return job;
         }

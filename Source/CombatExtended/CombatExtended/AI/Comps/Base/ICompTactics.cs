@@ -7,131 +7,29 @@ namespace CombatExtended.AI
 {
     public abstract class ICompTactics : IExposable
     {
-        private Pawn pawnInt;
+        public Pawn selPawn;
+        public CompTacticalManager manager;
+        
+        public abstract int Priority { get; }
+        
+        public virtual ThingWithComps CurrentWeapon => manager.CurrentWeapon;
+        public virtual CompEquippable CurrentWeaponEq => manager.CurrentWeaponEq;
+        public virtual CompAmmoUser CurrentWeaponCompAmmo => manager.CurrentWeaponCompAmmo;
+        public CompSuppressable CompSuppressable => manager.CompSuppressable;
+        public CompInventory CompInventory => manager.CompInventory;
+        public SightTracker.SightReader MapSightReader => manager.MapSightReader;
+        public TurretTracker MapTurretTracker => manager.MapTurretTracker;
 
-        public virtual Pawn SelPawn
-        {
-            get
-            {
-                return pawnInt;
-            }
-        }
-
-        public abstract int Priority
-        {
-            get;
-        }
-
-        public virtual ThingWithComps CurrentWeapon
-        {
-            get
-            {
-                return SelPawn.equipment.Primary;
-            }
-        }
-
-        private CompSuppressable _compSuppressable = null;
-        public virtual CompSuppressable CompSuppressable
-        {
-            get
-            {
-                if (_compSuppressable == null)
-                    _compSuppressable = SelPawn.TryGetComp<CompSuppressable>();
-                return _compSuppressable;
-            }
-        }
-
-        private CompInventory _compInventory = null;
-        public virtual CompInventory CompInventory
-        {
-            get
-            {
-                if (_compInventory == null) _compInventory = SelPawn.TryGetComp<CompInventory>();
-                return _compInventory;
-            }
-        }
-
-        private CompAmmoUser _AmmoUser_CompAmmoUser = null;
-        private ThingWithComps _AmmoUser_ThingWithComps = null;
-
-        public virtual CompAmmoUser CurrentWeaponCompAmmo
-        {
-            get
-            {
-                if (_AmmoUser_ThingWithComps == CurrentWeapon)
-                    return _AmmoUser_CompAmmoUser;
-
-                _AmmoUser_ThingWithComps = CurrentWeapon;
-
-                if (_AmmoUser_ThingWithComps == null)
-                    return _AmmoUser_CompAmmoUser = null;
-
-                return _AmmoUser_CompAmmoUser = _AmmoUser_ThingWithComps.TryGetComp<CompAmmoUser>();
-            }
-        }
-
-        private Map _sightReaderMap = null;
-        private Faction _sightGridFaction = null;
-        private SightTracker.SightReader _sightReader = null;
-        public SightTracker.SightReader MapSightReader
-        {
-            get
-            {
-                if (!SelPawn.Spawned || SelPawn.Faction == null)
-                {
-                    _sightReaderMap = null;
-                    _sightReader = null;
-                    return null;
-                }
-                if (_sightReaderMap != SelPawn.Map || _sightGridFaction != SelPawn.Faction)
-                {
-                    _sightGridFaction = SelPawn.Faction;
-                    _sightReaderMap = SelPawn.Map;
-                    SelPawn.GetSightReader(out _sightReader);
-                }
-                return _sightReader;
-            }
-        }
-
-        private Map _turretTrackerMap = null;
-        private Faction _sturretTrackerFaction = null;
-        private TurretTracker _turretTracker = null;
-        public TurretTracker MapTurretTracker
-        {
-            get
-            {
-                if (!SelPawn.Spawned || SelPawn.Faction == null || SelPawn.Faction == SelPawn.Map.ParentFaction)
-                {
-                    _turretTracker = null;
-                    _turretTrackerMap = null;
-                    return null;
-                }
-                if (_turretTrackerMap != SelPawn.Map || _sturretTrackerFaction != SelPawn.Faction)
-                {
-                    _sturretTrackerFaction = SelPawn.Faction;
-                    _turretTrackerMap = SelPawn.Map;
-                    _turretTracker = _turretTrackerMap.GetComponent<TurretTracker>();
-                }
-                return _turretTracker;
-            }
-        }
-
-
-        public Map Map
-        {
-            get
-            {
-                return pawnInt.Map;
-            }
-        }
+        public Map Map => selPawn.Map;
 
         public ICompTactics()
         {
         }
 
-        public virtual void Initialize(Pawn pawn)
+        public virtual void Initialize(CompTacticalManager manager)
         {
-            this.pawnInt = pawn;
+            this.manager = manager;
+            selPawn = manager.SelPawn;           
         }
 
         public virtual Job TryGiveTacticalJob()
@@ -166,11 +64,11 @@ namespace CombatExtended.AI
 
         public virtual void Notify_BulletImpactNearBy()
         {
-        }
+        }        
 
         public void ExposeData()
         {
-            Scribe_References.Look(ref pawnInt, "pawnInt");
+            Scribe_References.Look(ref selPawn, "pawnInt");
             this.PostExposeData();
         }
 

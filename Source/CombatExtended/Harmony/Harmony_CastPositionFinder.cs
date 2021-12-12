@@ -42,6 +42,7 @@ namespace CombatExtended.HarmonyCE
                 range = verb.EffectiveRange;                
                 pawn = newReq.caster;
                 warmupTime = verb?.verbProps.warmupTime ?? 1;
+                warmupTime = Mathf.Clamp(warmupTime, 0.5f, 0.8f);
                 map = newReq.caster?.Map;
                 target = newReq.target;
                 targetPosition = newReq.target.Position;
@@ -94,7 +95,7 @@ namespace CombatExtended.HarmonyCE
                 }
                 float sightCost = 0;
                 if (sightReader != null)
-                    sightCost += 6 - Mathf.Min(sightReader.GetSightCoverRating(c), 6);                
+                    sightCost = 6 - Mathf.Min(sightReader.GetSightCoverRating(c), 6);                
 
                 if (sightCost > 0)
                 {
@@ -105,11 +106,9 @@ namespace CombatExtended.HarmonyCE
                 }
                 if (range > 0)
                 {
-                    float rangeSqr = range * range;
-                    //
-                    //__result += (warmupTime - c.DistanceToSquared(target) / rangeSqr) * 4f;
+                    float rangeSqr = range * range;                    
                     __result -= c.PawnsInRange(map, 8).Count(c => c.Faction == pawn.Faction) * 2.0f;
-                    __result -= Mathf.Abs(rangeSqr * 0.75f - c.DistanceToSquared(targetPosition)) / (rangeSqr * 0.75f) * 8;
+                    __result -= Mathf.Abs(1 - c.DistanceToSquared(targetPosition) / (rangeSqr * warmupTime * warmupTime)) * 16;
                 }                
             }
         }

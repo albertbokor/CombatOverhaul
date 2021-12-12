@@ -58,23 +58,23 @@ namespace CombatExtended.AI
 
         private void CheckPrimaryEquipment()
         {
-            if (SelPawn.Faction.IsPlayerSafe())
+            if (selPawn.Faction.IsPlayerSafe())
                 return;
-            if (SelPawn.RaceProps.IsMechanoid)
+            if (selPawn.RaceProps.IsMechanoid)
                 return;
-            if (!SelPawn.RaceProps.Humanlike)
+            if (!selPawn.RaceProps.Humanlike)
                 return;
-            if (SelPawn.equipment == null)
+            if (selPawn.equipment == null)
                 return;
-            if (SelPawn.equipment.Primary != null)
+            if (selPawn.equipment.Primary != null)
                 return;
-            if (SelPawn.Downed || SelPawn.InMentalState)
+            if (selPawn.Downed || selPawn.InMentalState)
                 return;
             if (CompInventory?.SwitchToNextViableWeapon(false, true, false) ?? true)
                 return;
             if (CompInventory.rangedWeaponList == null)
                 return;
-            if (SelPawn.story != null && SelPawn.WorkTagIsDisabled(WorkTags.Violent))
+            if (selPawn.story != null && selPawn.WorkTagIsDisabled(WorkTags.Violent))
                 return;
             foreach (ThingWithComps thing in CompInventory.rangedWeaponList)
             {
@@ -85,20 +85,20 @@ namespace CombatExtended.AI
                 {
                     lastPrimaryOptimization = GenTicks.TicksGame;
 
-                    SelPawn.equipment.equipment.TryAddOrTransfer(thing);
+                    selPawn.equipment.equipment.TryAddOrTransfer(thing);
                     return;
                 }
             }
-            IEnumerable<AmmoThing> ammos = SelPawn.Position.AmmoInRange(Map, 15).Where(t => t is AmmoThing) ?? new List<AmmoThing>();
-            foreach (Thing thing in SelPawn.Position.WeaponsInRange(Map, 15).OrderBy(t => t.Position.DistanceTo(SelPawn.Position)))
+            IEnumerable<AmmoThing> ammos = selPawn.Position.AmmoInRange(Map, 15).Where(t => t is AmmoThing) ?? new List<AmmoThing>();
+            foreach (Thing thing in selPawn.Position.WeaponsInRange(Map, 15).OrderBy(t => t.Position.DistanceTo(selPawn.Position)))
             {
                 // TODO need more tunning
                 if (thing is ThingWithComps weapon)
                 {
                     CompAmmoUser compAmmo = weapon.TryGetComp<CompAmmoUser>();
-                    if (!SelPawn.CanReach(thing, PathEndMode.InteractionCell, Danger.Unspecified, false, false))
+                    if (!selPawn.CanReach(thing, PathEndMode.InteractionCell, Danger.Unspecified, false, false))
                         continue;
-                    if (!SelPawn.CanReserve(weapon))
+                    if (!selPawn.CanReserve(weapon))
                         continue;
                     if (compAmmo == null)
                         continue;
@@ -110,9 +110,9 @@ namespace CombatExtended.AI
                     {
                         if (!supportedAmmo.Contains(ammo.AmmoDef))
                             continue;
-                        if (!SelPawn.CanReach(ammo, PathEndMode.InteractionCell, Danger.Unspecified, false, false))
+                        if (!selPawn.CanReach(ammo, PathEndMode.InteractionCell, Danger.Unspecified, false, false))
                             continue;
-                        if (!SelPawn.CanReserve(ammo))
+                        if (!selPawn.CanReserve(ammo))
                             continue;
 
                         if (CompInventory.CanFitInInventory(ammo, out int count))
@@ -121,27 +121,27 @@ namespace CombatExtended.AI
 
                             Job pickup = JobMaker.MakeJob(JobDefOf.TakeInventory, ammo);
                             pickup.count = count;
-                            SelPawn.jobs.StartJob(pickup, JobCondition.InterruptForced, resumeCurJobAfterwards: false);
+                            selPawn.jobs.StartJob(pickup, JobCondition.InterruptForced, resumeCurJobAfterwards: false);
 
                             Job equip = JobMaker.MakeJob(JobDefOf.Equip, weapon);
-                            SelPawn.jobs.jobQueue.EnqueueFirst(equip);
+                            selPawn.jobs.jobQueue.EnqueueFirst(equip);
                             return;
                         }
                     }
                 }
             }
-            foreach (Thing thing in SelPawn.Position.WeaponsInRange(Map, 15))
+            foreach (Thing thing in selPawn.Position.WeaponsInRange(Map, 15))
             {
-                if (!SelPawn.CanReach(thing, PathEndMode.InteractionCell, Danger.Unspecified, false, false))
+                if (!selPawn.CanReach(thing, PathEndMode.InteractionCell, Danger.Unspecified, false, false))
                     continue;
-                if (!SelPawn.CanReserve(thing))
+                if (!selPawn.CanReserve(thing))
                     continue;
                 if (!thing.def.IsRangedWeapon)
                 {
                     lastPrimaryOptimization = GenTicks.TicksGame;
 
                     Job job = JobMaker.MakeJob(JobDefOf.Equip, thing);
-                    SelPawn.jobs.StartJob(job, JobCondition.InterruptForced, resumeCurJobAfterwards: true);
+                    selPawn.jobs.StartJob(job, JobCondition.InterruptForced, resumeCurJobAfterwards: true);
                     return;
                 }
             }
