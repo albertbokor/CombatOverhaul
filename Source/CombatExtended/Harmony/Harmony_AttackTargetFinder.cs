@@ -110,17 +110,17 @@ namespace CombatExtended.HarmonyCE
                         if ((attacker.jobs?.curJob?.def.alwaysShowWeapon ?? false)
                             && attacker.pather != null
                             && attacker.pather.curPath?.NodesConsumedCount > attacker.pather.curPath?.NodesLeftCount)
-                            result -= 5f;
+                            result -= 5f;                        
                         if (attacker.Position.DistanceToSquared(target.Thing.Position) < 16 && distSqr > 255)
                             result -= 2.5f;
                     }
                     result += 10 - attackers.Count * 3.5f;
-                }                
-                //if (target.Thing is Pawn other && searcher.Thing is Pawn pawn)
-                //{
-                //    if ((pawn.pather?.moving ?? false) && pawn.EdgingCloser(other))
-                //        result += (verb.EffectiveRange * verb.EffectiveRange - distSqr) / (verb.EffectiveRange * verb.EffectiveRange + 1f) * 10;
-                //}
+                }
+                if (target.Thing is Pawn other && searcher.Thing is Pawn pawn)
+                {
+                    if (other.jobs?.curJob?.def == JobDefOf.AttackMelee && verb.EffectiveRange > 5)
+                        result -= 20;                    
+                }
                 if (target.Thing != null && (verb.IsMeleeAttack || verb.EffectiveRange <= 25))
                 {                                                                
                     if (sightReader != null)

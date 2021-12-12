@@ -11,7 +11,7 @@ namespace CombatExtended.HarmonyCE
         public static class Harmony_AITrashColonyClose_TryGiveJob
         {
             public static bool Prefix(Pawn pawn)
-            {                
+            {
                 return false;
             }
         }

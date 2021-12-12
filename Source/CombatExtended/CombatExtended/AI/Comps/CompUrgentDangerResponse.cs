@@ -108,6 +108,13 @@ namespace CombatExtended.AI
             float vision = Vision, hearing = Hearing, focus = Focus;
             float awarness = Mathf.Clamp01(vision * VISIONWEIGHT + focus * FOCUSWEIGHT + hearing * HEARINGWEIGHT);
 
+            if (verb.EffectiveRange > 5 && selPawn.jobs.curJob?.def == JobDefOf.Goto && selPawn.jobs.curJob.targetA.Thing is Pawn other && other.Faction != null && other.Faction.HostileTo(selPawn.Faction) && other.jobs.curJob?.def == JobDefOf.AttackMelee)
+            {
+                selPawn.jobs.StopAll(false, false);          
+                cooldownTick = (int)(GenTicks.TicksGame + 30 * (2 - awarness));
+                return;
+            }
+
             if (selPawn.mindState != null
                 && selPawn.mindState.enemyTarget != null
                 && (!(selPawn.mindState.enemyTarget is Pawn e) || !e.Dead || !e.Downed)
@@ -167,59 +174,45 @@ namespace CombatExtended.AI
             }
             if (selPawn.mindState != null)
                 selPawn.mindState.enemyTarget = enemy;
-            
+
+            Verb enemyVerb = enemy.GetPrimaryVerbWithFallback();            
             float distSqr = selPawn.Position.DistanceToSquared(enemy.Position);
             float a = Mathf.Clamp(verb.verbProps.warmupTime * 0.75f, 0.4f, 0.8f);
             float f;            
             f = 1f - Mathf.Abs(1 - distSqr / (verb.EffectiveRange * verb.EffectiveRange * a * a));
             f = Mathf.Clamp01(f);
-            if (!Rand.Chance(f * 0.75f))
-            { 
-                job = SuppressionUtility.GetRunForCoverJob(base.selPawn, enemy.Position);
+            if (Rand.Chance(f) || enemyVerb == null || (enemyVerb.verbProps.warmupTime < verb.verbProps.warmupTime && (!enemyVerb.WarmingUp || !enemyVerb.CurrentTarget.HasThing || enemyVerb.CurrentTarget.Thing != selPawn)) || enemyVerb.IsMeleeAttack)
+            {
+                job = JobMaker.MakeJob(JobDefOf.Wait_Combat, expiryInterval: verb.verbProps.warmupTime.SecondsToTicks() + verb.verbProps.burstShotCount * verb.verbProps.ticksBetweenBurstShots + 30, checkOverrideOnExpiry: true);
                 if (job != null)
                 {
-                    IntVec3 coverCell = job.targetA.Cell;
-                    if (coverCell.DistanceToSquared(selPawn.Position) < distSqr * 0.25f)
-                    {                                                
-                        base.selPawn.jobs.StopAll();
-                        base.selPawn.jobs.StartJob(job, JobCondition.InterruptForced);                        
-                        return true;
-                    }
+                    base.selPawn.jobs.StopAll();
+                    base.selPawn.jobs.StartJob(job, JobCondition.InterruptForced);
                 }
             }
             CastPositionRequest newReq = default(CastPositionRequest);
             newReq.caster = selPawn;
             newReq.target = enemy;
             newReq.verb = verb;
-            newReq.maxRangeFromTarget = verb.verbProps.range;
+            newReq.maxRegions = 3;
+            newReq.maxRangeFromCaster = verb.verbProps.warmupTime * selPawn.GetStatValue(StatDefOf.MoveSpeed);
             newReq.wantCoverFromTarget = verb.verbProps.range > 5f;
-            if (Rand.Chance(0.5f) && distSqr > 16 * 16 && CastPositionFinder.TryFindCastPosition(newReq, out IntVec3 dest))
-            {                
-                cooldownTick = GenTicks.TicksGame + 60;                
+            if (CastPositionFinder.TryFindCastPosition(newReq, out IntVec3 dest))
+            {
+                cooldownTick = GenTicks.TicksGame + 240;
                 job = JobMaker.MakeJob(JobDefOf.Goto, dest);
                 if (job != null)
                 {
                     base.selPawn.jobs.StopAll();
                     base.selPawn.jobs.StartJob(job, JobCondition.InterruptForced);
-                    job = JobMaker.MakeJob(JobDefOf.Wait_Combat, dest, expiryInterval: 240);
+                    job = JobMaker.MakeJob(JobDefOf.Wait_Combat, dest, expiryInterval: 240, checkOverrideOnExpiry: true);
                     if (job != null)
                     {
                         selPawn.jobs.jobQueue.EnqueueFirst(job);
                         return true;
-                    }
+                    } 
                 }
-            }
-            if (Rand.Chance(0.5f))
-            {
-                cooldownTick = GenTicks.TicksGame + 60;
-                job = JobMaker.MakeJob(JobDefOf.Wait_Combat, expiryInterval: 240);
-                if (job != null)
-                {
-                    base.selPawn.jobs.StopAll();
-                    base.selPawn.jobs.StartJob(job, JobCondition.InterruptForced);
-                    return true;
-                }
-            }
+            }            
             return false;
         }     
     }

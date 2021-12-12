@@ -8,10 +8,10 @@ namespace CombatExtended
 {
     public class DangerTracker : MapComponent
     {
-        private const int DANGER_TICKS = 450;
-        private const int DANGER_TICKS_BULLET_STEP = 200;
-        private const int DANGER_TICKS_SMOKE_STEP = 140;
-        private const int DANGER_TICKS_MAX = 800;
+        private const int DANGER_TICKS = 900;
+        private const int DANGER_TICKS_BULLET_STEP = 400;
+        private const int DANGER_TICKS_SMOKE_STEP = 280;
+        private const int DANGER_TICKS_MAX = 1600;
         private const float DANGER_BULLET_MAX_DIST = 20f;
 
         private const float WEIGHTS_DIG = 0.8f;

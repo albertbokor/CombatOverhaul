@@ -48,7 +48,7 @@ namespace CombatExtended.HarmonyCE
                 SightTracker tracker = map.GetSightTracker();                
                 pawn.GetSightReader(out sightReader);
                 if (sightReader != null)
-                    visibilityAtDest = sightReader.GetVisibility(dest.Cell);
+                    visibilityAtDest = sightReader.GetVisibility(dest.Cell) / 2f;
 
                 // Run normal if we're not being suppressed, running for cover, crouch-walking or not actually moving to another cell
                 CompSuppressable comp = pawn?.TryGetComp<CompSuppressable>();

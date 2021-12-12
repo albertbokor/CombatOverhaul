@@ -1007,6 +1007,15 @@ namespace CombatExtended
             return null;
         }
 
+        public static Verb GetPrimaryVerbWithFallback(this Thing thing)
+        {
+            if (thing is Pawn pawn)
+                return GetWeaponVerbWithFallback(pawn);
+            if (thing is Building_TurretGunCE turret && turret.AttackVerb.Available())
+                return turret.AttackVerb;            
+            return null;
+        }
+
         public static bool CanAttackEnemyNowFast(this Pawn pawn, Thing enemy, Verb verb = null, SightTracker.SightReader reader = null)
         {
             if (verb == null && (verb = pawn.GetWeaponVerbWithFallback()) == null)
