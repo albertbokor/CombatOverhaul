@@ -70,6 +70,7 @@ namespace CombatExtended
         private bool debugDrawLOSShadowGrid = false;
         private bool debugDrawLOSVectorGrid = false;
         private bool debugDrawTargetedBy = false;
+        private bool debugDrawAvoidance = false;
 
         public bool DebuggingMode => debuggingMode;
         public bool DebugVerbose => debugVerbose;
@@ -83,7 +84,8 @@ namespace CombatExtended
         public bool DebugDrawLOSShadowGrid => debugDrawLOSShadowGrid && debuggingMode;
         public bool DebugDrawLOSVectorGrid => debugDrawLOSVectorGrid && debuggingMode;
         public bool DebugGenClosetPawn => debugGenClosetPawn && debuggingMode;
-        public bool DebugDrawTargetedBy => debugDrawTargetedBy && debuggingMode;        
+        public bool DebugDrawTargetedBy => debugDrawTargetedBy && debuggingMode;
+        public bool DebugDrawAvoidance => debugDrawAvoidance && debuggingMode;
         #endregion
 
         private bool lastAmmoSystemStatus;
@@ -116,6 +118,7 @@ namespace CombatExtended
             Scribe_Values.Look(ref debugDrawLOSVectorGrid, "debugDrawLOSVectorGrid", false);
             Scribe_Values.Look(ref debugShowSuppressionBuildup, "debugShowSuppressionBuildup", false);
             Scribe_Values.Look(ref debugDrawTargetedBy, "debugDrawTargetedBy", false);
+            Scribe_Values.Look(ref debugDrawAvoidance, "debugDrawAvoidance", false);
 #endif
 
             // Ammo settings
@@ -197,6 +200,7 @@ namespace CombatExtended
                 list.CheckboxLabeled("Draw LOS gird", ref debugDrawLOSShadowGrid);
                 list.CheckboxLabeled("Draw LOS vector gird", ref debugDrawLOSVectorGrid);
                 list.CheckboxLabeled("Draw enemies targeting selected pawn", ref debugDrawTargetedBy, "Debug targeted by in the reservation manager");
+                list.CheckboxLabeled("Draw avoidence grids", ref debugDrawAvoidance);
             }
             else
             {

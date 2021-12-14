@@ -24,9 +24,10 @@ namespace CombatExtended.HarmonyCE
         private static UInt64 targetFlags;
         private static IntVec3 targetPosition;
         private static float warmupTime;
+        private static AvoidanceTracker avoidanceTracker;
+        private static AvoidanceTracker.AvoidanceReader avoidanceReader;
         private static SightTracker.SightReader sightReader;
-        private static TurretTracker turretTracker;
-        private static DangerTracker dangerTracker;
+        private static TurretTracker turretTracker;        
         private static LightingTracker lightingTracker;
         private static List<CompProjectileInterceptor> interceptors;
         private static Stopwatch stopwatch = new Stopwatch();
@@ -41,6 +42,8 @@ namespace CombatExtended.HarmonyCE
                 verb = newReq.verb;
                 range = verb.EffectiveRange;                
                 pawn = newReq.caster;
+                avoidanceTracker = pawn.Map.GetAvoidanceTracker();
+                avoidanceTracker.TryGetAvoidanceReader(pawn, out avoidanceReader);
                 warmupTime = verb?.verbProps.warmupTime ?? 1;
                 warmupTime = Mathf.Clamp(warmupTime, 0.5f, 0.8f);
                 map = newReq.caster?.Map;
@@ -50,25 +53,25 @@ namespace CombatExtended.HarmonyCE
                 interceptors = map.listerThings.ThingsInGroup(ThingRequestGroup.ProjectileInterceptor)
                                                .Select(t => t.TryGetComp<CompProjectileInterceptor>())
                                                .ToList();
-
-                dangerTracker = map.GetDangerTracker();
+                                
                 lightingTracker = map.GetLightingTracker();
-
-                if(map.ParentFaction != newReq.caster?.Faction)
+                
+                if (map.ParentFaction != newReq.caster?.Faction)
                     turretTracker = map.GetComponent<TurretTracker>();
                 if (newReq.caster != null && newReq.caster.Faction != null)
                     newReq.caster.GetSightReader(out sightReader);
             }
 
-            public static void Postfix()
+            public static void Postfix(IntVec3 dest, bool __result)
             {
+                if (__result && avoidanceTracker != null)
+                    avoidanceTracker.Notify_CoverPositionSelected(pawn, dest);
                 stopwatch.Stop();
                 stopwatch.Reset();
                 pawn = null;
                 verb = null;
                 map = null;
-                sightReader = null;
-                dangerTracker = null;
+                sightReader = null;                
                 lightingTracker = null;
                 turretTracker = null;
             }
@@ -92,24 +95,20 @@ namespace CombatExtended.HarmonyCE
                         else
                             __result += 8;
                     }
-                }
+                }                
                 float sightCost = 0;
                 if (sightReader != null)
-                    sightCost = 6 - Mathf.Min(sightReader.GetSightCoverRating(c), 6);                
-
+                    sightCost = 6 - Mathf.Min(sightReader.GetSightCoverRating(c), 6);
+                if (avoidanceReader != null)
+                    __result += 3 - Mathf.Min(avoidanceReader.GetProximity(c), 3f);
                 if (sightCost > 0)
                 {
-                    __result += sightCost;
-                    __result += 2 - dangerTracker.DangerAt(c);
+                    __result += sightCost;                    
                     if (lightingTracker.IsNight)
-                        __result *= 1 - lightingTracker.CombatGlowAt(c) / 2f;
+                        __result *= 1 - lightingTracker.CombatGlowAt(c) / 2f;                    
                 }
                 if (range > 0)
-                {
-                    float rangeSqr = range * range;                    
-                    __result -= c.PawnsInRange(map, 8).Count(c => c.Faction == pawn.Faction) * 2.0f;
-                    __result -= Mathf.Abs(1 - c.DistanceToSquared(targetPosition) / (rangeSqr * warmupTime * warmupTime)) * 16;
-                }                
+                    __result -= Mathf.Abs(1 - c.DistanceToSquared(targetPosition) / (range * range * warmupTime * warmupTime)) * 16;                   
             }
         }
     }

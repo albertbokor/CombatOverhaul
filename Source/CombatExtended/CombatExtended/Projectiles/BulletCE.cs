@@ -45,8 +45,7 @@ namespace CombatExtended
                     intendedTargetThing,
                     ed,
                     def,
-                    null //CoverDef Missing!
-                    );
+                    null); //CoverDef Missing!);
             if (!(launcher is AmmoThing))
                 Find.BattleLog.Add(logEntry);
         }
@@ -61,10 +60,9 @@ namespace CombatExtended
             if (!cookOff && (logMisses || hitThing is Pawn || hitThing is Building_Turret))
             {
                 LogImpact(hitThing, out logEntry);
-            }
-
+            }            
             if (hitThing != null)
-            {
+            {                
                 // launcher being the pawn equipping the weapon, not the weapon itself
                 float damageAmountBase = DamageAmount;
                 var projectilePropsCE = (ProjectilePropertiesCE)def.projectile;
@@ -97,7 +95,7 @@ namespace CombatExtended
                             hitPawn,
                             CookOff
                             );
-                    Find.BattleLog.Add(logEntry);
+                    Find.BattleLog.Add(logEntry);                                                      
                 }
 
                 try

@@ -70,7 +70,7 @@ namespace CombatExtended
             {
                 return intendedTarget.Thing;
             }
-        }
+        }        
 
         public float cameraShakingInit = -1f;
         public ThingDef equipmentDef;
@@ -90,6 +90,7 @@ namespace CombatExtended
         protected Sustainer ambientSustainer;
         #endregion
 
+        private AvoidanceTracker avoidanceTracker;
         private TrailerProjectileExtension trailerExtension;
         private float suppressionAmount;
         public Thing mount; // GiddyUp compatibility, ignore collisions with pawns the launcher is mounting
@@ -256,15 +257,6 @@ namespace CombatExtended
             get
             {
                 return (ExactPosition - LastPos);
-            }
-        }
-
-        private DangerTracker _dangerTracker = null;
-        private DangerTracker DangerTracker
-        {
-            get
-            {
-                return _dangerTracker ?? (_dangerTracker = Map.GetDangerTracker());
             }
         }
 
@@ -520,7 +512,7 @@ namespace CombatExtended
             if (lbce != null)
             {
                 lbce.SpawnBeam(muzzle, destination);
-		RayCastSuppression(muzzle.ToIntVec3(), destination.ToIntVec3());
+		        RayCastSuppression(muzzle.ToIntVec3(), destination.ToIntVec3());
                 Destroy(DestroyMode.Vanish);
                 return;
             }
@@ -688,6 +680,7 @@ namespace CombatExtended
             //Order cells by distance from the last position
             foreach (var cell in cells)
             {
+                avoidanceTracker.Notify_Bullet(cell);
                 if (CheckCellForCollision(cell))
                 {
                     return true;
@@ -968,8 +961,8 @@ namespace CombatExtended
                 }
             }
             float distToOriginSquared = originInt.DistanceToSquared(positionInt);
-            if (shotHeight < CollisionVertical.WallCollisionHeight * CollisionVertical.WallCollisionHeight && distToOriginSquared > 9)
-                DangerTracker?.Notify_BulletAt(Position, Mathf.Sqrt(distToOriginSquared));
+            //if (shotHeight < CollisionVertical.WallCollisionHeight * CollisionVertical.WallCollisionHeight && distToOriginSquared > 9)
+            //    DangerTracker?.Notify_Bullet(Position);
         }
 
         /// <summary>
@@ -979,7 +972,8 @@ namespace CombatExtended
         /// <param name="respawningAfterLoad">Respawning after load</param>
         public override void SpawnSetup(Map map, bool respawningAfterLoad)
         {
-            if(def.projectile?.flyOverhead ?? false)
+            avoidanceTracker = map.GetAvoidanceTracker();
+            if (def.projectile?.flyOverhead ?? false)
             {
                 map.GetComponent<FlyOverProjectileTracker>().Register(this);
             }
@@ -1092,7 +1086,9 @@ namespace CombatExtended
 
         public virtual void Impact(Thing hitThing)
         {
-            if(cameraShakingInit > 0f && Find.CameraDriver != null)
+            avoidanceTracker.Notify_Bullet(Position);
+
+            if (cameraShakingInit > 0f && Find.CameraDriver != null)
             {
                 Find.CameraDriver.shaker.DoShake(cameraShakingInit);
             }

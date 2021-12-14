@@ -802,9 +802,9 @@ namespace CombatExtended
         }
 
         private static Map[] _mapsDanger = new Map[20];
-        private static DangerTracker[] _dangerTrackers = new DangerTracker[20];
+        private static AvoidanceTracker[] _dangerTrackers = new AvoidanceTracker[20];
 
-        public static DangerTracker GetDangerTracker(this Map map)
+        public static AvoidanceTracker GetAvoidanceTracker(this Map map)
         {
             int index = map?.Index ?? -1;
             if (index < 0)
@@ -813,7 +813,7 @@ namespace CombatExtended
             {
                 int expandedLength = Mathf.Max(_mapsDanger.Length * 2, index + 1);
                 Map[] maps = new Map[expandedLength];
-                DangerTracker[] trackers = new DangerTracker[expandedLength];
+                AvoidanceTracker[] trackers = new AvoidanceTracker[expandedLength];
                 Array.Copy(_mapsDanger, maps, _mapsDanger.Length);
                 Array.Copy(_dangerTrackers, trackers, _dangerTrackers.Length);
                 _mapsDanger = maps;
@@ -821,7 +821,7 @@ namespace CombatExtended
             }
             if (_mapsDanger[index] == map)
                 return _dangerTrackers[index];
-            return _dangerTrackers[index] = (_mapsDanger[index] = map).GetComponent<DangerTracker>();
+            return _dangerTrackers[index] = (_mapsDanger[index] = map).GetComponent<AvoidanceTracker>();
         }
 
         private static Map[] _mapsSight = new Map[20];

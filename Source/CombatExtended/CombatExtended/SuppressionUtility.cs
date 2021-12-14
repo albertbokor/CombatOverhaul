@@ -13,8 +13,9 @@ namespace CombatExtended
     {
         public const float maxCoverDist = 10f; //Maximum distance to run for cover to
 
-        private static LightingTracker lightingTracker;
-        private static DangerTracker dangerTracker;
+        private static AvoidanceTracker avoidanceTracker;
+        private static AvoidanceTracker.AvoidanceReader avoidanceReader;
+        private static LightingTracker lightingTracker;        
         private static SightTracker.SightReader sightReader;
         private static List<CompProjectileInterceptor> interceptors;
 
@@ -98,7 +99,8 @@ namespace CombatExtended
             IntVec3 bestPos = pawn.Position;
             interceptors = pawn.Map.listerThings.ThingsInGroup(ThingRequestGroup.ProjectileInterceptor).Select(t => t.TryGetComp<CompProjectileInterceptor>()).ToList();
             lightingTracker = pawn.Map.GetLightingTracker();
-            dangerTracker = pawn.Map.GetDangerTracker();
+            avoidanceTracker = pawn.Map.GetAvoidanceTracker();
+            avoidanceTracker.TryGetAvoidanceReader(pawn, out avoidanceReader);
             pawn.GetSightReader(out sightReader);          
             float bestRating = GetCellCoverRatingForPawn(pawn, pawn.Position, fromPosition);
             if (bestRating <= 0)
@@ -123,6 +125,8 @@ namespace CombatExtended
                 }
             }
             coverPosition = bestPos;
+            avoidanceTracker.Notify_CoverPositionSelected(pawn, bestPos);
+            avoidanceReader = null;
             lightingTracker = null;
             sightReader = null;
             return bestRating >= 0;
@@ -156,17 +160,18 @@ namespace CombatExtended
             {
                 visibilityRating += sightReader.GetSightCoverRating(cell);
                 if(sightReader.turrets != null)
-                    visibilityRating += sightReader.turrets[cell] * 2f;
+                    visibilityRating += sightReader.turrets[cell] * 2f;                
             }
             if (visibilityRating > 0f)
             {
                 // Avoid bullets and other danger source
-                cellRating -= Mathf.Min(visibilityRating, 10f);
-                cellRating -= dangerTracker.DangerAt(cell) * 2f;
+                cellRating -= Mathf.Min(visibilityRating, 10f);                
                 // Only apply this at night for performance reasons.
                 if(lightingTracker.IsNight)
                     cellRating -= lightingTracker.CombatGlowAtFor(shooterPos, cell) * 2f;
             }
+            if (avoidanceReader != null)
+                cellRating -= avoidanceReader.GetDanger(cell);
 
             // better cover rating system
             float coverLOSRating = 0;

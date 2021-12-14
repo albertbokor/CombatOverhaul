@@ -18,9 +18,10 @@ namespace CombatExtended.HarmonyCE
         private static Pawn pawn;
         private static Map map;
         private static PathFinder instance;
-        private static LightingTracker lightingTracker;
-        private static DangerTracker dangerTracker;
+        private static LightingTracker lightingTracker;        
         private static TurretTracker turretTracker;
+        private static AvoidanceTracker avoidanceTracker;
+        private static AvoidanceTracker.AvoidanceReader avoidanceReader;
         private static SightTracker.SightReader sightReader;        
         private static bool crouching;
         private static bool nightTime;
@@ -36,17 +37,18 @@ namespace CombatExtended.HarmonyCE
                 counter = 0;
                 instance = __instance;
                 map = __instance.map;
-                pawn = traverseParms.pawn;                
-                nightTime = map.IsNightTime();
-                dangerTracker = map.GetDangerTracker();
-                lightingTracker = map.GetLightingTracker();                
+                pawn = traverseParms.pawn;                                
+                nightTime = map.IsNightTime();                
+                lightingTracker = map.GetLightingTracker();
+                avoidanceTracker = pawn.Map.GetAvoidanceTracker();
                 if (!lightingTracker.IsNight)
                     lightingTracker = null;
                 if (map.ParentFaction != pawn?.Faction)
                     turretTracker = map.GetComponent<TurretTracker>();
 
                 SightTracker tracker = map.GetSightTracker();                
-                pawn.GetSightReader(out sightReader);
+                pawn.GetSightReader(out sightReader);                
+                avoidanceTracker.TryGetAvoidanceReader(pawn, out avoidanceReader);
                 if (sightReader != null)
                     visibilityAtDest = sightReader.GetVisibility(dest.Cell) / 2f;
 
@@ -76,24 +78,21 @@ namespace CombatExtended.HarmonyCE
 
         public static void Postfix(PathFinder __instance, PawnPath __result, bool __state)
         {
-            //if (__state && __result != PawnPath.NotFound && __result != null)
-            //{
-            //    for(int i = 0; i < __result.nodes.Count; i++)
-            //    {                    
-            //    }
-            //}
+            if (avoidanceTracker != null)            
+                avoidanceTracker.Notify_PathFound(pawn, __result);            
             Reset();
         }
 
         public static void Reset()
         {
+            avoidanceTracker = null;
+            avoidanceReader = null;
             counter = 0;
             instance = null;
             visibilityAtDest = 0f;
             map = null;
             turretTracker = null;            
-            pawn = null;
-            dangerTracker = null;
+            pawn = null;            
             lightingTracker = null;
         }
 
@@ -136,14 +135,19 @@ namespace CombatExtended.HarmonyCE
                     var visibility = sightReader.GetVisibility(index);
                     if (visibility > visibilityAtDest)
                         value += (int)Mathf.Min(visibility * 45, 500);
-                }
+                }                
                 if (value > 0)
                 {
-                    if (dangerTracker != null)
-                        value += (int)(dangerTracker.DangerAt(index) * 150f);
+                    if (avoidanceReader != null)
+                        value += (int)(avoidanceReader.GetPathing(index) * 25);
                     if (nightTime && lightingTracker != null)
                         value += (int)(lightingTracker.CombatGlowAt(map.cellIndices.IndexToCell(index)) * 25f);
-                }                
+                }
+                else
+                {
+                    if (avoidanceReader != null)
+                        value += (int)(avoidanceReader.GetPathing(index) * 10);
+                }             
                 if (value > 10f)
                 {
                     counter++;

@@ -56,7 +56,7 @@ namespace CombatExtended
             }
 
             public float GetFriendlies(IntVec3 cell) => GetFriendlies(indices.CellToIndex(cell));
-            public float GetFriendlies(int index) => friendly != null ? friendly[index] : 0f;            
+            public float GetFriendlies(int index) => friendly != null ? friendly[index] : 0f;
 
             public float GetSightCoverRating(IntVec3 cell) => GetSightCoverRating(indices.CellToIndex(cell));
             public float GetSightCoverRating(int index)

@@ -18,20 +18,13 @@ namespace CombatExtended
         private const float LethalAirPPM = 10000f;       // Level of PPM where target severity hits 100% (about 2x the WHO/FDA immediately-dangerous-to-everyone threshold).
 
         private float density;
-        private int updateTickOffset;   //Random offset (it looks jarring when smoke clouds all update on the same tick)
-
-        private DangerTracker _dangerTracker = null;
-        private DangerTracker DangerTracker
-        {
-            get
-            {
-                return _dangerTracker ?? (_dangerTracker = Map.GetDangerTracker());
-            }
-        }
+        private int updateTickOffset;   //Random offset (it looks jarring when smoke clouds all update on the same tick)       
+        private AvoidanceTracker avoidanceTracker;
 
         public override void SpawnSetup(Map map, bool respawningAfterLoad)
         {
             updateTickOffset = Rand.Range(0, UpdateIntervalTicks);
+            avoidanceTracker = map.GetAvoidanceTracker();
             base.SpawnSetup(map, respawningAfterLoad);
         }
 
@@ -92,9 +85,10 @@ namespace CombatExtended
                 SpreadToAdjacentCells();
                 ApplyHediffs();
             }
-            if (this.IsHashIntervalTick(120))
-                DangerTracker?.Notify_SmokeAt(Position);
-
+            if (this.IsHashIntervalTick(30))
+            {
+                avoidanceTracker.Notify_Smoke(Position);
+            }
             base.Tick();
         }
 
