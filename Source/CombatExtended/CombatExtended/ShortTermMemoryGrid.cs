@@ -4,13 +4,13 @@ using Verse;
 
 namespace CombatExtended
 {
-    public class PartiableGrid
-    {        
-        private struct PartiableRecord
+    public class ShortTermMemoryGrid
+    {
+        private struct ShortTermRecord
         {
             public int expireAt;
             public float Value
-            {                
+            {
                 get
                 {
                     int ticks = GenTicks.TicksGame;
@@ -19,7 +19,7 @@ namespace CombatExtended
                         return (float)(expireAt - ticks) / 60f;
                     }
                     return 0f;
-                }                
+                }
                 set
                 {
                     expireAt = Math.Min((int)(value * 60), 1200) + GenTicks.TicksGame;
@@ -30,15 +30,15 @@ namespace CombatExtended
         public Map map;
         public CellIndices cellIndices;
 
-        private float alpha;        
-        private PartiableRecord[] records;
+        private float alpha;
+        private ShortTermRecord[] records;
 
-        public PartiableGrid(Map map, int unitTicks)
+        public ShortTermMemoryGrid(Map map, int unitTicks)
         {
             this.alpha = unitTicks / 60f;
             this.map = map;
             this.cellIndices = map.cellIndices;
-            this.records = new PartiableRecord[this.cellIndices.NumGridCells];            
+            this.records = new ShortTermRecord[this.cellIndices.NumGridCells];
         }
 
         public float this[IntVec3 cell]
@@ -53,7 +53,7 @@ namespace CombatExtended
         {
             get
             {
-                if(index >= 0 && index < map.cellIndices.NumGridCells)
+                if (index >= 0 && index < map.cellIndices.NumGridCells)
                 {
                     return records[index].Value;
                 }

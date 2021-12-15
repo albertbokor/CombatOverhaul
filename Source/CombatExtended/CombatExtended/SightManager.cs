@@ -7,10 +7,11 @@ using Verse;
 using Verse.AI;
 using System.Threading.Tasks;
 using System.Threading;
+using System.Text;
 
 namespace CombatExtended
 {
-    public abstract class SightTracker<T> where T : Thing
+    public abstract class SightManager<T> where T : Thing
     {        
         protected class IThingSightRecord
         {
@@ -28,8 +29,7 @@ namespace CombatExtended
             public int lastCycle;
         }
 
-        public readonly Map map;
-        public readonly SightTracker parent;
+        public readonly Map map;       
         public readonly SightGrid grid;
         public readonly int bucketCount;
         public readonly int updateInterval;        
@@ -48,12 +48,12 @@ namespace CombatExtended
         private bool mapIsAlive = true;
         private bool wait = false;
 
-        public SightTracker(SightTracker tracker, int bucketCount, int updateInterval)
-        {            
-            this.parent = tracker;
+        public SightManager(Map map, int bucketCount, int updateInterval)
+        {
+            this.map = map;
             this.updateInterval = updateInterval;
             this.bucketCount = bucketCount;            
-            grid = new SightGrid(map = tracker.map);
+            grid = new SightGrid(map);
             
             ticksUntilUpdate = updateInterval;
             
@@ -190,7 +190,7 @@ namespace CombatExtended
             }                       
             record.lastCycle = grid.CycleNum;            
             return true;
-        }        
+        }
 
         private IntVec3 GetShiftedPosition(IThingSightRecord record)
         {            

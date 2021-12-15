@@ -76,6 +76,8 @@ namespace CombatExtended.AI
                 return;
             if (selPawn.story != null && selPawn.WorkTagIsDisabled(WorkTags.Violent))
                 return;
+            if (selPawn.mindState?.duty != null && (selPawn.mindState.duty.def == DutyDefOf.Breaching || selPawn.mindState.duty.def == DutyDefOf.Sapper))            
+                return;            
             foreach (ThingWithComps thing in CompInventory.rangedWeaponList)
             {
                 CompAmmoUser compAmmo = thing.TryGetComp<CompAmmoUser>();

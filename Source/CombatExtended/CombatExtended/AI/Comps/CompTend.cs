@@ -67,6 +67,11 @@ namespace CombatExtended.AI
                 lastTendJobCheckedAt = GenTicks.TicksGame;
                 return null;
             }
+            if (selPawn.mindState?.duty != null && (selPawn.mindState.duty.def == DutyDefOf.Breaching || selPawn.mindState.duty.def == DutyDefOf.Sapper))
+            {
+                lastTendJobCheckedAt = GenTicks.TicksGame;
+                return null;
+            }
             if (selPawn.Position.PawnsInRange(Map, 45).Any(p => p.HostileTo(selPawn) && !selPawn.HiddingBehindCover(p)))
             {
                 lastTendJobCheckedAt = GenTicks.TicksGame - COOLDOWN_TEND_JOB_CHECK / 2;

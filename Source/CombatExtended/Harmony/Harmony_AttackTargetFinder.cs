@@ -118,6 +118,8 @@ namespace CombatExtended.HarmonyCE
                 }
                 if (target.Thing is Pawn other && searcher.Thing is Pawn pawn)
                 {
+                    if (other.equipment?.Primary == null)
+                        result -= 15;
                     if (other.jobs?.curJob?.def == JobDefOf.AttackMelee && verb.EffectiveRange > 5)
                         result -= 20;                    
                 }
