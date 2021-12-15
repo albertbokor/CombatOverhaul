@@ -1,0 +1,131 @@
+﻿using System;
+using System.Collections.Generic;
+using UnityEngine;
+using CombatExtended.HarmonyCE;
+using Verse;
+using System.Xml;
+
+namespace CombatExtended
+{
+    public class CellFlooder
+    {       
+        private struct FloodNode
+        {
+            public IntVec3 cell;
+            public IntVec3 parent;            
+            public float dist;
+            public int index;
+            public int parentIndex;            
+        }
+
+        private static readonly IntVec3[] diagonalOffsets = new IntVec3[5]
+        {
+            new IntVec3(-1, 0, -1),
+            new IntVec3(-1, 0, 1),
+            new IntVec3(1, 0, 1),
+            new IntVec3(1, 0, -1),
+            new IntVec3(-1, 0, -1),
+        };
+
+        private static readonly IntVec3[] offsets = new IntVec3[4]
+        {
+            new IntVec3(-1, 0, 0),
+            new IntVec3(0, 0, 1),
+            new IntVec3(1, 0, 0),
+            new IntVec3(0, 0, -1),            
+        };
+
+        public Map map;
+
+        private int sig;
+        private WallGrid walls;
+        private readonly FastQueue<FloodNode> floodQueue = new FastQueue<FloodNode>();
+        private readonly List<FloodNode> floodedCells = new List<FloodNode>();
+        private readonly int[] sigArray;
+        
+        public CellFlooder(Map map)
+        {
+            this.sig = 13;
+            this.map = map;
+            this.walls = map.GetComponent<WallGrid>();
+            this.sigArray = new int[map.cellIndices.NumGridCells]; 
+        }
+        
+        public void Flood(IntVec3 center, Action<IntVec3, IntVec3, float> action, Func<IntVec3, bool> validator = null, int maxDist = 25)
+        {
+            sig++;
+            Func<IntVec3, bool> blocked = GetBlockedTestFunc(validator);
+            this.walls = map.GetComponent<WallGrid>();
+            FloodNode node = GetIntialFloodedCell(center);
+            FloodNode nextNode;
+            int cellIndex;            
+            IntVec3 nextCell;
+            IntVec3 offset;            
+
+            floodedCells.Clear();
+            floodedCells.Add(node);
+            floodQueue.Clear();            
+            floodQueue.Enqueue(GetIntialFloodedCell(center));
+            while (!floodQueue.IsEmpty)
+            {
+                node = floodQueue.Dequeue();               
+                //
+                // TODO optimize this some more
+                action(node.cell, node.parent, node.dist);
+                //
+                // check for the distance
+                if (node.dist >= maxDist)
+                    continue;
+
+                for (int i = 0; i < 4; i++)
+                {
+                    offset = offsets[i];
+                    nextCell = node.cell + offset;
+                    if (nextCell.InBounds(map) && sigArray[cellIndex = map.cellIndices.CellToIndex(nextCell)] != sig)
+                    {
+                        sigArray[cellIndex] = sig;
+                        if (!walls[nextCell])
+                        {
+                            nextNode = new FloodNode();
+                            nextNode.cell = nextCell;                                                        
+                            if(Mathf.Abs(nextCell.x - node.parent.x) == 1 && Mathf.Abs(nextCell.z - node.parent.z) == 1)
+                            {
+                                nextNode.parent = node.parent;
+                                nextNode.dist = node.dist + 0.4123f;
+                            }
+                            else
+                            {
+                                nextNode.parent = node.cell;
+                                nextNode.dist = node.dist + 1;
+                            }                                                      
+                            nextNode.index = floodedCells.Count;
+                            nextNode.parentIndex = node.index;                            
+                            floodQueue.Enqueue(nextNode);
+                            floodedCells.Add(nextNode);
+                        }
+                    }                    
+                }                
+            }            
+        }        
+
+        private Func<IntVec3, bool> GetBlockedTestFunc(Func<IntVec3, bool> validator)
+        {
+            if (validator == null)
+                return (cell) => walls[cell];
+            else
+                return (cell) => walls[cell] || !validator(cell);
+        }        
+
+        private FloodNode GetIntialFloodedCell(IntVec3 center)
+        {
+            FloodNode cell = new FloodNode();
+            cell.cell = center;
+            cell.parent = center;
+            cell.dist = 0;
+            cell.index = 0;
+            cell.parentIndex = 0;
+            return cell;
+        }       
+    }
+}
+
