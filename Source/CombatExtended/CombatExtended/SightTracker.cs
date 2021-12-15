@@ -134,13 +134,13 @@ namespace CombatExtended
         public SightTracker(Map map) : base(map)
         {
             friendly =
-                new SightManager_Pawns(map, 20, 4);
+                new SightManager_Pawns(this, 20, 4);
             hostile =
-                new SightManager_Pawns(map, 20, 4);
+                new SightManager_Pawns(this, 20, 4);
             universal =
-                new SightManager_Pawns(map, 20, 10);
+                new SightManager_Pawns(this, 20, 10);
             turrets =
-                new SightManager_Turrets(map, 20, 100);
+                new SightManager_Turrets(this, 20, 100);
         }
 
         public override void MapComponentTick()
@@ -254,7 +254,6 @@ namespace CombatExtended
                 reader.friendly = universal.grid;
                 reader.turrets = turrets.grid;
                 reader.universal = hostile.grid;
-                return true;
             }
             reader = new SightReader(this);
             if (faction.HostileTo(map.ParentFaction))
@@ -269,30 +268,6 @@ namespace CombatExtended
                 reader.friendly = friendly.grid;
                 reader.turrets = null;
             }
-            reader.universal = universal.grid;
-            return true;
-        }
-
-        public bool TryGetEnemyReader(out SightReader reader)
-        {
-            if (map.ParentFaction == null)
-            {
-                reader = null;
-                return false;
-            }
-            if (map.ParentFaction.def == FactionDefOf.Mechanoid || map.ParentFaction.def == FactionDefOf.Insect)
-            {
-                reader = new SightReader(this);
-                reader.hostile = friendly.grid;
-                reader.friendly = universal.grid;
-                reader.turrets = turrets.grid;
-                reader.universal = hostile.grid;
-                return true;
-            }
-            reader = new SightReader(this);
-            reader.hostile = friendly.grid;
-            reader.friendly = hostile.grid;
-            reader.turrets = turrets.grid;
             reader.universal = universal.grid;
             return true;
         }

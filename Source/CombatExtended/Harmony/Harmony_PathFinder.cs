@@ -28,7 +28,7 @@ namespace CombatExtended.HarmonyCE
         private static float visibilityAtDest;        
         private static float counter = 0;
 
-        internal static bool Prefix(PathFinder __instance, ref PawnPath __result, IntVec3 start, LocalTargetInfo dest, TraverseParms traverseParms, PathEndMode peMode, PathFinderCostTuning tuning, out bool __state)
+        internal static bool Prefix(PathFinder __instance, ref PawnPath __result, IntVec3 start, LocalTargetInfo dest, TraverseParms traverseParms, PathEndMode peMode, out bool __state)
         {
             __state = false;
             if (traverseParms.pawn != null && traverseParms.pawn.Faction != null && traverseParms.pawn.RaceProps.Humanlike && traverseParms.pawn.RaceProps.intelligence == Intelligence.Humanlike)
@@ -37,8 +37,7 @@ namespace CombatExtended.HarmonyCE
                 counter = 0;
                 instance = __instance;
                 map = __instance.map;
-                pawn = traverseParms.pawn;
-                //Verb verb = pawn.GetWeaponVerbWithFallback();                
+                pawn = traverseParms.pawn;                                
                 nightTime = map.IsNightTime();                
                 lightingTracker = map.GetLightingTracker();
                 avoidanceTracker = pawn.Map.GetAvoidanceTracker();
@@ -47,15 +46,11 @@ namespace CombatExtended.HarmonyCE
                 if (map.ParentFaction != pawn?.Faction)
                     turretTracker = map.GetComponent<TurretTracker>();
 
-                SightTracker tracker = map.GetSightTracker();
+                SightTracker tracker = map.GetSightTracker();                
                 pawn.GetSightReader(out sightReader);                
-                avoidanceTracker.TryGetReader(pawn, out avoidanceReader);
+                avoidanceTracker.TryGetAvoidanceReader(pawn, out avoidanceReader);
                 if (sightReader != null)
-                {
                     visibilityAtDest = sightReader.GetVisibility(dest.Cell) / 2f;
-                    if (pawn.GetWeaponVerbWithFallback()?.EffectiveRange < 20)
-                        visibilityAtDest *= 2f / 3f;
-                }
 
                 // Run normal if we're not being suppressed, running for cover, crouch-walking or not actually moving to another cell
                 CompSuppressable comp = pawn?.TryGetComp<CompSuppressable>();
@@ -74,24 +69,6 @@ namespace CombatExtended.HarmonyCE
                 __result = PawnPath.NotFound;
                 return false;
             }
-            else if(tuning?.custom is BreachingGrid.CustomTuning)
-            {
-                __state = true;
-                counter = 0;
-                instance = __instance;
-                map = __instance.map;
-                nightTime = map.IsNightTime();
-                lightingTracker = map.GetLightingTracker();
-                avoidanceTracker = map.GetAvoidanceTracker();
-                if (!lightingTracker.IsNight)
-                    lightingTracker = null;
-                if (map.ParentFaction != pawn?.Faction)
-                    turretTracker = map.GetComponent<TurretTracker>();
-                SightTracker tracker = map.GetSightTracker();
-                tracker.TryGetEnemyReader(out sightReader);
-                avoidanceTracker.TryGetEnemyAvoidanceReader(out avoidanceReader);
-                return true;
-            }
             else
             {
                 Reset();
@@ -101,7 +78,7 @@ namespace CombatExtended.HarmonyCE
 
         public static void Postfix(PathFinder __instance, PawnPath __result, bool __state)
         {
-            if (avoidanceTracker != null && pawn != null)            
+            if (avoidanceTracker != null)            
                 avoidanceTracker.Notify_PathFound(pawn, __result);            
             Reset();
         }
@@ -112,8 +89,6 @@ namespace CombatExtended.HarmonyCE
             avoidanceReader = null;
             counter = 0;
             instance = null;
-            sightReader = null;
-            turretTracker = null;
             visibilityAtDest = 0f;
             map = null;
             turretTracker = null;            
@@ -159,20 +134,20 @@ namespace CombatExtended.HarmonyCE
                 {                    
                     var visibility = sightReader.GetVisibility(index);
                     if (visibility > visibilityAtDest)
-                        value += (int)Mathf.Min(visibility * 45, 600);
-                }
+                        value += (int)Mathf.Min(visibility * 45, 500);
+                }                
                 if (value > 0)
                 {
                     if (avoidanceReader != null)
-                        value += (int)(avoidanceReader.GetPathing(index) * 35);
+                        value += (int)(avoidanceReader.GetPathing(index) * 25);
                     if (nightTime && lightingTracker != null)
                         value += (int)(lightingTracker.CombatGlowAt(map.cellIndices.IndexToCell(index)) * 25f);
                 }
                 else
                 {
                     if (avoidanceReader != null)
-                        value += (int)(avoidanceReader.GetPathing(index) * 20);
-                }
+                        value += (int)(avoidanceReader.GetPathing(index) * 10);
+                }             
                 if (value > 10f)
                 {
                     counter++;

@@ -114,7 +114,6 @@ namespace CombatExtended.AI
 
         public override bool StartCastChecks(Verb verb, LocalTargetInfo castTarg, LocalTargetInfo destTarg)
         {
-            if (selPawn.mindState?.duty != null && (selPawn.mindState.duty.def == DutyDefOf.Breaching || selPawn.mindState.duty.def == DutyDefOf.Sapper)) return true;            
             if (!ShouldRun) return true;
             if (OpportunisticallySwitchedRecently) return true;
             if (TryFlare(verb, castTarg, destTarg))

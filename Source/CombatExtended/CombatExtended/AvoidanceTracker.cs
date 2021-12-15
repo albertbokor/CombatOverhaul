@@ -12,11 +12,11 @@ namespace CombatExtended
     {
         public class AvoidanceReader
         {
-            public ShortTermMemoryGrid danger;
-            public ShortTermMemoryGrid smoke;
-            public ShortTermMemoryGrid pathing;
-            public ShortTermMemoryGrid proximity;
-            public ShortTermMemoryGrid bullet;
+            public PartiableGrid danger;
+            public PartiableGrid smoke;
+            public PartiableGrid pathing;
+            public PartiableGrid proximity;
+            public PartiableGrid bullet;
 
             private readonly Map map;
             private readonly CellIndices indices;
@@ -55,21 +55,21 @@ namespace CombatExtended
                 smoke != null ? smoke[index] > 0 : false;
         }
 
-        public ShortTermMemoryManager danger;
-        public ShortTermMemoryManager smoke;
-        public ShortTermMemoryManager bullets;       
-        public ShortTermMemoryManager[] pathing = new ShortTermMemoryManager[2];
-        public ShortTermMemoryManager[] proximity = new ShortTermMemoryManager[2];        
+        public PartiableManager danger;
+        public PartiableManager smoke;
+        public PartiableManager bullets;       
+        public PartiableManager[] pathing = new PartiableManager[2];
+        public PartiableManager[] proximity = new PartiableManager[2];        
 
         public AvoidanceTracker(Map map) : base(map)
         {
-            danger = new ShortTermMemoryManager(map);
-            bullets = new ShortTermMemoryManager(map);
-            smoke = new ShortTermMemoryManager(map);
-            pathing[0] = new ShortTermMemoryManager(map);
-            proximity[0] = new ShortTermMemoryManager(map);
-            pathing[1] = new ShortTermMemoryManager(map);            
-            proximity[1] = new ShortTermMemoryManager(map);
+            danger = new PartiableManager(map);
+            bullets = new PartiableManager(map);
+            smoke = new PartiableManager(map);
+            pathing[0] = new PartiableManager(map);
+            proximity[0] = new PartiableManager(map);
+            pathing[1] = new PartiableManager(map);            
+            proximity[1] = new PartiableManager(map);
         }
 
         public override void MapComponentTick()
@@ -106,19 +106,7 @@ namespace CombatExtended
             }
         }
 
-        public bool TryGetEnemyAvoidanceReader(out AvoidanceReader reader)
-        {
-            reader = new AvoidanceReader(this);
-            reader.danger = danger.grid;
-            reader.bullet = bullets.grid;
-            if ((map.ParentFaction?.def ?? null) != FactionDefOf.Mechanoid)
-                reader.smoke = smoke.grid;
-            reader.proximity = proximity[1].grid;
-            reader.pathing = pathing[1].grid;
-            return true;
-        }
-
-        public bool TryGetReader(Pawn pawn, out AvoidanceReader reader)
+        public bool TryGetAvoidanceReader(Pawn pawn, out AvoidanceReader reader)
         {
             reader = null;
             if (pawn.Faction == null
@@ -146,19 +134,19 @@ namespace CombatExtended
         public void Notify_Bullet(IntVec3 cell)
         {
             if (cell.InBounds(map))
-                bullets.Apply(cell, 3, 3);
+                bullets.Set(cell, 0.35f, 3);
         }
 
         public void Notify_BulletImpact(IntVec3 cell)
         {
             if (cell.InBounds(map))
-                danger.Apply(cell, 5, 3);
+                danger.Set(cell, 5, 3);
         }
 
         public void Notify_Smoke(IntVec3 cell)
         {
             if (cell.InBounds(map))
-                smoke.Apply(cell, 0.5f, 3);
+                smoke.Set(cell, 0.5f, 3);
         }        
 
         public void Notify_PathFound(Pawn pawn, PawnPath path)
@@ -167,11 +155,11 @@ namespace CombatExtended
                 || pawn.Faction == null
                 || map.ParentFaction == null)
                 return;
-            ShortTermMemoryManager manager = !pawn.Faction.HostileTo(map.ParentFaction) ? pathing[0] : pathing[1];
+            PartiableManager manager = !pawn.Faction.HostileTo(map.ParentFaction) ? pathing[0] : pathing[1];
             for (int i = 3; i < path.nodes.Count; i += 7)
-                manager.Apply(path.nodes[i], 5, 3);
+                manager.Set(path.nodes[i], 3, 3);
             for (int i = 1; i < path.nodes.Count; i += 3)
-                manager.Apply(path.nodes[i], 2, 1);
+                manager.Set(path.nodes[i], 2, 1);
         }
 
         public void Notify_CoverPositionSelected(Pawn pawn, IntVec3 cell)
@@ -180,9 +168,9 @@ namespace CombatExtended
                 || pawn.Faction == null
                 || map.ParentFaction == null)
                 return;
-            ShortTermMemoryManager manager = !pawn.Faction.HostileTo(map.ParentFaction) ? proximity[0] : proximity[1];
-            manager.Apply(cell, 8f, 2);
-            manager.Apply(cell, 2f, 4);
+            PartiableManager manager = !pawn.Faction.HostileTo(map.ParentFaction) ? proximity[0] : proximity[1];
+            manager.Set(cell, 8f, 2);
+            manager.Set(cell, 2f, 4);
         }
 
         public void Notify_Injury(Pawn pawn, IntVec3 cell)
@@ -191,7 +179,7 @@ namespace CombatExtended
                 || pawn.Faction == null
                 || map.ParentFaction == null)
                 return;
-            ShortTermMemoryManager manager = danger;
+            PartiableManager manager = danger;
         }
 
         public void Notify_Death(Pawn pawn, IntVec3 cell)
@@ -200,7 +188,7 @@ namespace CombatExtended
                 || pawn.Faction == null
                 || map.ParentFaction == null)
                 return;
-            ShortTermMemoryManager manager = danger;
+            PartiableManager manager = danger;
         }
     }
 }

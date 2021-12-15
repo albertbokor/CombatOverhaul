@@ -18,34 +18,227 @@ namespace CombatExtended
      * 
      * when casting update the grid at a regualar intervals for a pawn/Thing or risk exploding value issues.
      */
-    public class SightGrid : SensoryGrid
+    [StaticConstructorOnStartup]
+    public class SightGrid
     {
+        [StructLayout(LayoutKind.Auto)]
+        private struct SightRecord
+        {
+            /// <summary>
+            /// At what cycle does this record expire.
+            /// </summary>
+            public int expireAt;
+            /// <summary>
+            /// Used to prevent set a record twice in a single operation.
+            /// </summary>
+            public short sig;
+            /// <summary>
+            /// The number of overlaping casts.
+            /// </summary>
+            public short count;            
+            /// <summary>
+            /// The previous number of overlaping casts.
+            /// </summary>
+            public short countPrev;
+            /// <summary>
+            /// Indicates how much this cell is visible/close to casters.
+            /// </summary>
+            public float visibility;
+            /// <summary>
+            /// The previous visibility value.
+            /// </summary>
+            public float visibilityPrev;
+            /// <summary>
+            /// The general direction of casters.
+            /// </summary>
+            public Vector2 direction;
+            /// <summary>
+            /// The previous general direction of casters;
+            /// </summary>
+            public Vector2 directionPrev;
+            /// <summary>
+            /// A bit map that is used to indicate an pool of potential casters.
+            /// </summary>
+            public UInt64 casterFlags;
+            /// <summary>
+            /// The previous caster flags.
+            /// </summary>
+            public UInt64 casterFlagsPrev;
+            /// <summary>
+            /// Will prepare this record for the next cycle by either reseting prev fields or replacing them with the current values.
+            /// </summary>            
+            /// <param name="reset">Wether to reset prev</param>
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            public void Next(bool expired)
+            {
+                if (!expired)
+                {                    
+                    directionPrev   = direction;
+                    countPrev       = count;
+                    casterFlagsPrev = casterFlags;
+                    visibilityPrev = visibility;
+                    casterFlagsPrev = casterFlags;
+                }
+                else
+                {
+                    directionPrev = Vector2.zero; ;
+                    countPrev       = 0;
+                    casterFlagsPrev = 0;
+                    visibilityPrev  = 0;
+                    casterFlagsPrev = 0;
+                }
+            }                       
+        }
+
+        //
+        // State fields.
+        #region Fields
+
+        /// <summary>
+        /// How far can the current caster see.
+        /// </summary>
         private float range;
-        private IntVec3 center;
+        /// <summary>
+        /// The center of the the current casting operation.
+        /// </summary>
+        private IntVec3 center;                        
+        /// <summary>
+        /// The signature of the current operation.
+        /// </summary>
+        private short sig = 13;
+        /// <summary>
+        /// The flags of the current caster.
+        /// </summary>
+        private UInt64 currentCasterFlags;
+        /// <summary>
+        /// Ticks between cycles.
+        /// </summary>
+        private int cycle = 19;
 
-        public SightGrid(Map map) : base(map)
+        #endregion
+
+        //
+        // Read only fields.
+        #region ReadonlyFields
+
+        /// <summary>
+        /// CellIndices of the parent map.
+        /// </summary>
+        private readonly CellIndices cellIndices;
+        /// <summary>
+        /// The sight array with the size of the parent map.
+        /// </summary>
+        private readonly SightRecord[] sightArray;        
+        /// <summary>
+        /// Parent map.
+        /// </summary>
+        private readonly Map map;
+        /// <summary>
+        /// Number of cells in parent map.
+        /// </summary>
+        private readonly int mapCellNum;
+
+        #endregion
+
+        /// <summary>
+        /// The current cycle of update.
+        /// </summary>
+        public int CycleNum
         {
+            get => cycle;
         }
 
-        public void Set(int index, int num, int dist) => Set(cellIndices.IndexToCell(index), num, dist);
-        public void Set(IntVec3 cell, int num, int dist)
+        public SightGrid(Map map)
         {
-            base.Set(cellIndices.CellToIndex(cell), num, (range - dist) / range, new Vector2(cell.x - center.x, cell.z - center.z));
+            cellIndices = map.cellIndices;                        
+            mapCellNum = cellIndices.NumGridCells;            
+            sightArray = new SightRecord[map.cellIndices.NumGridCells];            
+            this.map = map;            
+            for (int i = 0; i < sightArray.Length; i++)
+            {               
+                sightArray[i] = new SightRecord()
+                {
+                    sig = -1,
+                    expireAt = -1,
+                    direction = Vector3.zero
+                };
+            }
         }
 
-        public void Next(IntVec3 center, float range, UInt64 casterFlags)
+        /// <summary>
+        /// Return the number of enemies in cell.
+        /// </summary>
+        /// <param name="cell">Cell</param>
+        /// <returns>Number of enemies in cell.</returns>
+        public float this[IntVec3 cell]
         {
-            base.Next(casterFlags);
-            this.range = range;
-            this.center = center;
+            get => this[cellIndices.CellToIndex(cell)];            
         }
 
-        public override void NextCycle()
+        /// <summary>
+        /// Return the number of enemies in cell index.
+        /// </summary>
+        /// <param name="cell">Cell</param>
+        /// <returns>Number of enemies in cell index.</returns>
+        public float this[int index]
         {
-            base.NextCycle();
-            this.range = 0;
-            this.center = IntVec3.Invalid;
+            get
+            {
+                if (index >= 0 && index < mapCellNum)
+                {
+                    SightRecord record = sightArray[index];
+                    if (record.expireAt - CycleNum > 0)                        
+                        return Math.Max(record.count, record.countPrev);
+                    else if(record.expireAt - CycleNum == 0)
+                        return record.count;
+                }
+                return 0;
+            }
         }
+
+        public void Set(IntVec3 cell, int num, int dist) => Set(cellIndices.CellToIndex(cell), num, dist);
+        public void Set(int index, int num, int dist)
+        {
+            if (index >= 0 && index < mapCellNum)
+            {
+                SightRecord record = sightArray[index];                
+                if (record.sig != sig)
+                {
+                    IntVec3 cell = cellIndices.IndexToCell(index);
+                    float t = record.expireAt - CycleNum;
+                    if (t > 0)
+                    {
+                        record.count += (short)num;
+                        float visibility = (range - dist) / range * num;
+
+                        record.visibility += visibility;
+                        record.direction.x += (cell.x - center.x) * num;
+                        record.direction.y += (cell.z - center.z) * num;
+                        record.casterFlags |= currentCasterFlags;                       
+                    }
+                    else
+                    {
+                        if (t == 0)
+                        {
+                            record.expireAt = CycleNum + 1;
+                            record.Next(expired: false);                            
+                        }
+                        else
+                        {
+                            record.expireAt = CycleNum + 1;
+                            record.Next(expired: true);                            
+                        }
+                        record.count = (short)num;
+                        record.visibility = (range - dist) / range * num;
+                        record.direction.x = (cell.x - center.x) * num;
+                        record.direction.y = (cell.z - center.z) * num;                        
+                        record.casterFlags = currentCasterFlags;
+                    }
+                    record.sig = sig;
+                    sightArray[index] = record;
+                }
+            }
+        }       
 
         public float GetVisibility(int index) => GetVisibility(index, out _);
         public float GetVisibility(IntVec3 cell) => GetVisibility(cellIndices.CellToIndex(cell), out _);
@@ -55,16 +248,16 @@ namespace CombatExtended
         {
             if (index >= 0 && index < mapCellNum)
             {
-                SensoryRecord record = sightArray[index];
+                SightRecord record = sightArray[index];
                 if (record.expireAt - CycleNum > 0)
-                {
-                    enemies = record.signalNumPrev;
-                    return Mathf.Max((record.signalStrengthPrev + enemies) / 2f, (record.signalStrength + enemies) / 2f, 0f);
+                {                   
+                    enemies = record.countPrev;
+                    return Mathf.Max((record.visibilityPrev + enemies) / 2f, (record.visibility + enemies) / 2f, 0f);                   
                 }
-                else if (record.expireAt - CycleNum == 0)
+                else if(record.expireAt - CycleNum == 0)
                 {
-                    enemies = record.signalNum;
-                    return Mathf.Max((record.signalStrength + enemies) / 2f, 0f);
+                    enemies = record.count;
+                    return Mathf.Max((record.visibility + enemies) / 2f, 0f);
                 }
             }
             enemies = 0;
@@ -76,16 +269,17 @@ namespace CombatExtended
         {
             if (index >= 0 && index < mapCellNum)
             {
-                SensoryRecord record = sightArray[index];
+                SightRecord record = sightArray[index];
                 if (record.expireAt - CycleNum > 0)
                 {
-                    if (record.signalNum > record.signalNumPrev)
-                        return record.direction / (record.signalNum + 0.01f);
+                    if (record.count > record.countPrev)
+                        return record.direction / (record.count + 0.01f);
                     else
-                        return record.directionPrev / (record.signalNumPrev + 0.01f);
+                        return record.directionPrev / (record.countPrev + 0.01f);
                 }
-                if (record.expireAt - CycleNum == 0)
-                    return record.direction / (record.signalNum + 0.01f);
+                else if (record.expireAt - CycleNum == 0)
+                    return record.direction / (record.count + 0.01f);
+
             }
             return Vector2.zero;
         }
@@ -95,12 +289,11 @@ namespace CombatExtended
         {
             if (index >= 0 && index < mapCellNum)
             {
-                SensoryRecord record = sightArray[index];
-                if (record.expireAt - CycleNum > 0)
-                    return record.sourceFlagsPrev | record.sourceFlags;
-
-                if (record.expireAt - CycleNum == 0)
-                    return record.sourceFlags;
+                SightRecord record = sightArray[index];
+                if (record.expireAt - CycleNum > 0)                                 
+                    return record.casterFlagsPrev | record.casterFlags;                
+                else if (record.expireAt - CycleNum == 0)
+                    return record.casterFlags;
             }
             return 0;
         }
@@ -110,23 +303,23 @@ namespace CombatExtended
         {
             if (index >= 0 && index < mapCellNum)
             {
-                SensoryRecord record = sightArray[index];
+                SightRecord record = sightArray[index];
                 if (record.expireAt - CycleNum > 0)
                 {
-                    if (record.signalNum > record.signalNumPrev)
+                    if (record.count > record.countPrev)
                     {
-                        enemies = record.signalNum;
+                        enemies = record.count;
                         return record.direction / (enemies + 0.01f);
                     }
                     else
                     {
-                        enemies = record.signalNumPrev;
+                        enemies = record.countPrev;
                         return record.directionPrev / (enemies + 0.01f);
-                    }
+                    }                   
                 }
-                else if (record.expireAt - CycleNum == 0)
+                else if(record.expireAt - CycleNum == 0)
                 {
-                    enemies = record.signalNum;
+                    enemies = record.count;
                     return record.direction / (enemies + 0.01f);
                 }
             }
@@ -139,7 +332,7 @@ namespace CombatExtended
         {
             if (cell.InBounds(map))
             {
-                SensoryRecord record = sightArray[cellIndices.CellToIndex(cell)];
+                SightRecord record = sightArray[cellIndices.CellToIndex(cell)];
                 if (record.expireAt - CycleNum >= 0)
                 {
                     Vector2 direction = record.direction.normalized * -1f;
@@ -149,7 +342,7 @@ namespace CombatExtended
                     {
                         if (!result && cell.InBounds(map))
                         {
-                            Thing cover = cell.GetCover(map);
+                            Thing cover = cell.GetCover(map);                            
                             if (cover != null && cover.def.Fillage == FillCategory.Partial && cover.def.category != ThingCategory.Plant)
                                 result = true;
                         }
@@ -165,38 +358,63 @@ namespace CombatExtended
 
         public float GetCellSightCoverRating(int index, out bool hasCover) => GetCellSightCoverRatingInternel(cellIndices.IndexToCell(index), out hasCover);
         public float GetCellSightCoverRating(IntVec3 cell, out bool hasCover) => GetCellSightCoverRatingInternel(cell, out hasCover);
-
+        
         private float GetCellSightCoverRatingInternel(IntVec3 cell, out bool hasCover)
         {
             if (!cell.InBounds(map))
             {
                 hasCover = false;
                 return 0f;
-            }
+            }           
             hasCover = HasCover(cell);
-            if (hasCover)
+            if(hasCover)
                 return GetVisibility(cell) * 0.5f;
             else
                 return GetVisibility(cell);
         }
 
+        /// <summary>
+        /// Prepare the grid for a new casting operation.
+        /// </summary>
+        /// <param name="center">Center of casting.</param>
+        /// <param name="range">Expected range of casting.</param>
+        /// <param name="casterFlags">caster's Flags</param>
+        public void Next(IntVec3 center, float range, UInt64 casterFlags)
+        {
+            sig++;
+            this.center = center;
+            this.range = range * 1.5f;
+            this.currentCasterFlags = casterFlags;
+        }
+
+        public void NextCycle()
+        {
+            sig++;
+            cycle++;
+            this.center = IntVec3.Invalid;
+            this.range = 0;
+            this.currentCasterFlags = 0;
+        }
+
         private static StringBuilder _builder = new StringBuilder();
-        public override string GetDebugInfoAt(int index)
+
+        public string GetDebugInfoAt(IntVec3 cell) => GetDebugInfoAt(map.cellIndices.CellToIndex(cell));
+        public string GetDebugInfoAt(int index)
         {
             if (index >= 0 && index < mapCellNum)
             {
-                SensoryRecord record = sightArray[index];
+                SightRecord record = sightArray[index];
                 _builder.Clear();
                 _builder.AppendFormat("<color=grey>{0}</color> {1}\n", "Partially expired ", record.expireAt - CycleNum == 0);
                 _builder.AppendFormat("<color=grey>{0}</color> {1}", "Expired           ", record.expireAt - CycleNum < 0);
                 _builder.AppendLine();
                 _builder.AppendFormat("<color=orange>{0}</color> {1}\n" +
                     "<color=grey>cur</color>  {2}\t" +
-                    "<color=grey>prev</color> {3}", "Enemies", this[index], record.signalNum, record.signalNumPrev);
+                    "<color=grey>prev</color> {3}", "Enemies", this[index], record.count, record.countPrev);
                 _builder.AppendLine();
                 _builder.AppendFormat("<color=orange>{0}</color> {1}\n " +
                     "<color=grey>cur</color>  {2}\t" +
-                    "<color=grey>prev</color> {3}", "Visibility", GetVisibility(index), Math.Round(record.signalStrength, 2), Math.Round(record.signalStrength, 2));
+                    "<color=grey>prev</color> {3}", "Visibility", GetVisibility(index), Math.Round(record.visibility, 2), Math.Round(record.visibilityPrev, 2));
                 _builder.AppendLine();
                 _builder.AppendFormat("<color=orange>{0}</color> {1}\n" +
                     "<color=grey>cur</color>  {2} " +
@@ -204,10 +422,21 @@ namespace CombatExtended
                 _builder.AppendLine();
                 _builder.AppendFormat("<color=orange>{0}</color> {1}\n" +
                     "<color=grey>cur</color>\n{2}\n" +
-                    "<color=grey>prev</color>\n{3}", "Flags", Convert.ToString((long)GetFlagsAt(index), 2).Replace("1", "<color=green>1</color>"), Convert.ToString((long)record.sourceFlags, 2).Replace("1", "<color=green>1</color>"), Convert.ToString((long)record.sourceFlagsPrev, 2).Replace("1", "<color=green>1</color>"));
+                    "<color=grey>prev</color>\n{3}", "Flags", Convert.ToString((long)GetFlagsAt(index), 2).Replace("1", "<color=green>1</color>"), Convert.ToString((long)record.casterFlags, 2).Replace("1", "<color=green>1</color>"), Convert.ToString((long)record.casterFlagsPrev, 2).Replace("1", "<color=green>1</color>"));
                 return _builder.ToString();
             }
             return "<color=red>Out of bounds</color>";
+        }
+
+        private static float[] log2Lookup = new float[3420];
+        private static float[] sqrtLookup = new float[8198];
+
+        static SightGrid()
+        {
+            for (int i = 1; i < log2Lookup.Length; i++)
+                log2Lookup[i] = Mathf.Log(i / 10f, 2);
+            for (int i = 1; i < sqrtLookup.Length; i++)
+                sqrtLookup[i] = Mathf.Sqrt(i / 2f);
         }
     }
 }

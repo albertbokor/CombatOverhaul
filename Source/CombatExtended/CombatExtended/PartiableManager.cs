@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using RimWorld;
 using UnityEngine;
@@ -9,9 +8,9 @@ using Verse.AI;
 
 namespace CombatExtended
 {
-    public class ShortTermMemoryManager
-    {        
-        protected struct ShortTermMemoryRect
+    public class PartiableManager
+    {
+        protected struct PartiableUpdateRequest
         {
             public int minX;
             public int minZ;
@@ -32,20 +31,20 @@ namespace CombatExtended
                 maxZ = Mathf.Clamp(maxZ, 0, sizeZ - 1);
             }
 
-            public static ShortTermMemoryRect Create(IntVec3 cell, float value, int radius)
+            public static PartiableUpdateRequest Create(IntVec3 cell, float value, int radius)
             {
-                ShortTermMemoryRect zone = new ShortTermMemoryRect();
+                PartiableUpdateRequest zone = new PartiableUpdateRequest();
                 zone.minX = cell.x - radius;
                 zone.minZ = cell.z - radius;
                 zone.maxX = cell.x + radius;
                 zone.maxZ = cell.z + radius;
-                zone.value = value;                
+                zone.value = value;
                 return zone;
             }
         }
 
         public Map map;
-        public ShortTermMemoryGrid grid;
+        public PartiableGrid grid;
         
         private int sizeX;
         private int sizeZ;
@@ -55,15 +54,15 @@ namespace CombatExtended
         private object locker = new object();
         private int oldestQueuedAt = -1;
         private int offThreadCount;
-        private readonly List<ShortTermMemoryRect> mainThreadQueue = new List<ShortTermMemoryRect>();
-        private readonly List<ShortTermMemoryRect> offThreadQueue = new List<ShortTermMemoryRect>();
+        private readonly List<PartiableUpdateRequest> mainThreadQueue = new List<PartiableUpdateRequest>();
+        private readonly List<PartiableUpdateRequest> offThreadQueue = new List<PartiableUpdateRequest>();
 
         private bool mapIsAlive = true;
 
-        public ShortTermMemoryManager(Map map, int unitTicks = 60)
+        public PartiableManager(Map map, int unitTicks = 60)
         {
             this.map = map;           
-            grid = new ShortTermMemoryGrid(map, unitTicks);
+            grid = new PartiableGrid(map, unitTicks);
             sizeX = map.cellIndices.mapSizeX;
             sizeZ = map.cellIndices.mapSizeZ;
             cellIndices = map.cellIndices;
@@ -99,13 +98,13 @@ namespace CombatExtended
             }
         }
 
-        public void Apply(IntVec3 cell, float value, int radius)
+        public void Set(IntVec3 cell, float value, int radius)
         {
             if (cell.InBounds(map))
                 Enqueue(cell, value, radius);
         }
 
-        private void Apply(ShortTermMemoryRect request)
+        private void Apply(PartiableUpdateRequest request)
         {
             //
             // apply the new values...            
@@ -119,8 +118,8 @@ namespace CombatExtended
             if (mainThreadQueue.Count == 0)
                 oldestQueuedAt = GenTicks.TicksGame;
 
-            ShortTermMemoryRect request;
-            request = ShortTermMemoryRect.Create(cell, value, radius);
+            PartiableUpdateRequest request;
+            request = PartiableUpdateRequest.Create(cell, value, radius);
             request.Clamp(map.cellIndices.mapSizeX, map.cellIndices.mapSizeZ);
             if(request.IsValid)
                 mainThreadQueue.Add(request);
@@ -128,7 +127,7 @@ namespace CombatExtended
 
         private void OffMainThreadLoop()
         {
-            ShortTermMemoryRect request = default(ShortTermMemoryRect);
+            PartiableUpdateRequest request = default(PartiableUpdateRequest);
             int dangerRectLeft = 0;
             bool dequeued = false;
             while (mapIsAlive)
@@ -149,7 +148,7 @@ namespace CombatExtended
                     Apply(request);
                 // sleep so other threads can do stuff
                 if (dangerRectLeft == 0)
-                    Thread.Sleep(2);
+                    Thread.Sleep(1);
             }
             Log.Message("CE: AvoidanceTracker thread stopped!");
         }

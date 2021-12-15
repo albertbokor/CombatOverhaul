@@ -100,13 +100,7 @@ namespace CombatExtended.AI
 
                 if (projProps.pelletCount > 1 && shotDist < 20)
                 {
-                    fireModes.TrySetAimMode(AimMode.SuppressFire);
-                    fireModes.TrySetFireMode(FireMode.AutoFire);
-                    return;
-                }
-                if (verb.EffectiveRange > 35 && shotDist <= 15)
-                {
-                    fireModes.TrySetAimMode(AimMode.SuppressFire);
+                    fireModes.TrySetAimMode(AimMode.Snapshot);
                     fireModes.TrySetFireMode(FireMode.AutoFire);
                     return;
                 }

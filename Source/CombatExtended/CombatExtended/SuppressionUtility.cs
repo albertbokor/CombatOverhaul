@@ -100,7 +100,7 @@ namespace CombatExtended
             interceptors = pawn.Map.listerThings.ThingsInGroup(ThingRequestGroup.ProjectileInterceptor).Select(t => t.TryGetComp<CompProjectileInterceptor>()).ToList();
             lightingTracker = pawn.Map.GetLightingTracker();
             avoidanceTracker = pawn.Map.GetAvoidanceTracker();
-            avoidanceTracker.TryGetReader(pawn, out avoidanceReader);
+            avoidanceTracker.TryGetAvoidanceReader(pawn, out avoidanceReader);
             pawn.GetSightReader(out sightReader);          
             float bestRating = GetCellCoverRatingForPawn(pawn, pawn.Position, fromPosition);
             if (bestRating <= 0)

@@ -43,7 +43,7 @@ namespace CombatExtended.HarmonyCE
                 range = verb.EffectiveRange;                
                 pawn = newReq.caster;
                 avoidanceTracker = pawn.Map.GetAvoidanceTracker();
-                avoidanceTracker.TryGetReader(pawn, out avoidanceReader);
+                avoidanceTracker.TryGetAvoidanceReader(pawn, out avoidanceReader);
                 warmupTime = verb?.verbProps.warmupTime ?? 1;
                 warmupTime = Mathf.Clamp(warmupTime, 0.5f, 0.8f);
                 map = newReq.caster?.Map;
