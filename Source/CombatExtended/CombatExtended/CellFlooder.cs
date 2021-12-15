@@ -13,19 +13,17 @@ namespace CombatExtended
         {
             public IntVec3 cell;
             public IntVec3 parent;            
-            public float dist;
-            public int index;
-            public int parentIndex;            
+            public float dist;                 
         }
 
-        private static readonly IntVec3[] diagonalOffsets = new IntVec3[5]
-        {
-            new IntVec3(-1, 0, -1),
-            new IntVec3(-1, 0, 1),
-            new IntVec3(1, 0, 1),
-            new IntVec3(1, 0, -1),
-            new IntVec3(-1, 0, -1),
-        };
+        //private static readonly IntVec3[] diagonalOffsets = new IntVec3[5]
+        //{
+        //    new IntVec3(-1, 0, -1),
+        //    new IntVec3(-1, 0, 1),
+        //    new IntVec3(1, 0, 1),
+        //    new IntVec3(1, 0, -1),
+        //    new IntVec3(-1, 0, -1),
+        //};
 
         private static readonly IntVec3[] offsets = new IntVec3[4]
         {
@@ -64,11 +62,12 @@ namespace CombatExtended
 
             floodedCells.Clear();
             floodedCells.Add(node);
-            floodQueue.Clear();            
+            floodQueue.Clear();
             floodQueue.Enqueue(GetIntialFloodedCell(center));
             while (!floodQueue.IsEmpty)
-            {
-                node = floodQueue.Dequeue();               
+            {                
+                node = floodQueue.Dequeue();
+                map.debugDrawer.FlashCell(node.cell, node.dist / 25f, $"{node.dist}", 15);
                 //
                 // TODO optimize this some more
                 action(node.cell, node.parent, node.dist);
@@ -81,27 +80,30 @@ namespace CombatExtended
                 {
                     offset = offsets[i];
                     nextCell = node.cell + offset;
-                    if (nextCell.InBounds(map) && sigArray[cellIndex = map.cellIndices.CellToIndex(nextCell)] != sig)
+                    if (nextCell.InBounds(map))
                     {
-                        sigArray[cellIndex] = sig;
-                        if (!walls[nextCell])
+                        if (sigArray[cellIndex = map.cellIndices.CellToIndex(nextCell)] != sig)
                         {
-                            nextNode = new FloodNode();
-                            nextNode.cell = nextCell;                                                        
-                            if(Mathf.Abs(nextCell.x - node.parent.x) == 1 && Mathf.Abs(nextCell.z - node.parent.z) == 1)
+                            sigArray[cellIndex] = sig;
+                            if (!blocked(nextCell))
                             {
-                                nextNode.parent = node.parent;
-                                nextNode.dist = node.dist + 0.4123f;
+                                nextNode = new FloodNode();
+                                nextNode.cell = nextCell;
+                                // TODO improve this.
+                                // this is not perfectly accurate but it does result in consistant result.
+                                if (Mathf.Abs(nextCell.x - node.parent.x) == 1 && Mathf.Abs(nextCell.z - node.parent.z) == 1)
+                                {
+                                    nextNode.parent = node.parent;                                    
+                                    nextNode.dist = node.dist + 0.4123f;
+                                }
+                                else
+                                {
+                                    nextNode.parent = node.cell;                                   
+                                    nextNode.dist = node.dist + 1;
+                                }                                
+                                floodQueue.Enqueue(nextNode);
+                                floodedCells.Add(nextNode);
                             }
-                            else
-                            {
-                                nextNode.parent = node.cell;
-                                nextNode.dist = node.dist + 1;
-                            }                                                      
-                            nextNode.index = floodedCells.Count;
-                            nextNode.parentIndex = node.index;                            
-                            floodQueue.Enqueue(nextNode);
-                            floodedCells.Add(nextNode);
                         }
                     }                    
                 }                
@@ -121,9 +123,7 @@ namespace CombatExtended
             FloodNode cell = new FloodNode();
             cell.cell = center;
             cell.parent = center;
-            cell.dist = 0;
-            cell.index = 0;
-            cell.parentIndex = 0;
+            cell.dist = 0;            
             return cell;
         }       
     }

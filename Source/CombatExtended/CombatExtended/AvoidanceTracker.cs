@@ -134,13 +134,13 @@ namespace CombatExtended
         public void Notify_Bullet(IntVec3 cell)
         {
             if (cell.InBounds(map))
-                bullets.Set(cell, 0.25f, 2);
+                bullets.Set(cell, 0.35f, 3);
         }
 
         public void Notify_BulletImpact(IntVec3 cell)
         {
             if (cell.InBounds(map))
-                danger.Set(cell, 4, 3);
+                danger.Set(cell, 5, 3);
         }
 
         public void Notify_Smoke(IntVec3 cell)
@@ -175,10 +175,20 @@ namespace CombatExtended
 
         public void Notify_Injury(Pawn pawn, IntVec3 cell)
         {
+            if ((!pawn.RaceProps.Humanlike && !pawn.RaceProps.IsMechanoid)
+                || pawn.Faction == null
+                || map.ParentFaction == null)
+                return;
+            PartiableManager manager = danger;
         }
 
         public void Notify_Death(Pawn pawn, IntVec3 cell)
         {
+            if ((!pawn.RaceProps.Humanlike && !pawn.RaceProps.IsMechanoid)
+                || pawn.Faction == null
+                || map.ParentFaction == null)
+                return;
+            PartiableManager manager = danger;
         }
     }
 }
