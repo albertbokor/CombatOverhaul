@@ -32,7 +32,7 @@ namespace CombatExtended
         private static List<VisibleRow> rowQueue = new List<VisibleRow>();
         private static Map map;
         private static WallGrid grid;
-        private static Action<IntVec3, int, int> setAction;
+        private static Action<IntVec3, int, int, float> setAction;
 
         static ShadowCastingUtility()
         {
@@ -114,7 +114,8 @@ namespace CombatExtended
             public int visibilityCarry;            
             public int depth;
             public int quartor;
-            public int maxDepth;            
+            public int maxDepth;
+            public float blockChance;
 
             public IEnumerable<Vector3> Tiles()
             {
@@ -141,6 +142,7 @@ namespace CombatExtended
                 row.maxDepth = maxDepth;
                 row.quartor = this.quartor;
                 row.visibilityCarry = visibilityCarry;
+                row.blockChance = blockChance;
                 return row;
             }
 
@@ -184,12 +186,12 @@ namespace CombatExtended
         {            
             rowQueue.Clear();
             rowQueue.Add(start);
-            
+            var coverMinDist = Mathf.Max(start.maxDepth / 3f, 10f);
             while (rowQueue.Count > 0)
             {                
                 VisibleRow nextRow;                
                 VisibleRow row = rowQueue.Pop();
-                                
+               
                 if (row.depth > row.maxDepth || row.visibilityCarry <= 1e-5f)
                 {
                     continue;
@@ -197,21 +199,32 @@ namespace CombatExtended
                 var lastCell = InvalidOffset;                
                 var lastIsWall = false;
                 var lastIsCover = false;
+                var lastFill = 0f;
+                var lastFillNum = 0;
 
                 foreach (Vector3 offset in row.Tiles())
-                {                                        
-                    var cell = source + row.Transform(offset.ToIntVec3());
-                    var isWall = !cell.InBounds(map) || grid[cell];
-                    var isCover = !isWall && cell.GetCover(map)?.def.Fillage == FillCategory.Partial;                    
+                {
+                    FillCategory fill = FillCategory.None;
+                    IntVec3 cell = source + row.Transform(offset.ToIntVec3());                    
+                    bool isWall = !cell.InBounds(map) || (fill = grid.GetFillCategory(cell)) == FillCategory.Full;
+                    bool isCover = !isWall && fill == FillCategory.Partial;
                     
                     if (isWall || (offset.z >= row.depth * row.startSlope && offset.z <= row.depth * row.endSlope))
-                    {                        
-                        setAction(cell, row.visibilityCarry, row.depth);
-                    }
-                    if(isCover && row.visibilityCarry >= carryLimit)
                     {
-                        isCover = false;
-                        isWall = true;
+                        setAction(cell, row.visibilityCarry, row.depth, row.blockChance);
+                    }            
+                    if (isCover)
+                    { 
+                        if (row.visibilityCarry >= carryLimit)                        
+                        {
+                            isCover = false;
+                            isWall = true;
+                        }
+                        else
+                        {
+                            lastFill += grid[cell];
+                            lastFillNum++;
+                        }
                     }
                     if (IsValid(lastCell)) // check so it's a valid offsets
                     {
@@ -221,8 +234,9 @@ namespace CombatExtended
                             {
                                 nextRow = row.Next();
                                 nextRow.endSlope = GetSlope(offset);
-                                if (lastIsCover)
+                                if (lastIsCover && row.depth > 6)
                                 {
+                                    nextRow.blockChance = Mathf.Max((1 - row.blockChance) * lastFill / lastFillNum * Mathf.Lerp(0, 1f, (row.depth - 6f) / coverMinDist), row.blockChance);
                                     nextRow.visibilityCarry += 1;
                                 }
                                 rowQueue.Add(nextRow);
@@ -237,26 +251,28 @@ namespace CombatExtended
                         {
                             nextRow = row.Next();
                             nextRow.endSlope = GetSlope(offset);
-                            if (lastIsCover)
+                            if (lastIsCover && row.depth > 6)
                             {
+                                nextRow.blockChance = Mathf.Max((1 - row.blockChance) * lastFill / lastFillNum * Mathf.Lerp(0, 1f, (row.depth - 6f) / coverMinDist), row.blockChance);
                                 nextRow.visibilityCarry += 1;
                             }
                             rowQueue.Add(nextRow);
                         }                        
-                    }                    
-                    cellsScanned++;                    
-                    lastCell = offset;                                      
+                    }
+                    cellsScanned++;
+                    lastCell = offset;
                     lastIsWall = isWall;
                     lastIsCover = isCover;
                 }                
                 if (lastCell.y >= 0 && !lastIsWall)
                 {
                     nextRow = row.Next();
-                    if (lastIsCover)
-                    {
+                    if (lastIsCover && row.depth > 6)
+                    {                        
+                        nextRow.blockChance = Mathf.Max((1 - row.blockChance) * lastFill / lastFillNum * Mathf.Lerp(0, 1f, (row.depth - 6f) / coverMinDist), row.blockChance);
                         nextRow.visibilityCarry += 1;
                     }
-                    rowQueue.Add(nextRow);                    
+                    rowQueue.Add(nextRow);
                 }
             }
         }
@@ -280,11 +296,11 @@ namespace CombatExtended
                 foreach (Vector3 offset in row.Tiles())
                 {
                     var cell = source + row.Transform(offset.ToIntVec3());
-                    var isWall = !cell.InBounds(map) || grid[cell];                    
+                    var isWall = !cell.InBounds(map) || !grid.CanBeSeenOver(cell);                    
 
                     if (isWall || (offset.z >= row.depth * row.startSlope && offset.z <= row.depth * row.endSlope))
                     {
-                        setAction(cell, 1, row.depth);
+                        setAction(cell, 1, row.depth, row.blockChance);
                     }
                     if (IsValid(lastCell)) // check so it's a valid offsets
                     {                        

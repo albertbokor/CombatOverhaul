@@ -25,6 +25,7 @@ namespace CombatExtended.HarmonyCE
         private static SightTracker.SightReader sightReader;        
         private static bool crouching;
         private static bool nightTime;
+        private static bool raiders;
         private static float visibilityAtDest;        
         private static float counter = 0;
 
@@ -38,7 +39,11 @@ namespace CombatExtended.HarmonyCE
                 instance = __instance;
                 map = __instance.map;
                 pawn = traverseParms.pawn;                                
-                nightTime = map.IsNightTime();                
+                nightTime = map.IsNightTime();
+                if (Faction.OfPlayerSilentFail != null)
+                    raiders = pawn.Faction?.HostileTo(Faction.OfPlayerSilentFail) ?? true;
+                else
+                    raiders = false;
                 lightingTracker = map.GetLightingTracker();
                 avoidanceTracker = pawn.Map.GetAvoidanceTracker();
                 if (!lightingTracker.IsNight)
@@ -134,9 +139,9 @@ namespace CombatExtended.HarmonyCE
                 {                    
                     var visibility = sightReader.GetVisibility(index);
                     if (visibility > visibilityAtDest)
-                        value += (int)Mathf.Min(visibility * 45, 500);
-                }                
-                if (value > 0)
+                        value += (int) visibility * 45;
+                }      
+                if (value > 0 || raiders)
                 {
                     if (avoidanceReader != null)
                         value += (int)(avoidanceReader.GetPathing(index) * 25);
@@ -146,15 +151,15 @@ namespace CombatExtended.HarmonyCE
                 else
                 {
                     if (avoidanceReader != null)
-                        value += (int)(avoidanceReader.GetPathing(index) * 10);
+                        value += (int)(avoidanceReader.GetPathing(index) * 15);
                 }             
                 if (value > 10f)
                 {
                     counter++;
                     //
                     // TODO make this into a maxcost -= something system                    
-                    var l1 = 350 * (1f - Mathf.Lerp(0.0f, 0.85f, counter / (openNum + 1f))) * (1f - Mathf.Min(openNum, 7500f) / 10000f);                    
-                    var l2 = 150 * (1f - Mathf.Clamp01(PathFinder.calcGrid[parentIndex].knownCost / 4000));                    
+                    var l1 = 450 * (1f - Mathf.Lerp(0.0f, 0.85f, counter / (openNum + 1f))) * (1f - Mathf.Min(openNum, 7500f) / 10000f);                    
+                    var l2 = 250 * (1f - Mathf.Clamp01(PathFinder.calcGrid[parentIndex].knownCost / 5000));                    
                     // we use this so the game doesn't die                
                     return (int)Mathf.Min(value, l1 + l2);
                 }

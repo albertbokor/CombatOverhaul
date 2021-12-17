@@ -95,20 +95,20 @@ namespace CombatExtended.HarmonyCE
                         else
                             __result += 8;
                     }
-                }                
+                }
                 float sightCost = 0;
                 if (sightReader != null)
-                    sightCost = 6 - Mathf.Min(sightReader.GetSightCoverRating(c), 6);
+                    sightCost = 6 - sightReader.GetVisibility(c);
                 if (avoidanceReader != null)
-                    __result += 3 - Mathf.Min(avoidanceReader.GetProximity(c), 3f);
+                    __result += 5 - Mathf.Min(avoidanceReader.GetProximity(c), 5f) - avoidanceReader.GetDanger(c) / 2f;
                 if (sightCost > 0)
                 {
-                    __result += sightCost;                    
+                    __result += sightCost;                   
                     if (lightingTracker.IsNight)
                         __result *= 1 - lightingTracker.CombatGlowAt(c) / 2f;                    
                 }
                 if (range > 0)
-                    __result -= Mathf.Abs(1 - c.DistanceToSquared(targetPosition) / (range * range * warmupTime * warmupTime)) * 16;                   
+                    __result += 16 - Mathf.Abs(1 - c.DistanceToSquared(targetPosition) / (range * range * warmupTime * warmupTime)) * 16;                   
             }
         }
     }

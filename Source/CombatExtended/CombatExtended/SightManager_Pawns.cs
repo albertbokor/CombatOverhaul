@@ -11,10 +11,10 @@ using Verse.AI;
 
 namespace CombatExtended
 {
-    public class SightManager_Pawns : SightTracker<Pawn>
+    public class SightManager_Pawns : SightManager<Pawn>
     {
-        public SightManager_Pawns(SightTracker tracker, int bucketCount = 20, int updateInterval = 10)
-            : base(tracker, bucketCount, updateInterval)
+        public SightManager_Pawns(Map map, int bucketCount = 20, int updateInterval = 10)
+            : base(map, bucketCount, updateInterval)
         {
         }
 

@@ -124,7 +124,7 @@ namespace CombatExtended.HarmonyCE
                 if (target.Thing != null && (verb.IsMeleeAttack || verb.EffectiveRange <= 25))
                 {                                                                
                     if (sightReader != null)
-                        result += 15 - sightReader.GetSightCoverRating(target.Thing.Position);
+                        result += 15 - sightReader.GetVisibility(target.Thing.Position);
 
                     result += 10 - Mathf.Abs(16f * 16f - distSqr) / (16f * 16f) * 10;
                 }                

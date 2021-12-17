@@ -10,8 +10,10 @@ using System.Threading;
 
 namespace CombatExtended
 {
-    public abstract class SightTracker<T> where T : Thing
-    {        
+    public abstract class SightManager<T> where T : Thing
+    {
+        private const int COVERCARRYLIMIT = 6;
+
         protected class IThingSightRecord
         {
             /// <summary>
@@ -28,9 +30,8 @@ namespace CombatExtended
             public int lastCycle;
         }
 
-        public readonly Map map;
-        public readonly SightTracker parent;
-        public readonly SightGrid grid;
+        public readonly Map map;        
+        public readonly ISignalGrid grid;
         public readonly int bucketCount;
         public readonly int updateInterval;        
 
@@ -48,12 +49,12 @@ namespace CombatExtended
         private bool mapIsAlive = true;
         private bool wait = false;
 
-        public SightTracker(SightTracker tracker, int bucketCount, int updateInterval)
-        {            
-            this.parent = tracker;
+        public SightManager(Map map, int bucketCount, int updateInterval)
+        {
+            this.map = map;
             this.updateInterval = updateInterval;
             this.bucketCount = bucketCount;            
-            grid = new SightGrid(map = tracker.map);
+            grid = new ISignalGrid(map);
             
             ticksUntilUpdate = updateInterval;
             
@@ -177,15 +178,29 @@ namespace CombatExtended
             {
                 Log.Error($"CE: SighGridUpdater {record.thing} position is outside the map's bounds!");
                 return false;
-            }
-            int count = 1;
+            }            
             lock (locker)
             {                
                 castingQueue.Add(delegate
                 {
-                    grid.Next(pos, range, GetFlags(record));
-                    grid.Set(pos, count, 1);
-                    ShadowCastingUtility.CastVisibility(map, pos, (cell, dist) => grid.Set(cell, count, dist), range);
+                    grid.Next(GetFlags(record));
+                    grid.Set(pos, 1.0f, Vector2.zero);                                        
+                    float r = range * 1.43f;
+                    ShadowCastingUtility.CastWeighted(map, pos, (cell, carry, dist, coverRating) =>
+                    {
+                        // we ignore the cover rating early on because it benefits the caster not the enemy
+                        //if (dist < r1)
+                        //    coverRating = 0.0f;
+                        //else if (coverRating > 0f)
+                        //    coverRating = coverRating * Mathf.Lerp(0, 1.0f, (dist - r1) / r2);
+                        // float visibility = (range - dist) / range * num;
+                        //
+                        // NOTE: the carry is the number of cover things between the source and the current cell.                       
+                        float visibility = (float)(r - dist) / r * (1 - coverRating);
+                        // only set anything if visibility is ok
+                        if(visibility >= 0f)
+                            grid.Set(cell, visibility, new Vector2(cell.x - pos.x, cell.z - pos.z) * visibility);
+                    }, range, COVERCARRYLIMIT, out int _);
                 });                
             }                       
             record.lastCycle = grid.CycleNum;            

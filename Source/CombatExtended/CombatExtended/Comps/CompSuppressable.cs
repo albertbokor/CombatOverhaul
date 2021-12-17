@@ -215,7 +215,7 @@ namespace CombatExtended
             if (!isSuppressed)
                 ticksHunkered = 0;
             else if (IsHunkering)
-                ticksHunkered++;
+                ticksHunkered++;           
 
             if (ticksHunkered > MinTicksUntilMentalBreak && Rand.Chance(ChanceBreakPerTick))
             {
@@ -264,6 +264,13 @@ namespace CombatExtended
                     CE_Utility.MakeIconOverlay((Pawn)parent, CE_ThingDefOf.Mote_SuppressIcon);
                 }
             }
+            if (parent.IsHashIntervalTick(60))
+            {
+                if(IsHunkering)
+                    parent.Map.GetComponent<AvoidanceTracker>().Notify_PawnHunkered(parent.Position);
+                else if(isSuppressed)
+                    parent.Map.GetComponent<AvoidanceTracker>().Notify_PawnSuppressed(parent.Position);
+            }            
             if (!parent.Faction.IsPlayerSafe()
                 && parent.IsHashIntervalTick(120)
                 && isSuppressed

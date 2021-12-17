@@ -26,7 +26,7 @@ namespace CombatExtended
         /// <param name="map">Map</param>
         /// <param name="source">Source cell</param>
         /// <param name="radius">Radius</param>        
-        public static void CastWeighted(Map map, IntVec3 source, Action<IntVec3, int, int> setAction, int radius) => Cast(map, TryCastWeighted, setAction, source, radius);
+        public static void CastWeighted(Map map, IntVec3 source, Action<IntVec3, int, int, float> setAction, int radius) => Cast(map, TryCastWeighted, setAction, source, radius);
         /// <summary>
         /// Evaluate all cells around the source for visibility (float value).
         /// Note: this is a slower but more accurate version of CastVisibility.
@@ -35,7 +35,7 @@ namespace CombatExtended
         /// <param name="source">Source cell</param>
         /// <param name="maxRadius">Radius</param>
         /// <param name="cellCount">number of cells sat (the action called in)</param>
-        public static void CastWeighted(Map map, IntVec3 source, Action<IntVec3, int, int> action, int radius, int carryLimit, out int cellCount)
+        public static void CastWeighted(Map map, IntVec3 source, Action<IntVec3, int, int, float> action, int radius, int carryLimit, out int cellCount)
         {
             ShadowCastingUtility.carryLimit = carryLimit;
             CastWeighted(map, source, action, radius);
@@ -50,7 +50,7 @@ namespace CombatExtended
         /// <param name="map">Map</param>
         /// <param name="source">Source cell</param>
         /// <param name="radius">Radius</param>        
-        public static void CastVisibility(Map map, IntVec3 source, Action<IntVec3, int> action, int radius) => Cast(map, TryCastVisibility, (cell, _, dist) => action(cell, dist), source, radius);
+        public static void CastVisibility(Map map, IntVec3 source, Action<IntVec3, int> action, int radius) => Cast(map, TryCastVisibility, (cell, _, dist, ignore) => action(cell, dist), source, radius);
         /// <summary>
         /// Evaluate all cells around the source for visibility (on/off).
         /// Note: this is a faster but less accurate version of CastVisibility.
@@ -65,7 +65,7 @@ namespace CombatExtended
             cellCount = ShadowCastingUtility.cellsScanned;
         }       
 
-        private static void Cast(Map map, Action<float, float, int, int> castingAction, Action<IntVec3, int, int> action, IntVec3 source, int radius)
+        private static void Cast(Map map, Action<float, float, int, int> castingAction, Action<IntVec3, int, int, float> action, IntVec3 source, int radius)
         {
             lock (locker)
             {
@@ -74,7 +74,7 @@ namespace CombatExtended
                 ShadowCastingUtility.source = source;
                 ShadowCastingUtility.setAction = action;
                 ShadowCastingUtility.cellsScanned = 0;
-                int maxDepth = (int)(radius * 1.43f);
+                int maxDepth = (int)(radius);
                 for (int i = 0; i < 4; i++)
                 {
                     castingAction(-1, 1, i, maxDepth);
@@ -91,7 +91,7 @@ namespace CombatExtended
         /// <param name="source">Source cell</param>
         /// <param name="direction">Direction</param>
         /// <param name="baseWidth">What is the maximum amount of cells (width) to be scanned</param>        
-        public static void CastVisibility(Map map, IntVec3 source, Vector3 direction, Action<IntVec3, int> action, float radius, float baseWidth) => Cast(map, TryCastVisibility, (cell, _, dist) => action(cell, dist), source, (source.ToVector3() + direction.normalized * radius).ToIntVec3(), baseWidth);
+        public static void CastVisibility(Map map, IntVec3 source, Vector3 direction, Action<IntVec3, int> action, float radius, float baseWidth) => Cast(map, TryCastVisibility, (cell, _, dist, ignore) => action(cell, dist), source, (source.ToVector3() + direction.normalized * radius).ToIntVec3(), baseWidth);
         /// <summary>
         /// Evaluate visible cells from the source in the direction of target. Will result in storing the cover visiblity (on/off) for each each cell in the ShadowGrid
         /// </summary>
@@ -114,7 +114,7 @@ namespace CombatExtended
         /// <param name="direction">Direction</param>
         /// <param name="action">Set action (x, z, current_ray_value)</param> 
         /// <param name="baseWidth">What is the maximum amount of cells (width) to be scanned</param>          
-        public static void CastWeighted(Map map, IntVec3 source, Vector3 direction, Action<IntVec3, int, int> action, float radius, float baseWidth) => Cast(map, TryCastWeighted, action, source, (source.ToVector3() + direction.normalized * radius).ToIntVec3(), baseWidth);
+        public static void CastWeighted(Map map, IntVec3 source, Vector3 direction, Action<IntVec3, int, int, float> action, float radius, float baseWidth) => Cast(map, TryCastWeighted, action, source, (source.ToVector3() + direction.normalized * radius).ToIntVec3(), baseWidth);
         /// <summary>
         /// Evaluate visible cells from the source in the direction of target. Will result in storing the cover visiblity (float value) scoring for each each cell in the ShadowGrid
         /// </summary>
@@ -125,7 +125,7 @@ namespace CombatExtended
         /// <param name="baseWidth">What is the maximum amount of cells (width) to be scanned</param>
         /// <param name="cellCount">number of cells sat (the action called in)</param>
         /// <param name="carryLimit">How many layers of cover before it's no longer visible</param>  
-        public static void CastWeighted(Map map, IntVec3 source, Vector3 direction, Action<IntVec3, int, int> action, float radius, float baseWidth, int carryLimit, out int cellCount)
+        public static void CastWeighted(Map map, IntVec3 source, Vector3 direction, Action<IntVec3, int, int, float> action, float radius, float baseWidth, int carryLimit, out int cellCount)
         {
             ShadowCastingUtility.carryLimit = carryLimit;
             CastWeighted(map, source, direction, action, radius, baseWidth);            
@@ -133,7 +133,7 @@ namespace CombatExtended
             ShadowCastingUtility.carryLimit = VISIBILITY_CARRY_MAX;
         }          
 
-        private static void Cast(Map map, Action<float, float, int, int> castingAction, Action<IntVec3, int, int> setAction, IntVec3 source, IntVec3 target, float baseWidth)
+        private static void Cast(Map map, Action<float, float, int, int> castingAction, Action<IntVec3, int, int, float> setAction, IntVec3 source, IntVec3 target, float baseWidth)
         {
             lock (locker)
             {

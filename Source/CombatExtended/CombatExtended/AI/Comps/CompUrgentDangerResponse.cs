@@ -205,7 +205,7 @@ namespace CombatExtended.AI
                 {
                     base.selPawn.jobs.StopAll();
                     base.selPawn.jobs.StartJob(job, JobCondition.InterruptForced);
-                    job = JobMaker.MakeJob(JobDefOf.Wait_Combat, dest, expiryInterval: 240, checkOverrideOnExpiry: true);
+                    job = JobMaker.MakeJob(JobDefOf.Wait_Combat, dest, expiryInterval: verb.verbProps.warmupTime.SecondsToTicks() + verb.verbProps.burstShotCount * verb.verbProps.ticksBetweenBurstShots + 30, checkOverrideOnExpiry: true);
                     if (job != null)
                     {
                         selPawn.jobs.jobQueue.EnqueueFirst(job);

@@ -113,9 +113,9 @@ namespace CombatExtended
         private Func<IntVec3, bool> GetBlockedTestFunc(Func<IntVec3, bool> validator)
         {
             if (validator == null)
-                return (cell) => walls[cell];
+                return (cell) => walls.GetFillCategory(cell) == FillCategory.Full;
             else
-                return (cell) => walls[cell] || !validator(cell);
+                return (cell) => walls.GetFillCategory(cell) == FillCategory.Full || !validator(cell);
         }        
 
         private FloodNode GetIntialFloodedCell(IntVec3 center)

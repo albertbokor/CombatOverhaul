@@ -11,10 +11,10 @@ using Verse.AI;
 
 namespace CombatExtended
 {
-    public class SightManager_Turrets : SightTracker<Building_TurretGunCE>
+    public class SightManager_Turrets : SightManager<Building_TurretGunCE>
     {
-        public SightManager_Turrets(SightTracker tracker, int bucketCount = 30, int updateInterval = 200)
-            : base(tracker, bucketCount, updateInterval)
+        public SightManager_Turrets(Map map, int bucketCount = 30, int updateInterval = 200)
+            : base(map, bucketCount, updateInterval)
         {            
         }             
 

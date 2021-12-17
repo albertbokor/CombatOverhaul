@@ -156,22 +156,19 @@ namespace CombatExtended
                 cellRating += GetCoverRating(cover) * 2;
             }
             float visibilityRating = 0;
-            if (sightReader != null)
-            {
-                visibilityRating += sightReader.GetSightCoverRating(cell);
-                if(sightReader.turrets != null)
-                    visibilityRating += sightReader.turrets[cell] * 2f;                
-            }
+            if (sightReader != null)                
+                visibilityRating += sightReader.GetVisibility(cell);
+
             if (visibilityRating > 0f)
             {
                 // Avoid bullets and other danger source
-                cellRating -= Mathf.Min(visibilityRating, 10f);                
+                cellRating -= visibilityRating;
                 // Only apply this at night for performance reasons.
-                if(lightingTracker.IsNight)
+                if (lightingTracker.IsNight)
                     cellRating -= lightingTracker.CombatGlowAtFor(shooterPos, cell) * 2f;
             }
             if (avoidanceReader != null)
-                cellRating -= avoidanceReader.GetDanger(cell);
+                cellRating -= avoidanceReader.GetDanger(cell) + avoidanceReader.GetProximity(cell);
 
             // better cover rating system
             float coverLOSRating = 0;
@@ -183,7 +180,7 @@ namespace CombatExtended
                 if (cover is Gas)
                     coverLOSRating += 5;
                 else if (cover.def.Fillage == FillCategory.Partial) 
-                    coverLOSRating += cover.def.category == ThingCategory.Plant ? 6 : 12;
+                    coverLOSRating += cover.def.category == ThingCategory.Plant ? 4 : 12;
             }
             cellRating += Mathf.Min(coverLOSRating, 25);
 

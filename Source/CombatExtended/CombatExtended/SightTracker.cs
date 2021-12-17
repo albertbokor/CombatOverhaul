@@ -17,10 +17,10 @@ namespace CombatExtended
 
         public class SightReader
         {            
-            public SightGrid friendly;
-            public SightGrid hostile;
-            public SightGrid universal;
-            public SightGrid turrets;
+            public ISignalGrid friendly;
+            public ISignalGrid hostile;
+            public ISignalGrid universal;
+            public ISignalGrid turrets;
 
             private readonly Map map;
             private readonly CellIndices indices;
@@ -47,40 +47,27 @@ namespace CombatExtended
             {                
                 float value = 0f;
                 if (hostile != null)
-                    value += hostile[index];
+                    value += hostile.GetSignalNum(index);
                 if (turrets != null)
-                    value += turrets[index];
+                    value += turrets.GetSignalNum(index);
                 if (universal != null)
-                    value += universal[index];
+                    value += universal.GetSignalNum(index);
                 return value;
             }
 
             public float GetFriendlies(IntVec3 cell) => GetFriendlies(indices.CellToIndex(cell));
-            public float GetFriendlies(int index) => friendly != null ? friendly[index] : 0f;
-
-            public float GetSightCoverRating(IntVec3 cell) => GetSightCoverRating(indices.CellToIndex(cell));
-            public float GetSightCoverRating(int index)
-            {
-                float value = 0f;
-                if (hostile != null)
-                    value += hostile.GetCellSightCoverRating(index);
-                if (turrets != null)
-                    value += turrets.GetCellSightCoverRating(index);
-                if (universal != null)
-                    value += universal.GetCellSightCoverRating(index);
-                return value;
-            }
+            public float GetFriendlies(int index) => friendly != null ? friendly.GetSignalNum(index) : 0f;            
 
             public float GetVisibility(IntVec3 cell) => GetVisibility(indices.CellToIndex(cell));
             public float GetVisibility(int index)
             {
                 float value = 0f;
                 if (hostile != null)
-                    value += hostile.GetVisibility(index);
+                    value += hostile.GetSignalStrengthAt(index);
                 if (turrets != null)
-                    value += turrets.GetVisibility(index);
+                    value += turrets.GetSignalStrengthAt(index);
                 if (universal != null)
-                    value += universal.GetVisibility(index);
+                    value += universal.GetSignalStrengthAt(index);
                 return value;
             }
 
@@ -114,16 +101,16 @@ namespace CombatExtended
             {
                 Vector2 value = Vector2.zero;
                 if (hostile != null)
-                    value += hostile.GetDirectionAt(index);
+                    value += hostile.GetSignalDirectionAt(index);
                 if (turrets != null)
-                    value += turrets.GetDirectionAt(index);
+                    value += turrets.GetSignalDirectionAt(index);
                 if (universal != null)
-                    value += universal.GetDirectionAt(index);                
+                    value += universal.GetSignalDirectionAt(index);                
                 return value;
             }
 
             public Vector2 GetFriendlyDirection(IntVec3 cell) => GetFriendlyDirection(indices.CellToIndex(cell));
-            public Vector2 GetFriendlyDirection(int index) => friendly != null ? friendly.GetDirectionAt(index) : Vector2.zero;          
+            public Vector2 GetFriendlyDirection(int index) => friendly != null ? friendly.GetSignalDirectionAt(index) : Vector2.zero;          
         }
 
         public readonly SightManager_Pawns friendly;
@@ -134,13 +121,13 @@ namespace CombatExtended
         public SightTracker(Map map) : base(map)
         {
             friendly =
-                new SightManager_Pawns(this, 20, 4);
+                new SightManager_Pawns(map, 20, 4);
             hostile =
-                new SightManager_Pawns(this, 20, 4);
+                new SightManager_Pawns(map, 20, 4);
             universal =
-                new SightManager_Pawns(this, 20, 10);
+                new SightManager_Pawns(map, 20, 10);
             turrets =
-                new SightManager_Turrets(this, 20, 100);
+                new SightManager_Turrets(map, 20, 100);
         }
 
         public override void MapComponentTick()
@@ -176,7 +163,7 @@ namespace CombatExtended
                                         _drawnCells.Add(cell);
                                         var value = reader.GetEnemies(cell);
                                         if (value > 0)
-                                            map.debugDrawer.FlashCell(cell, (float)reader.GetVisibility(cell) / 10f, $"{Math.Round(value, 3)} {value}", 15);
+                                            map.debugDrawer.FlashCell(cell, Mathf.Clamp((float)reader.GetVisibility(cell) / 10f, 0f, 0.99f), $"{Math.Round(value, 3)} {value}", 15);
                                     }
                                 }
                             }
@@ -193,9 +180,9 @@ namespace CombatExtended
                             if (cell.InBounds(map) && !_drawnCells.Contains(cell))
                             {
                                 _drawnCells.Add(cell);
-                                var value = hostile.grid.GetVisibility(cell, out int enemies1) + friendly.grid.GetVisibility(cell, out int enemies2);
+                                var value = hostile.grid.GetSignalStrengthAt(cell, out int enemies1) + friendly.grid.GetSignalStrengthAt(cell, out int enemies2);
                                 if (value > 0)
-                                    map.debugDrawer.FlashCell(cell, (float)value / 10f, $"{Math.Round(value, 3)} {enemies1 + enemies2}", 15);
+                                    map.debugDrawer.FlashCell(cell, Mathf.Clamp(value / 10f, 0f, 0.99f), $"{Math.Round(value, 3)} {enemies1 + enemies2}", 15);
                             }
                         }
                     }
@@ -216,8 +203,8 @@ namespace CombatExtended
                 {
                     foreach (IntVec3 cell in GenRadial.RadialCellsAround(center, 24, true))
                     {                        
-                        float enemies = hostile.grid[cell] + friendly.grid[cell];
-                        Vector3 dir = hostile.grid.GetDirectionAt(cell) + friendly.grid.GetDirectionAt(cell);
+                        float enemies = hostile.grid.GetSignalNum(cell)+ friendly.grid.GetSignalNum(cell);
+                        Vector3 dir = hostile.grid.GetSignalDirectionAt(cell) + friendly.grid.GetSignalDirectionAt(cell);
                         if (cell.InBounds(map) && enemies > 0)
                         {
                             Vector2 direction = dir.normalized * 0.5f;

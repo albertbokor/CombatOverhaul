@@ -5,25 +5,46 @@ namespace CombatExtended
 {
     public class WallGrid : MapComponent
     {
-        private readonly bool[][] grid;
+        private readonly CellIndices cellIndices;
+        private readonly float[] grid;
 
         public WallGrid(Map map) : base(map)
         {
-            grid = new bool[map.cellIndices.mapSizeX][];
-            for (int i = 0; i < map.cellIndices.mapSizeX; i++)
-                grid[i] = new bool[map.cellIndices.mapSizeZ];
+            cellIndices = map.cellIndices;
+            grid = new float[cellIndices.NumGridCells];            
         }
 
-        public bool this[IntVec3 cell]
+        public FillCategory GetFillCategory(IntVec3 cell) => GetFillCategory(cellIndices.CellToIndex(cell));
+        public FillCategory GetFillCategory(int index)
         {
-            get => grid[cell.x][cell.z];
-            set => grid[cell.x][cell.z] = value;
+            float f = grid[index];
+            if (f == 0)
+                return FillCategory.None;
+            else if (f < 1f)
+                return FillCategory.Partial;
+            else
+                return FillCategory.Full;
         }
 
-        public bool this[int index]
+        public bool CanBeSeenOver(IntVec3 cell) => CanBeSeenOver(cellIndices.CellToIndex(cell));
+        public bool CanBeSeenOver(int index)
         {
-            get => this[map.cellIndices.IndexToCell(index)];
-            set => this[map.cellIndices.IndexToCell(index)] = value;
+            return grid[index] < 0.998f;
+        }
+
+        public float this[IntVec3 cell]
+        {
+            get => this[cellIndices.CellToIndex(cell)];
+            set => this[cellIndices.CellToIndex(cell)] = value;
+        }
+
+        public float this[int index]
+        {
+            get => grid[index];
+            set
+            {    
+                grid[index] = value;                
+            }
         }
     }
 }
