@@ -12,7 +12,7 @@ namespace CombatExtended
         {
             public IntVec3 cell;
             public IntVec3 parent;            
-            public float dist;
+            public float dist;           
 
             public int CompareTo(Node other)
             {

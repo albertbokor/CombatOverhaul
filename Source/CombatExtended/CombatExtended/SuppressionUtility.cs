@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using CombatExtended.AI;
 using CombatExtended.Utilities;
@@ -101,28 +102,30 @@ namespace CombatExtended
             lightingTracker = pawn.Map.GetLightingTracker();
             avoidanceTracker = pawn.Map.GetAvoidanceTracker();
             avoidanceTracker.TryGetAvoidanceReader(pawn, out avoidanceReader);
-            pawn.GetSightReader(out sightReader);          
-            float bestRating = GetCellCoverRatingForPawn(pawn, pawn.Position, fromPosition);
+            pawn.GetSightReader(out sightReader);
+
+            float moveSpeed = Mathf.Max(pawn.GetStatValue(StatDefOf.MoveSpeed), 0.5f);
+            float baseVisibility = sightReader?.GetVisibility(pawn.Position) ?? 0f;
+            float baseDanger = avoidanceReader?.GetDanger(pawn.Position) ?? 0f;
+            float bestRating = GetCellCoverRatingForPawn(pawn, pawn.Position, fromPosition) - GetCellPathCost(pawn.Position, moveSpeed, 0, 0);
             if (bestRating <= 0)
-            {
-                // Go through each cell in radius around the pawn
-                Region pawnRegion = pawn.Position.GetRegion(pawn.Map);
-                List<Region> adjacentRegions = pawnRegion.Neighbors.ToList();
-                adjacentRegions.Add(pawnRegion);
-                // Make sure only cells within bounds are evaluated
-                foreach (IntVec3 cell in cellList.Where(x => x.InBounds(pawn.Map)))
+            {                       
+                pawn.Map.GetComponent<MapCompCE>().Flooder.Flood(pawn.Position,
+                (cell, parent, cost) =>
                 {
-                    // Check for adjacency so we don't path to the other side of a wall or some such
-                    if (cell.InBounds(pawn.Map) && adjacentRegions.Contains(cell.GetRegion(pawn.Map)))
+                    float cellRating = GetCellCoverRatingForPawn(pawn, cell, fromPosition) - cost;
+                    if (cellRating > bestRating)
                     {
-                        float cellRating = GetCellCoverRatingForPawn(pawn, cell, fromPosition);
-                        if (cellRating > bestRating)
-                        {
-                            bestRating = cellRating;
-                            bestPos = cell;
-                        }
+                        bestRating = cellRating;
+                        bestPos = cell;
                     }
-                }
+                    //
+                    //pawn.Map.debugDrawer.FlashCell(cell, cost, $"{Math.Round(cost, 1)} {Math.Round(cellRating, 1)}", 20);
+                },
+                (cell) =>
+                {                    
+                    return GetCellPathCost(cell, moveSpeed, baseVisibility, baseDanger);
+                }, maxDist: (int) maxDist);
             }
             coverPosition = bestPos;
             avoidanceTracker.Notify_CoverPositionSelected(pawn, bestPos);
@@ -132,20 +135,29 @@ namespace CombatExtended
             return bestRating >= 0;
         }
 
+        private static float GetCellPathCost(IntVec3 cell, float movespeed, float baseVisibility, float baseDanger)
+        {
+            float cost = 0f;
+            if (sightReader != null)
+                cost += Mathf.Max(sightReader.GetVisibility(cell) - baseVisibility, 0f);
+            if (avoidanceReader != null)
+                cost += Mathf.Max(avoidanceReader.GetDanger(cell) - baseDanger, 0f) / movespeed;
+            return cost;
+        }
+
         private static float GetCellCoverRatingForPawn(Pawn pawn, IntVec3 cell, IntVec3 shooterPos)
         {
             //
             // Check for invalid locations            
             if (!cell.IsValid || !cell.Standable(pawn.Map) || !pawn.CanReserveAndReach(cell, PathEndMode.OnCell, Danger.Deadly) || cell.ContainsStaticFire(pawn.Map))
             {
-                return -1;
+                return -1f;
             }
-
             float cellRating = 0;            
 
             if (!GenSight.LineOfSight(shooterPos, cell, pawn.Map))
             {
-                cellRating += 20;
+                cellRating += 12;
             }
             else
             {
@@ -153,11 +165,11 @@ namespace CombatExtended
                 Vector3 coverVec = (shooterPos - cell).ToVector3().normalized;
                 IntVec3 coverCell = (cell.ToVector3Shifted() + coverVec).ToIntVec3();
                 Thing cover = coverCell.GetCover(pawn.Map);
-                cellRating += GetCoverRating(cover) * 2;
+                cellRating += GetCoverRating(cover) * 5;
             }
             float visibilityRating = 0;
-            if (sightReader != null)  
-                visibilityRating += sightReader.GetVisibility(cell) * 5;
+            if (sightReader != null)
+                visibilityRating += sightReader.GetVisibility(cell) * 2;
 
             if (visibilityRating > 0f)
             {
@@ -168,31 +180,33 @@ namespace CombatExtended
                     cellRating -= lightingTracker.CombatGlowAtFor(shooterPos, cell) * 2f;
             }
             if (avoidanceReader != null)
-                cellRating -= avoidanceReader.GetDanger(cell) + avoidanceReader.GetProximity(cell);
+                cellRating -= Mathf.Min(avoidanceReader.GetDanger(cell) + avoidanceReader.GetProximity(cell), 8f);
 
             // better cover rating system
             float coverLOSRating = 0;
             foreach (IntVec3 pos in pawn.Map.PartialLineOfSights(cell, shooterPos))
             {
-                Thing cover = pos.GetCover(pawn.Map);
+                if (cell == pawn.Position)
+                    continue;
+                Thing cover = pos.GetCover(pawn.Map);                
                 if (cover == null)
                     continue;
                 if (cover is Gas)
                     coverLOSRating += 5;
                 else if (cover.def.Fillage == FillCategory.Partial) 
-                    coverLOSRating += cover.def.category == ThingCategory.Plant ? 5 : 12;
+                    coverLOSRating += cover.def.category == ThingCategory.Plant ? 0.5f : 3;
             }
             cellRating += Mathf.Min(coverLOSRating, 25);
 
             //Check time to path to that location
-            if (!pawn.Position.Equals(cell))
-            {
-                // float pathCost = pawn.Map.pathFinder.FindPath(pawn.Position, cell, TraverseMode.NoPassClosedDoors).TotalCost;
-                float pathCost = Mathf.Abs(cell.x - pawn.Position.x) + 0.5f * Mathf.Abs(cell.z - pawn.Position.z);
-                if (!GenSight.LineOfSight(pawn.Position, cell, pawn.Map))                
-                    pathCost *= 2; 
-                cellRating = cellRating - pathCost;
-            }
+            //if (!pawn.Position.Equals(cell))
+            //{
+            //    // float pathCost = pawn.Map.pathFinder.FindPath(pawn.Position, cell, TraverseMode.NoPassClosedDoors).TotalCost;
+            //    float pathCost = Mathf.Abs(cell.x - pawn.Position.x) + 0.5f * Mathf.Abs(cell.z - pawn.Position.z);
+            //    if (!GenSight.LineOfSight(pawn.Position, cell, pawn.Map))                
+            //        pathCost *= 2; 
+            //    cellRating = cellRating - pathCost;
+            //}
             for (int i = 0; i < interceptors.Count; i++)
             {
                 CompProjectileInterceptor interceptor = interceptors[i];
