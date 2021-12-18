@@ -12,11 +12,12 @@ namespace CombatExtended
     {
         public class AvoidanceReader
         {
-            public PartiableGrid danger;
-            public PartiableGrid smoke;
-            public PartiableGrid pathing;
-            public PartiableGrid proximity;
-            public PartiableGrid bullet;
+            public IShortTermMemoryGrid danger;
+            public IShortTermMemoryGrid dangerMajor;
+            public IShortTermMemoryGrid smoke;
+            public IShortTermMemoryGrid pathing;
+            public IShortTermMemoryGrid proximity;
+            public IShortTermMemoryGrid bullet;            
 
             private readonly Map map;
             private readonly CellIndices indices;
@@ -32,16 +33,16 @@ namespace CombatExtended
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public float GetDanger(IntVec3 cell) => GetDanger(indices.CellToIndex(cell));
             public float GetDanger(int index) =>
-                Mathf.Min(danger[index] + (AnySmoke(index) ? 3f : 0) + bullet[index] / 2f, 8f);
+                Mathf.Min(danger[index] + (AnySmoke(index) ? 4f : 0), 8f) + dangerMajor[index];
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public float GetPathing(IntVec3 cell) => GetPathing(indices.CellToIndex(cell));
-            public float GetPathing(int index) => pathing != null ? pathing[index] + GetDanger(index) * 2f : 0f;
+            public float GetPathing(int index) => pathing != null ? pathing[index] + dangerMajor[index] : 0f;
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public float GetProximity(IntVec3 cell) => GetProximity(indices.CellToIndex(cell));
             public float GetProximity(int index) =>
-                proximity != null ? Mathf.Min(proximity[index] + (AnyBullets(index) ? 2f : 0f), 8f) : 0f;
+                proximity != null ? Mathf.Min(proximity[index] + (AnyBullets(index) ? 2f : 0f), 8f) + dangerMajor[index] : 0f;
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public bool AnyBullets(IntVec3 cell) => AnyBullets(indices.CellToIndex(cell));
@@ -54,21 +55,23 @@ namespace CombatExtended
                 smoke != null ? smoke[index] > 0 : false;
         }
 
-        public PartiableManager danger;
-        public PartiableManager smoke;
-        public PartiableManager bullets;       
-        public PartiableManager[] pathing = new PartiableManager[2];
-        public PartiableManager[] proximity = new PartiableManager[2];        
+        public IShortTermMemoryHandler danger;
+        public IShortTermMemoryHandler dangerMajor;
+        public IShortTermMemoryHandler smoke;
+        public IShortTermMemoryHandler bullets;       
+        public IShortTermMemoryHandler[] pathing = new IShortTermMemoryHandler[2];
+        public IShortTermMemoryHandler[] proximity = new IShortTermMemoryHandler[2];        
 
         public AvoidanceTracker(Map map) : base(map)
         {
-            danger = new PartiableManager(map);
-            bullets = new PartiableManager(map);
-            smoke = new PartiableManager(map);
-            pathing[0] = new PartiableManager(map);
-            proximity[0] = new PartiableManager(map);
-            pathing[1] = new PartiableManager(map);            
-            proximity[1] = new PartiableManager(map);
+            danger = new IShortTermMemoryHandler(map);
+            dangerMajor = new IShortTermMemoryHandler(map, 480, 40);
+            bullets = new IShortTermMemoryHandler(map);
+            smoke = new IShortTermMemoryHandler(map);
+            pathing[0] = new IShortTermMemoryHandler(map);
+            proximity[0] = new IShortTermMemoryHandler(map);
+            pathing[1] = new IShortTermMemoryHandler(map);            
+            proximity[1] = new IShortTermMemoryHandler(map);
         }
 
         public override void MapComponentTick()
@@ -80,6 +83,8 @@ namespace CombatExtended
             smoke.Tick();
             // tick danger grid
             danger.Tick();
+            // tick major danger grid
+            dangerMajor.Tick();
             // update path avoidence grid
             pathing[0].Tick();
             pathing[1].Tick();
@@ -98,7 +103,14 @@ namespace CombatExtended
                         {
                             var value = danger.grid[cell] + pathing[1].grid[cell] + proximity[1].grid[cell] + smoke.grid[cell] + bullets.grid[cell];
                             if (value > 0)
-                                map.debugDrawer.FlashCell(cell, (float)value / 10f, $"{danger.grid[cell]} {Math.Round(pathing[1].grid[cell], 1)} {Math.Round(proximity[1].grid[cell], 1)}", 15);
+                                map.debugDrawer.FlashCell(cell, (float)dangerMajor.grid[cell] / 20f, $"{Math.Round(danger.grid[cell], 1)} {Math.Round(dangerMajor.grid[cell], 1)} {Math.Round(pathing[1].grid[cell], 1)} {Math.Round(proximity[1].grid[cell], 1)}", 15);
+                            if (danger.grid[cell] > 0)
+                                map.debugDrawer.FlashCell(cell, (float)danger.grid[cell] / 20f, $" ", 15);
+                            if (pathing[1].grid[cell] > 0)
+                                map.debugDrawer.FlashCell(cell, (float)pathing[1].grid[cell] / 20f, $" ", 15);
+                            if (proximity[1].grid[cell] > 0)
+                                map.debugDrawer.FlashCell(cell, (float)proximity[1].grid[cell] / 20f, $" ", 15);
+
                         }
                     }
                 }
@@ -114,6 +126,7 @@ namespace CombatExtended
                 return false;            
             reader = new AvoidanceReader(this);
             reader.danger = danger.grid;
+            reader.dangerMajor = danger.grid;
             reader.bullet = bullets.grid;
             if (!pawn.RaceProps.IsMechanoid)
                 reader.smoke = smoke.grid;
@@ -133,19 +146,20 @@ namespace CombatExtended
         public void Notify_Bullet(IntVec3 cell)
         {
             if (cell.InBounds(map))
-                bullets.Set(cell, 0.35f, 3);
+                bullets.Flood(cell, 0.35f, 3);
         }
 
         public void Notify_PawnSuppressed(IntVec3 cell)
         {
             if (cell.InBounds(map))
             {
-                danger.Set(cell, 5, 4);
+                danger.Flood(cell, 5, 4);
                 bullets.Set(cell, 2, 3);
                 pathing[0].Set(cell, 5, 3);
                 pathing[1].Set(cell, 5, 3);
-                proximity[0].Set(cell, 3, 2);
-                proximity[1].Set(cell, 3, 2);
+                proximity[0].Flood(cell, 3, 5);
+                proximity[1].Flood(cell, 3, 5);
+                dangerMajor.Flood(cell, 0.35f, 7);
             }
         }
 
@@ -153,12 +167,13 @@ namespace CombatExtended
         {
             if (cell.InBounds(map))
             {
-                danger.Set(cell, 10, 7);
+                danger.Flood(cell, 10, 7);
                 bullets.Set(cell, 10, 5);
                 pathing[0].Set(cell, 10, 4);
                 pathing[1].Set(cell, 10, 4);
-                proximity[0].Set(cell, 4, 4);
-                proximity[1].Set(cell, 3, 4);
+                proximity[0].Flood(cell, 4, 4);
+                proximity[1].Flood(cell, 3, 4);
+                dangerMajor.Flood(cell, 0.50f, 10);
             }
         }
 
@@ -166,15 +181,16 @@ namespace CombatExtended
         {
             if (cell.InBounds(map))
             {
-                danger.Set(cell, 5, 3);
+                danger.Set(cell, 4, 3);                
                 bullets.Set(cell, 2, 1);
+                dangerMajor.Flood(cell, 0.15f, 15);
             }
         }
 
         public void Notify_Smoke(IntVec3 cell)
         {
             if (cell.InBounds(map))
-                smoke.Set(cell, 0.5f, 3);
+                smoke.Flood(cell, 0.5f, 3);
         }        
 
         public void Notify_PathFound(Pawn pawn, PawnPath path)
@@ -183,11 +199,11 @@ namespace CombatExtended
                 || pawn.Faction == null
                 || map.ParentFaction == null)
                 return;
-            PartiableManager manager = !pawn.Faction.HostileTo(map.ParentFaction) ? pathing[0] : pathing[1];
+            IShortTermMemoryHandler manager = !pawn.Faction.HostileTo(map.ParentFaction) ? pathing[0] : pathing[1];
             for (int i = 3; i < path.nodes.Count; i += 7)                            
-                manager.Set(path.nodes[i], 3, 3);            
+                manager.Set(path.nodes[i], 2, 4);
             for (int i = 1; i < path.nodes.Count; i += 3)
-                manager.Set(path.nodes[i], 2, 1);
+                manager.Set(path.nodes[i], 2, 2);
         }
 
         public void Notify_CoverPositionSelected(Pawn pawn, IntVec3 cell)
@@ -198,9 +214,9 @@ namespace CombatExtended
                 return;
             if (cell.InBounds(map))
             {
-                PartiableManager manager = !pawn.Faction.HostileTo(map.ParentFaction) ? proximity[0] : proximity[1];
-                manager.Set(cell, 8f, 2);
-                manager.Set(cell, 2f, 4);
+                IShortTermMemoryHandler manager = !pawn.Faction.HostileTo(map.ParentFaction) ? proximity[0] : proximity[1];
+                manager.Set(cell, 4f, 2);
+                manager.Set(cell, 2f, 4);           
             }
         }
 
@@ -212,11 +228,12 @@ namespace CombatExtended
                 return;            
             if (cell.InBounds(map))
             {
-                danger.Set(cell, 10, 7);
-                pathing[0].Set(cell, 10, 10);
-                pathing[1].Set(cell, 10, 10);
-                proximity[0].Set(cell, 3, 15);
-                proximity[1].Set(cell, 3, 15);
+                danger.Set(cell, 5, 7);
+                pathing[0].Flood(cell, 5, 10);
+                pathing[1].Flood(cell, 5, 10);
+                proximity[0].Flood(cell, 3, 15);
+                proximity[1].Flood(cell, 3, 15);
+                dangerMajor.Flood(cell, 0.5f, 15);
             }
         }
 
@@ -228,11 +245,12 @@ namespace CombatExtended
                 return;
             if (cell.InBounds(map))
             {
-                danger.Set(cell, 20, 10);
-                pathing[0].Set(cell, 15, 15);
-                pathing[1].Set(cell, 15, 15);
-                proximity[0].Set(cell, 10, 20);
-                proximity[1].Set(cell, 10, 20);
+                danger.Set(cell, 8, 10);
+                pathing[0].Flood(cell, 10, 15);
+                pathing[1].Flood(cell, 10, 15);
+                proximity[0].Flood(cell, 7, 20);
+                proximity[1].Flood(cell, 7, 20);
+                dangerMajor.Flood(cell, 3, 20);
             }
         }
     }

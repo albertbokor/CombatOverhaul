@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
+using RimWorld;
 using Verse;
 
 namespace CombatExtended
 {
-    public class PartiableGrid
+    public class IShortTermMemoryGrid
     {        
-        private struct PartiableRecord
+        private struct IShortTermMemory
         {
             public int expireAt;
             public float Value
@@ -19,26 +20,29 @@ namespace CombatExtended
                         return (float)(expireAt - ticks) / 60f;
                     }
                     return 0f;
-                }                
-                set
-                {
-                    expireAt = Math.Min((int)(value * 60), 1200) + GenTicks.TicksGame;
                 }
+            }
+
+            public void Set(float value, float max)
+            {
+                expireAt = (int) Math.Min((int)(value * 60), max) + GenTicks.TicksGame;
             }
         }
 
         public Map map;
         public CellIndices cellIndices;
 
-        private float alpha;        
-        private PartiableRecord[] records;
+        private float alpha;       
+        private float maxTicks;
+        private IShortTermMemory[] records;
 
-        public PartiableGrid(Map map, int unitTicks)
+        public IShortTermMemoryGrid(Map map, int ticksPerUnit, int maxUnit)
         {
-            this.alpha = unitTicks / 60f;
+            this.alpha = ticksPerUnit / 60f;            
+            this.maxTicks = maxUnit * alpha * 60;
             this.map = map;
             this.cellIndices = map.cellIndices;
-            this.records = new PartiableRecord[this.cellIndices.NumGridCells];            
+            this.records = new IShortTermMemory[this.cellIndices.NumGridCells];            
         }
 
         public float this[IntVec3 cell]
@@ -54,8 +58,8 @@ namespace CombatExtended
             get
             {
                 if(index >= 0 && index < map.cellIndices.NumGridCells)
-                {
-                    return records[index].Value;
+                {                    
+                    return records[index].Value / alpha;
                 }
                 return 0f;
             }
@@ -64,7 +68,7 @@ namespace CombatExtended
             {
                 if (index >= 0 && index < map.cellIndices.NumGridCells)
                 {
-                    records[index].Value = value;
+                    records[index].Set(value * alpha, maxTicks);                    
                 }
             }
         }

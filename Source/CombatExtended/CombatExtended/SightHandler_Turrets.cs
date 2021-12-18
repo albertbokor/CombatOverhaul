@@ -11,9 +11,9 @@ using Verse.AI;
 
 namespace CombatExtended
 {
-    public class SightManager_Turrets : SightManager<Building_TurretGunCE>
+    public class SightHandler_Turrets : SightHandler<Building_TurretGunCE>
     {
-        public SightManager_Turrets(Map map, int bucketCount = 30, int updateInterval = 200)
+        public SightHandler_Turrets(Map map, int bucketCount = 30, int updateInterval = 200)
             : base(map, bucketCount, updateInterval)
         {            
         }             

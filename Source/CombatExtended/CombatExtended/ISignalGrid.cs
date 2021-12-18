@@ -168,7 +168,7 @@ namespace CombatExtended
                         record.signalNum = 1;
                         record.signalStrength = signalStrength;
                         record.extras.direction = dir;
-                        record.extras.flags = currentSignalFlags;                        
+                        record.extras.flags = currentSignalFlags;                     
                     }
                     record.sig = sig;
                     signalArray[index] = record;

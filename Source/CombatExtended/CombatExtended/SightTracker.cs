@@ -113,25 +113,25 @@ namespace CombatExtended
             public Vector2 GetFriendlyDirection(int index) => friendly != null ? friendly.GetSignalDirectionAt(index) : Vector2.zero;          
         }
 
-        public readonly SightManager_Pawns friendly;
-        public readonly SightManager_Pawns hostile;
-        public readonly SightManager_Pawns universal;
-        public readonly SightManager_Turrets turrets;       
+        public readonly SightHandler_Pawns friendly;
+        public readonly SightHandler_Pawns hostile;
+        public readonly SightHandler_Pawns universal;
+        public readonly SightHandler_Turrets turrets;       
         
         public SightTracker(Map map) : base(map)
         {
             friendly =
-                new SightManager_Pawns(map, 20, 4);
+                new SightHandler_Pawns(map, 20, 4);
             hostile =
-                new SightManager_Pawns(map, 20, 4);
+                new SightHandler_Pawns(map, 20, 4);
             universal =
-                new SightManager_Pawns(map, 20, 10);
+                new SightHandler_Pawns(map, 20, 10);
             turrets =
-                new SightManager_Turrets(map, 20, 100);
-        }
+                new SightHandler_Turrets(map, 20, 100);            
+        }        
 
         public override void MapComponentTick()
-        {
+        {            
             base.MapComponentTick();
             // --------------
             friendly.Tick();

@@ -156,8 +156,8 @@ namespace CombatExtended
                 cellRating += GetCoverRating(cover) * 2;
             }
             float visibilityRating = 0;
-            if (sightReader != null)                
-                visibilityRating += sightReader.GetVisibility(cell);
+            if (sightReader != null)  
+                visibilityRating += sightReader.GetVisibility(cell) * 5;
 
             if (visibilityRating > 0f)
             {
@@ -180,7 +180,7 @@ namespace CombatExtended
                 if (cover is Gas)
                     coverLOSRating += 5;
                 else if (cover.def.Fillage == FillCategory.Partial) 
-                    coverLOSRating += cover.def.category == ThingCategory.Plant ? 4 : 12;
+                    coverLOSRating += cover.def.category == ThingCategory.Plant ? 5 : 12;
             }
             cellRating += Mathf.Min(coverLOSRating, 25);
 
@@ -190,7 +190,7 @@ namespace CombatExtended
                 // float pathCost = pawn.Map.pathFinder.FindPath(pawn.Position, cell, TraverseMode.NoPassClosedDoors).TotalCost;
                 float pathCost = Mathf.Abs(cell.x - pawn.Position.x) + 0.5f * Mathf.Abs(cell.z - pawn.Position.z);
                 if (!GenSight.LineOfSight(pawn.Position, cell, pawn.Map))                
-                    pathCost *= 2;                
+                    pathCost *= 2; 
                 cellRating = cellRating - pathCost;
             }
             for (int i = 0; i < interceptors.Count; i++)

@@ -10,7 +10,7 @@ using System.Threading;
 
 namespace CombatExtended
 {
-    public abstract class SightManager<T> where T : Thing
+    public abstract class SightHandler<T> where T : Thing
     {
         private const int COVERCARRYLIMIT = 6;
 
@@ -49,7 +49,7 @@ namespace CombatExtended
         private bool mapIsAlive = true;
         private bool wait = false;
 
-        public SightManager(Map map, int bucketCount, int updateInterval)
+        public SightHandler(Map map, int bucketCount, int updateInterval)
         {
             this.map = map;
             this.updateInterval = updateInterval;

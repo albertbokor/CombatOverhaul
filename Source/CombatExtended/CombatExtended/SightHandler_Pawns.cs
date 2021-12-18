@@ -11,9 +11,9 @@ using Verse.AI;
 
 namespace CombatExtended
 {
-    public class SightManager_Pawns : SightManager<Pawn>
+    public class SightHandler_Pawns : SightHandler<Pawn>
     {
-        public SightManager_Pawns(Map map, int bucketCount = 20, int updateInterval = 10)
+        public SightHandler_Pawns(Map map, int bucketCount = 20, int updateInterval = 10)
             : base(map, bucketCount, updateInterval)
         {
         }
