@@ -165,7 +165,7 @@ namespace CombatExtended
                 Vector3 coverVec = (shooterPos - cell).ToVector3().normalized;
                 IntVec3 coverCell = (cell.ToVector3Shifted() + coverVec).ToIntVec3();
                 Thing cover = coverCell.GetCover(pawn.Map);
-                cellRating += GetCoverRating(cover) * 5;
+                cellRating += GetCoverRating(cover) * 6;
             }
             float visibilityRating = 0;
             if (sightReader != null)
@@ -194,19 +194,9 @@ namespace CombatExtended
                 if (cover is Gas)
                     coverLOSRating += 5;
                 else if (cover.def.Fillage == FillCategory.Partial) 
-                    coverLOSRating += cover.def.category == ThingCategory.Plant ? 0.5f : 3;
+                    coverLOSRating += cover.def.category == ThingCategory.Plant ? 0.35f : cover.def.fillPercent * 5f;
             }
-            cellRating += Mathf.Min(coverLOSRating, 25);
-
-            //Check time to path to that location
-            //if (!pawn.Position.Equals(cell))
-            //{
-            //    // float pathCost = pawn.Map.pathFinder.FindPath(pawn.Position, cell, TraverseMode.NoPassClosedDoors).TotalCost;
-            //    float pathCost = Mathf.Abs(cell.x - pawn.Position.x) + 0.5f * Mathf.Abs(cell.z - pawn.Position.z);
-            //    if (!GenSight.LineOfSight(pawn.Position, cell, pawn.Map))                
-            //        pathCost *= 2; 
-            //    cellRating = cellRating - pathCost;
-            //}
+            cellRating += Mathf.Min(coverLOSRating, 25);           
             for (int i = 0; i < interceptors.Count; i++)
             {
                 CompProjectileInterceptor interceptor = interceptors[i];
@@ -220,8 +210,8 @@ namespace CombatExtended
         {
             if (cover == null) return 0;
             if (cover is Gas) return 0.8f;
-            if (cover.def.category == ThingCategory.Plant) return cover.def.fillPercent; // Plant cover only has a random chance to block gunfire and is rated lower            
-            return 1;
+            if (cover.def.category == ThingCategory.Plant) return cover.def.fillPercent * 0.667f; // Plant cover only has a random chance to block gunfire and is rated lower            
+            return cover.def.fillPercent;
         }
 
         public static bool TryGetSmokeScreeningJob(Pawn pawn, IntVec3 suppressorLoc, out Job job)
