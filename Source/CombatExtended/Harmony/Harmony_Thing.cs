@@ -16,7 +16,7 @@ namespace CombatExtended.HarmonyCE
     {
         public static void Postfix(Thing __instance, ref IEnumerable<Thing> __result)
         {
-            var ammoUser = (__instance as ThingWithComps)?.TryGetComp<CompAmmoUser>();
+            var ammoUser = (__instance as ThingWithComps)?.TryGetCompFast<CompAmmoUser>();
 
             if (ammoUser != null && (ammoUser.HasMagazine && ammoUser.CurMagCount > 0 && ammoUser.CurrentAmmo != null))
             {

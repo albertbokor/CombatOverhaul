@@ -21,6 +21,7 @@ namespace CombatExtended.HarmonyCE
         private static TurretTracker turretTracker;
         private static CompTacticalManager manager;
         private static CombatReservationManager combatReservationManager;
+        private static bool tpsLow;
 
         [HarmonyPatch(typeof(AttackTargetFinder), "BestAttackTarget")]
         internal static class Harmony_AttackTargetFinder_BestAttackTarget
@@ -47,8 +48,9 @@ namespace CombatExtended.HarmonyCE
             }
 
             internal static void Prefix(IAttackTargetSearcher searcher)
-            {               
-                map = searcher.Thing?.Map;
+            {
+                tpsLow = PerformanceTracker.TpsCriticallyLow;
+                map = searcher.Thing?.Map;                
                 combatReservationManager = map.GetComponent<CombatReservationManager>();
                 interceptors = searcher.Thing?.Map.listerThings.ThingsInGroup(ThingRequestGroup.ProjectileInterceptor)
                                                .Select(t => t.TryGetComp<CompProjectileInterceptor>())
@@ -96,11 +98,11 @@ namespace CombatExtended.HarmonyCE
             }
 
             public static float GetShootingTargetBaseScore(IAttackTarget target, IAttackTargetSearcher searcher, Verb verb)
-            {
+            {                
                 float result = 60f;
                 float distSqr = target.Thing.Position.DistanceToSquared(searcher.Thing.Position);                
 
-                if (combatReservationManager != null && combatReservationManager.Reserved(target.Thing, out List<Pawn> attackers))
+                if (!tpsLow && combatReservationManager != null && combatReservationManager.Reserved(target.Thing, out List<Pawn> attackers))
                 {                   
                     for(int i = 0; i < attackers.Count; i++)
                     {                        
@@ -127,8 +129,8 @@ namespace CombatExtended.HarmonyCE
                         result += 15 - sightReader.GetVisibility(target.Thing.Position);
 
                     result += 10 - Mathf.Abs(16f * 16f - distSqr) / (16f * 16f) * 10;
-                }                
-                if (verb.EffectiveRange >= 25)
+                }
+                if (!tpsLow && verb.EffectiveRange >= 25)
                 {
                     if (searcher.Thing.Map?.GetLightingTracker() is LightingTracker tracker)
                         result *= tracker.CombatGlowAt(target.Thing.Position) * 0.5f;
@@ -160,6 +162,6 @@ namespace CombatExtended.HarmonyCE
                 }
                 return result;
             }
-        }
+        }        
     }
 }

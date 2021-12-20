@@ -4,34 +4,55 @@ using Verse;
 
 namespace CombatExtended.HarmonyCE
 {
-    [HarmonyPatch(typeof(Game), nameof(Game.ExposeData))]
-    public static class Harmony_Game_ExposeData
-    {        
-        public static void Postfix()
+    public static class Harmony_Game
+    {
+        [HarmonyPatch(typeof(Game), nameof(Game.ExposeData))]
+        public static class Harmony_Game_ExposeData
         {
-            try
+            public static void Postfix()
             {
-                CE_Scriber.ExecuteLateScribe();
-            }
-            catch (Exception er)
-            {
-                Log.Error($"CE: Late scriber is really broken {er}!!");
+                try
+                {
+                    CE_Scriber.ExecuteLateScribe();
+                }
+                catch (Exception er)
+                {
+                    Log.Error($"CE: Late scriber is really broken {er}!!");
+                }
             }
         }
-    }
 
-    [HarmonyPatch(typeof(Game), nameof(Game.LoadGame))]
-    public static class Harmony_Game_LoadGame
-    {        
-        public static void Postfix()
+        [HarmonyPatch(typeof(Game), nameof(Game.LoadGame))]
+        public static class Harmony_Game_LoadGame
         {
-            try
+            public static void Postfix()
             {
-                CE_Scriber.Reset();
+                try
+                {
+                    CE_Scriber.Reset();
+                }
+                catch (Exception er)
+                {
+                    Log.Error($"CE: Late scriber is really broken {er}!!");
+                }
             }
-            catch (Exception er)
+        }
+
+        [HarmonyPatch(typeof(Game), nameof(Game.AddMap))]
+        public static class Harmony_Game_AddMap
+        {
+            public static void Postfix(Map map)
             {
-                Log.Error($"CE: Late scriber is really broken {er}!!");
+                ICacheUtility.Register(map);
+            }
+        }
+
+        [HarmonyPatch(typeof(Game), nameof(Game.DeinitAndRemoveMap))]
+        public static class Harmony_Game_DeinitAndRemoveMap
+        {
+            public static void Postfix(Map map)
+            {
+                ICacheUtility.DeRegister(map);
             }
         }
     }

@@ -485,7 +485,7 @@ namespace CombatExtended
             // Building_TurretGunCE DOES NOT inherit from Building_TurretGun!!!
             if (thing is Building_Turret)
             {
-                CompMannable comp = thing.TryGetComp<CompMannable>();
+                CompMannable comp = thing.TryGetCompFast<CompMannable>();
                 if (comp != null)
                 {
                     return comp.ManningPawn;
@@ -726,7 +726,7 @@ namespace CombatExtended
         {
             if (pawn != null)
             {
-                CompInventory comp = pawn.TryGetComp<CompInventory>();
+                CompInventory comp = pawn.TryGetCompFast<CompInventory>();
                 if (comp != null)
                 {
                     comp.UpdateInventory();
@@ -754,7 +754,7 @@ namespace CombatExtended
         {
             Pawn pawn = inventoryTracker.pawn;
             weapons = null;
-            CompInventory compInventory = pawn.TryGetComp<CompInventory>();
+            CompInventory compInventory = pawn.TryGetCompFast<CompInventory>();
             // check is this pawn has a CompInventory
             if (compInventory == null)
                 return false;
@@ -777,97 +777,25 @@ namespace CombatExtended
         {
             return lightingCurve.Evaluate(range);
         }
-
-        private static Map[] _mapsLighting = new Map[20];
-        private static LightingTracker[] _lightingTrackers = new LightingTracker[20];
-
+        
         public static LightingTracker GetLightingTracker(this Map map)
         {
-            int index = map?.Index ?? -1;
-            if (index < 0)
-                return null;
-            if (index >= _mapsLighting.Length)
-            {
-                int expandedLength = Mathf.Max(_mapsLighting.Length * 2, index + 1);
-                Map[] maps = new Map[expandedLength];
-                LightingTracker[] trackers = new LightingTracker[expandedLength];
-                Array.Copy(_mapsLighting, maps, _mapsLighting.Length);
-                Array.Copy(_lightingTrackers, trackers, _lightingTrackers.Length);
-                _mapsLighting = maps;
-                _lightingTrackers = trackers;
-            }
-            if (_mapsLighting[index] == map)
-                return _lightingTrackers[index];
-            return _lightingTrackers[index] = (_mapsLighting[index] = map).GetComponent<LightingTracker>();
+            return map.TryGetCompFast<LightingTracker>();
         }
-
-        private static Map[] _mapsDanger = new Map[20];
-        private static AvoidanceTracker[] _dangerTrackers = new AvoidanceTracker[20];
-
+        
         public static AvoidanceTracker GetAvoidanceTracker(this Map map)
         {
-            int index = map?.Index ?? -1;
-            if (index < 0)
-                return null;
-            if (index >= _mapsDanger.Length)
-            {
-                int expandedLength = Mathf.Max(_mapsDanger.Length * 2, index + 1);
-                Map[] maps = new Map[expandedLength];
-                AvoidanceTracker[] trackers = new AvoidanceTracker[expandedLength];
-                Array.Copy(_mapsDanger, maps, _mapsDanger.Length);
-                Array.Copy(_dangerTrackers, trackers, _dangerTrackers.Length);
-                _mapsDanger = maps;
-                _dangerTrackers = trackers;
-            }
-            if (_mapsDanger[index] == map)
-                return _dangerTrackers[index];
-            return _dangerTrackers[index] = (_mapsDanger[index] = map).GetComponent<AvoidanceTracker>();
-        }
-
-        private static Map[] _mapsSight = new Map[20];
-        private static SightTracker[] _sightTracker = new SightTracker[20];
+            return map.TryGetCompFast<AvoidanceTracker>();
+        }        
 
         public static SightTracker GetSightTracker(this Map map)
         {
-            int index = map?.Index ?? -1;
-            if (index < 0)
-                return null;
-            if (index >= _sightTracker.Length)
-            {
-                int expandedLength = Mathf.Max(_mapsSight.Length * 2, index + 1);
-                Map[] maps = new Map[expandedLength];
-                SightTracker[] trackers = new SightTracker[expandedLength];
-                Array.Copy(_mapsSight, maps, _mapsSight.Length);
-                Array.Copy(_sightTracker, trackers, _sightTracker.Length);
-                _mapsSight = maps;
-                _sightTracker = trackers;
-            }
-            if (_mapsSight[index] == map)
-                return _sightTracker[index];
-            return _sightTracker[index] = (_mapsSight[index] = map).GetComponent<SightTracker>();
+            return map.TryGetCompFast<SightTracker>();
         }
-
-        private static Map[] _mapsWall = new Map[20];
-        private static WallGrid[] _wallGrid = new WallGrid[20];
-
+        
         public static WallGrid GetWallGrid(this Map map)
         {
-            int index = map?.Index ?? -1;
-            if (index < 0)
-                return null;
-            if (index >= _wallGrid.Length)
-            {
-                int expandedLength = Mathf.Max(_mapsSight.Length * 2, index + 1);
-                Map[] maps = new Map[expandedLength];
-                WallGrid[] trackers = new WallGrid[expandedLength];
-                Array.Copy(_mapsWall, maps, _mapsWall.Length);
-                Array.Copy(_wallGrid, trackers, _wallGrid.Length);
-                _mapsWall = maps;
-                _wallGrid = trackers;
-            }
-            if (_mapsWall[index] == map)
-                return _wallGrid[index];
-            return _wallGrid[index] = (_mapsWall[index] = map).GetComponent<WallGrid>();
+            return map.TryGetCompFast<WallGrid>();
         }
 
         #endregion
@@ -971,7 +899,7 @@ namespace CombatExtended
 
         public static bool GetSightReader(this Pawn pawn, out SightTracker.SightReader reader)
         {
-            SightTracker tracker = pawn.Map.GetComponent<SightTracker>();
+            SightTracker tracker = pawn.Map.TryGetCompFast<SightTracker>();
             return tracker.TryGetReader(pawn, out reader);
         }
               

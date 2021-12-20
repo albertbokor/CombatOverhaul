@@ -83,17 +83,17 @@ namespace CombatExtended.AI
         public override void TickShort()
         {
             base.TickShort();
-            if (disabled || cooldownTick > GenTicks.TicksGame)            
+            if (disabled || cooldownTick > GenTicks.TicksGame || PerformanceTracker.TpsLevel < 0.1f)
                 return;
-
+            float u = 2 - PerformanceTracker.TpsLevel;
             if (!selPawn.Spawned || selPawn.Downed || (selPawn.Faction?.IsPlayerSafe() ?? true))
             {
-                cooldownTick = GenTicks.TicksGame + GenTicks.TickLongInterval;
+                cooldownTick = GenTicks.TicksGame + (int)(GenTicks.TickLongInterval * u * u);
                 return;
             }
             if ((sightReader = MapSightReader) == null)
             {
-                cooldownTick = GenTicks.TicksGame + GenTicks.TickLongInterval;
+                cooldownTick = GenTicks.TicksGame + (int)(GenTicks.TickLongInterval * u * u);
                 return;
             }
             if (selPawn.jobs.curJob?.def == CE_JobDefOf.ReloadWeapon || selPawn.stances?.curStance is Stance_Warmup)
@@ -102,7 +102,7 @@ namespace CombatExtended.AI
             Verb verb = selPawn.GetWeaponVerbWithFallback();
             if (verb == null || verb.IsMeleeAttack)
             {
-                cooldownTick = GenTicks.TicksGame + GenTicks.TickRareInterval;
+                cooldownTick = GenTicks.TicksGame + (int)(GenTicks.TickRareInterval * u * u);
                 return;
             }            
             float vision = Vision, hearing = Hearing, focus = Focus;
@@ -111,7 +111,7 @@ namespace CombatExtended.AI
             if (verb.EffectiveRange > 5 && selPawn.jobs.curJob?.def == JobDefOf.Goto && selPawn.jobs.curJob.targetA.Thing is Pawn other && other.Faction != null && other.Faction.HostileTo(selPawn.Faction) && other.jobs.curJob?.def == JobDefOf.AttackMelee)
             {
                 selPawn.jobs.StopAll(false, false);          
-                cooldownTick = (int)(GenTicks.TicksGame + 30 * (2 - awarness));
+                cooldownTick = (int)(GenTicks.TicksGame + 30 * (2 - awarness) * u * u);
                 return;
             }
 
@@ -121,7 +121,7 @@ namespace CombatExtended.AI
                 && selPawn.CanAttackEnemyNowFast(selPawn.mindState.enemyTarget, verb, sightReader)
                 && TryUrgentResponse(selPawn.mindState.enemyTarget, verb))
             {
-                cooldownTick = (int)(GenTicks.TicksGame + 540 * (2 - awarness));
+                cooldownTick = (int)(GenTicks.TicksGame + 540 * (2 - awarness) * u * u);
                 return;
             }
             IntVec3 position = selPawn.Position;
@@ -131,7 +131,7 @@ namespace CombatExtended.AI
 
             if (curFlags == 0)
             {
-                cooldownTick = GenTicks.TicksGame + 60;                
+                cooldownTick = GenTicks.TicksGame + (int)(60 * u * u);                
                 return;
             }
             Thing nearest = null;
@@ -147,11 +147,11 @@ namespace CombatExtended.AI
             }
             if(nearest == null)
             {
-                cooldownTick = GenTicks.TicksGame + 40;
+                cooldownTick = GenTicks.TicksGame + (int)(40 * u * u);
                 return;
             }
             TryUrgentResponse(nearest, verb);
-            cooldownTick = (int)(GenTicks.TicksGame + 540 * (2 - awarness));
+            cooldownTick = (int)(GenTicks.TicksGame + (540 * u * u) * (2 - awarness));
         }
 
         private bool TryUrgentResponse(Thing enemy, Verb verb)
@@ -190,29 +190,32 @@ namespace CombatExtended.AI
                     base.selPawn.jobs.StartJob(job, JobCondition.InterruptForced);
                 }
             }
-            CastPositionRequest newReq = default(CastPositionRequest);
-            newReq.caster = selPawn;
-            newReq.target = enemy;
-            newReq.verb = verb;
-            newReq.maxRegions = 3;
-            newReq.maxRangeFromCaster = verb.verbProps.warmupTime * selPawn.GetStatValue(StatDefOf.MoveSpeed);
-            newReq.wantCoverFromTarget = verb.verbProps.range > 5f;
-            if (CastPositionFinder.TryFindCastPosition(newReq, out IntVec3 dest))
+            if (!PerformanceTracker.TpsCriticallyLow)
             {
-                cooldownTick = GenTicks.TicksGame + 240;
-                job = JobMaker.MakeJob(JobDefOf.Goto, dest);
-                if (job != null)
+                CastPositionRequest newReq = default(CastPositionRequest);
+                newReq.caster = selPawn;
+                newReq.target = enemy;
+                newReq.verb = verb;
+                newReq.maxRegions = 3;
+                newReq.maxRangeFromCaster = verb.verbProps.warmupTime * selPawn.GetStatValue(StatDefOf.MoveSpeed);
+                newReq.wantCoverFromTarget = verb.verbProps.range > 5f;
+                if (CastPositionFinder.TryFindCastPosition(newReq, out IntVec3 dest))
                 {
-                    base.selPawn.jobs.StopAll();
-                    base.selPawn.jobs.StartJob(job, JobCondition.InterruptForced);
-                    job = JobMaker.MakeJob(JobDefOf.Wait_Combat, dest, expiryInterval: verb.verbProps.warmupTime.SecondsToTicks() + verb.verbProps.burstShotCount * verb.verbProps.ticksBetweenBurstShots + 30, checkOverrideOnExpiry: true);
+                    cooldownTick = GenTicks.TicksGame + 240;
+                    job = JobMaker.MakeJob(JobDefOf.Goto, dest);
                     if (job != null)
                     {
-                        selPawn.jobs.jobQueue.EnqueueFirst(job);
-                        return true;
-                    } 
+                        base.selPawn.jobs.StopAll();
+                        base.selPawn.jobs.StartJob(job, JobCondition.InterruptForced);
+                        job = JobMaker.MakeJob(JobDefOf.Wait_Combat, dest, expiryInterval: verb.verbProps.warmupTime.SecondsToTicks() + verb.verbProps.burstShotCount * verb.verbProps.ticksBetweenBurstShots + 30, checkOverrideOnExpiry: true);
+                        if (job != null)
+                        {
+                            selPawn.jobs.jobQueue.EnqueueFirst(job);
+                            return true;
+                        }
+                    }
                 }
-            }            
+            }
             return false;
         }     
     }

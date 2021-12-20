@@ -117,7 +117,7 @@ namespace CombatExtended
             }
         }
 
-        public bool TryGetAvoidanceReader(Pawn pawn, out AvoidanceReader reader)
+        public bool TryGetReader(Pawn pawn, out AvoidanceReader reader)
         {
             reader = null;
             if (pawn.Faction == null
@@ -144,14 +144,14 @@ namespace CombatExtended
         }
 
         public void Notify_Bullet(IntVec3 cell)
-        {
-            if (cell.InBounds(map))
+        {           
+            if (!PerformanceTracker.TpsCriticallyLow && cell.InBounds(map))
                 bullets.Flood(cell, 0.35f, 3);
         }
 
         public void Notify_PawnSuppressed(IntVec3 cell)
-        {
-            if (cell.InBounds(map))
+        {         
+            if (!PerformanceTracker.TpsCriticallyLow && cell.InBounds(map))
             {
                 danger.Flood(cell, 5, 4);
                 bullets.Set(cell, 2, 3);
@@ -165,7 +165,7 @@ namespace CombatExtended
 
         public void Notify_PawnHunkered(IntVec3 cell)
         {
-            if (cell.InBounds(map))
+            if (!PerformanceTracker.TpsCriticallyLow && cell.InBounds(map))
             {
                 danger.Flood(cell, 10, 7);
                 bullets.Set(cell, 10, 5);
@@ -179,7 +179,7 @@ namespace CombatExtended
 
         public void Notify_BulletImpact(IntVec3 cell)
         {
-            if (cell.InBounds(map))
+            if (!PerformanceTracker.TpsCriticallyLow && cell.InBounds(map))
             {
                 danger.Set(cell, 4, 3);                
                 bullets.Set(cell, 2, 1);
@@ -189,7 +189,7 @@ namespace CombatExtended
 
         public void Notify_Smoke(IntVec3 cell)
         {
-            if (cell.InBounds(map))
+            if (!PerformanceTracker.TpsCriticallyLow && cell.InBounds(map))
                 smoke.Flood(cell, 0.5f, 3);
         }        
 
@@ -202,13 +202,17 @@ namespace CombatExtended
             IShortTermMemoryHandler manager = !pawn.Faction.HostileTo(map.ParentFaction) ? pathing[0] : pathing[1];
             for (int i = 3; i < path.nodes.Count; i += 7)                            
                 manager.Set(path.nodes[i], 2, 4);
-            for (int i = 1; i < path.nodes.Count; i += 3)
-                manager.Set(path.nodes[i], 2, 2);
+            if (!PerformanceTracker.TpsCriticallyLow)
+            {
+                for (int i = 1; i < path.nodes.Count; i += 3)
+                    manager.Set(path.nodes[i], 2, 2);
+            }
         }
 
         public void Notify_CoverPositionSelected(Pawn pawn, IntVec3 cell)
         {
-            if (!pawn.RaceProps.Humanlike
+            if (PerformanceTracker.TpsCriticallyLow
+                || !pawn.RaceProps.Humanlike
                 || pawn.Faction == null
                 || map.ParentFaction == null)
                 return;
@@ -222,7 +226,8 @@ namespace CombatExtended
 
         public void Notify_Injury(Pawn pawn, IntVec3 cell)
         {
-            if ((!pawn.RaceProps.Humanlike && !pawn.RaceProps.IsMechanoid)
+            if (PerformanceTracker.TpsCriticallyLow
+                || (!pawn.RaceProps.Humanlike && !pawn.RaceProps.IsMechanoid)
                 || pawn.Faction == null
                 || map.ParentFaction == null)
                 return;            
@@ -239,7 +244,8 @@ namespace CombatExtended
 
         public void Notify_Death(Pawn pawn, IntVec3 cell)
         {
-            if ((!pawn.RaceProps.Humanlike && !pawn.RaceProps.IsMechanoid)
+            if (PerformanceTracker.TpsCriticallyLow
+                || (!pawn.RaceProps.Humanlike && !pawn.RaceProps.IsMechanoid)
                 || pawn.Faction == null
                 || map.ParentFaction == null)
                 return;

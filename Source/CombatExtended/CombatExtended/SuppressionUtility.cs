@@ -101,7 +101,7 @@ namespace CombatExtended
             interceptors = pawn.Map.listerThings.ThingsInGroup(ThingRequestGroup.ProjectileInterceptor).Select(t => t.TryGetComp<CompProjectileInterceptor>()).ToList();
             lightingTracker = pawn.Map.GetLightingTracker();
             avoidanceTracker = pawn.Map.GetAvoidanceTracker();
-            avoidanceTracker.TryGetAvoidanceReader(pawn, out avoidanceReader);
+            avoidanceTracker.TryGetReader(pawn, out avoidanceReader);
             pawn.GetSightReader(out sightReader);
 
             float moveSpeed = Mathf.Max(pawn.GetStatValue(StatDefOf.MoveSpeed), 0.5f);

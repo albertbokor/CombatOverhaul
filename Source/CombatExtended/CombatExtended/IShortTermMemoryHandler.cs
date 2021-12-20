@@ -24,7 +24,9 @@ namespace CombatExtended
         private int offThreadCount;
         private readonly List<Action> mainThreadQueue = new List<Action>();
         private readonly List<Action> offThreadQueue = new List<Action>();
-        private bool mapIsAlive = true;        
+        private bool mapIsAlive = true;
+        private int ticksUntilUpdate = 0;
+        private int updateInterval = 15;
 
         public IShortTermMemoryHandler(Map map, int ticksPerUnit = 60, int maxUnits = 20)
         {
@@ -41,6 +43,13 @@ namespace CombatExtended
 
         public virtual void Tick()
         {
+            if(PerformanceTracker.TpsCriticallyLow)
+            {
+                if (ticksUntilUpdate-- > 0)
+                    return;
+                float u = PerformanceTracker.TpsLevel;
+                ticksUntilUpdate = (int) (updateInterval * u * u);
+            }
             if (mainThreadQueue.Count == 0)
                 return;
             offThreadCount = 0;

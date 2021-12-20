@@ -92,9 +92,10 @@ namespace CombatExtended
                     DeRegister(tmpRecords[i].thing);
                 // clean up.
                 tmpRecords.Clear();
-            }                        
+            }
+            float u = (2 - PerformanceTracker.TpsLevel);
+            ticksUntilUpdate = (int) (updateInterval * u * u);
             curIndex++;
-            ticksUntilUpdate = updateInterval;
             if (curIndex >= bucketCount)
             {
                 wait = true;
