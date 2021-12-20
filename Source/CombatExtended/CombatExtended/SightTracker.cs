@@ -225,8 +225,21 @@ namespace CombatExtended
                 }
             }
         }
-       
-        public bool TryGetReader(Pawn pawn, out SightReader reader) => TryGetReader(pawn.Faction, out reader);
+
+        public bool TryGetReader(Pawn pawn, out SightReader reader)
+        {
+            if (pawn.RaceProps.IsMechanoid || pawn.RaceProps.Insect)
+            {
+                reader = new SightReader(this);
+                reader.hostile = friendly.grid;
+                reader.friendly = universal.grid;
+                reader.turrets = turrets.grid;
+                reader.universal = hostile.grid;
+                return true;
+            }
+            return TryGetReader(pawn.Faction, out reader);
+        }
+
         public bool TryGetReader(Faction faction, out SightReader reader)
         {
             if (faction == null)
@@ -241,6 +254,7 @@ namespace CombatExtended
                 reader.friendly = universal.grid;
                 reader.turrets = turrets.grid;
                 reader.universal = hostile.grid;
+                return true;
             }
             reader = new SightReader(this);
             if (faction.HostileTo(map.ParentFaction))
@@ -279,7 +293,7 @@ namespace CombatExtended
             // make sure it's not already in.
             universal.DeRegister(pawn);
 
-            if (pawn.Faction.def == FactionDefOf.Insect || pawn.Faction.def == FactionDefOf.Mechanoid)
+            if ((pawn.Faction.def == FactionDefOf.Insect || pawn.RaceProps.Insect) || (pawn.Faction.def == FactionDefOf.Mechanoid || pawn.RaceProps.IsMechanoid))
             {
                 universal.Register(pawn);
                 return;

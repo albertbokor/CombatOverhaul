@@ -31,9 +31,8 @@ namespace CombatExtended.HarmonyCE
 
             return method;
         }
-
-        [HarmonyPostfix]
-        public static void PostFix(IAttackTarget t, ref float __result)
+        
+        public static void Postfix(IAttackTarget t, ref float __result)
         {
             Building_TurretGunCE bce;
             if ((bce = (t as Building_TurretGunCE)) != null && bce.def.building.IsMortar && !bce.IsMannable)

@@ -33,7 +33,7 @@ namespace CombatExtended
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public float GetDanger(IntVec3 cell) => GetDanger(indices.CellToIndex(cell));
             public float GetDanger(int index) =>
-                Mathf.Min(danger[index] + (AnySmoke(index) ? 4f : 0), 8f) + dangerMajor[index];
+                Mathf.Min(danger[index] + (AnySmoke(index) ? 4f : 0), 16f) + dangerMajor[index];
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public float GetPathing(IntVec3 cell) => GetPathing(indices.CellToIndex(cell));
@@ -42,7 +42,7 @@ namespace CombatExtended
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public float GetProximity(IntVec3 cell) => GetProximity(indices.CellToIndex(cell));
             public float GetProximity(int index) =>
-                proximity != null ? Mathf.Min(proximity[index] + (AnyBullets(index) ? 2f : 0f), 8f) + dangerMajor[index] : 0f;
+                proximity != null ? Mathf.Min(proximity[index] + (AnyBullets(index) ? 2f : 0f), 16f) + dangerMajor[index] : 0f;
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public bool AnyBullets(IntVec3 cell) => AnyBullets(indices.CellToIndex(cell));
@@ -68,10 +68,10 @@ namespace CombatExtended
             dangerMajor = new IShortTermMemoryHandler(map, 480, 40);
             bullets = new IShortTermMemoryHandler(map);
             smoke = new IShortTermMemoryHandler(map);
-            pathing[0] = new IShortTermMemoryHandler(map);
-            proximity[0] = new IShortTermMemoryHandler(map);
-            pathing[1] = new IShortTermMemoryHandler(map);            
-            proximity[1] = new IShortTermMemoryHandler(map);
+            pathing[0] = new IShortTermMemoryHandler(map, 80, 8);
+            proximity[0] = new IShortTermMemoryHandler(map, 80, 16);
+            pathing[1] = new IShortTermMemoryHandler(map, 120, 16);            
+            proximity[1] = new IShortTermMemoryHandler(map, 120, 16);
         }
 
         public override void MapComponentTick()
@@ -145,18 +145,21 @@ namespace CombatExtended
 
         public void Notify_Bullet(IntVec3 cell)
         {           
-            if (!PerformanceTracker.TpsCriticallyLow && cell.InBounds(map))
+            if (cell.InBounds(map))
                 bullets.Flood(cell, 0.35f, 3);
         }
 
         public void Notify_PawnSuppressed(IntVec3 cell)
         {         
-            if (!PerformanceTracker.TpsCriticallyLow && cell.InBounds(map))
+            if (cell.InBounds(map))
             {
                 danger.Flood(cell, 5, 4);
-                bullets.Set(cell, 2, 3);
-                pathing[0].Set(cell, 5, 3);
-                pathing[1].Set(cell, 5, 3);
+                if (!PerformanceTracker.TpsCriticallyLow)
+                {
+                    bullets.Set(cell, 2, 3);
+                    pathing[0].Set(cell, 5, 3);
+                    pathing[1].Set(cell, 5, 3);
+                }
                 proximity[0].Flood(cell, 3, 5);
                 proximity[1].Flood(cell, 3, 5);
                 dangerMajor.Flood(cell, 0.35f, 7);
@@ -165,12 +168,15 @@ namespace CombatExtended
 
         public void Notify_PawnHunkered(IntVec3 cell)
         {
-            if (!PerformanceTracker.TpsCriticallyLow && cell.InBounds(map))
+            if (cell.InBounds(map))
             {
-                danger.Flood(cell, 10, 7);
-                bullets.Set(cell, 10, 5);
-                pathing[0].Set(cell, 10, 4);
-                pathing[1].Set(cell, 10, 4);
+                danger.Flood(cell, 10, 7);                
+                if (!PerformanceTracker.TpsCriticallyLow)
+                {
+                    pathing[0].Set(cell, 10, 4);
+                    pathing[1].Set(cell, 10, 4);
+                    bullets.Set(cell, 10, 5);
+                }
                 proximity[0].Flood(cell, 4, 4);
                 proximity[1].Flood(cell, 3, 4);
                 dangerMajor.Flood(cell, 0.50f, 10);
@@ -201,18 +207,14 @@ namespace CombatExtended
                 return;
             IShortTermMemoryHandler manager = !pawn.Faction.HostileTo(map.ParentFaction) ? pathing[0] : pathing[1];
             for (int i = 3; i < path.nodes.Count; i += 7)                            
-                manager.Set(path.nodes[i], 2, 4);
-            if (!PerformanceTracker.TpsCriticallyLow)
-            {
-                for (int i = 1; i < path.nodes.Count; i += 3)
-                    manager.Set(path.nodes[i], 2, 2);
-            }
+                manager.Set(path.nodes[i], 3, 4);
+            for (int i = 1; i < path.nodes.Count; i += 3)
+                manager.Set(path.nodes[i], 2, 2);            
         }
 
         public void Notify_CoverPositionSelected(Pawn pawn, IntVec3 cell)
         {
-            if (PerformanceTracker.TpsCriticallyLow
-                || !pawn.RaceProps.Humanlike
+            if (!pawn.RaceProps.Humanlike
                 || pawn.Faction == null
                 || map.ParentFaction == null)
                 return;
@@ -226,8 +228,7 @@ namespace CombatExtended
 
         public void Notify_Injury(Pawn pawn, IntVec3 cell)
         {
-            if (PerformanceTracker.TpsCriticallyLow
-                || (!pawn.RaceProps.Humanlike && !pawn.RaceProps.IsMechanoid)
+            if ((!pawn.RaceProps.Humanlike && !pawn.RaceProps.IsMechanoid)
                 || pawn.Faction == null
                 || map.ParentFaction == null)
                 return;            
@@ -244,8 +245,7 @@ namespace CombatExtended
 
         public void Notify_Death(Pawn pawn, IntVec3 cell)
         {
-            if (PerformanceTracker.TpsCriticallyLow
-                || (!pawn.RaceProps.Humanlike && !pawn.RaceProps.IsMechanoid)
+            if ((!pawn.RaceProps.Humanlike && !pawn.RaceProps.IsMechanoid)
                 || pawn.Faction == null
                 || map.ParentFaction == null)
                 return;

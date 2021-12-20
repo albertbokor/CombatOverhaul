@@ -118,6 +118,8 @@ namespace CombatExtended
         //1:1 COPY from CellFinderLoose.GetFleeDestToolUser
         private IntVec3 GetFleeDest(Pawn pawn, List<Thing> threats)
         {
+            pawn.GetSightReader(out SightTracker.SightReader sightReader);
+            pawn.Map.GetAvoidanceTracker().TryGetReader(pawn, out AvoidanceTracker.AvoidanceReader avoidanceReader);
             IntVec3 bestPos = pawn.Position;
             float bestScore = -1f;
             TraverseParms traverseParms = TraverseParms.For(pawn, Danger.Deadly, TraverseMode.ByPawn, false);
@@ -144,8 +146,12 @@ namespace CombatExtended
                             }
                             float num3 = Mathf.Sqrt(num);
                             float f = Mathf.Min(num3, 23f); //Slight alteration
-                            float num4 = Mathf.Pow(f, 1.2f);
-                            num4 *= Mathf.InverseLerp(50f, 0f, (current - pawn.Position).LengthHorizontal);
+                            if (sightReader != null)
+                                f += Mathf.Min(sightReader.GetVisibility(current), 4);
+                            if (sightReader != null)
+                                f += Mathf.Min(avoidanceReader.GetDanger(current), 4);
+                            float num4 = Mathf.Pow(f, 1.2f);                            
+                            num4 *= Mathf.InverseLerp(50f, 0f, (current - pawn.Position).LengthHorizontal);                            
                             if (current.GetRoom(map) != thing.GetRoom(RegionType.Set_Passable))
                             {
                                 num4 *= 4.2f;

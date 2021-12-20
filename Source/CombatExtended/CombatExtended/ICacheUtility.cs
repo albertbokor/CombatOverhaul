@@ -13,7 +13,7 @@ namespace CombatExtended
             public static Dictionary<int, T> compsById = new Dictionary<int, T>();            
             
             public static T GetComp(Thing thing)
-            {                
+            { 
                 if (compsById.TryGetValue(thing.thingIDNumber, out T val))
                 {
                     return val;

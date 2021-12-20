@@ -47,8 +47,7 @@ namespace CombatExtended
             {
                 if (ticksUntilUpdate-- > 0)
                     return;
-                float u = PerformanceTracker.TpsLevel;
-                ticksUntilUpdate = (int) (updateInterval * u * u);
+                ticksUntilUpdate = (int) Mathf.Lerp(2, updateInterval * 4, PerformanceTracker.TpsLevel);
             }
             if (mainThreadQueue.Count == 0)
                 return;

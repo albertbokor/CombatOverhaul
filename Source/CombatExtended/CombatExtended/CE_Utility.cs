@@ -902,7 +902,13 @@ namespace CombatExtended
             SightTracker tracker = pawn.Map.TryGetCompFast<SightTracker>();
             return tracker.TryGetReader(pawn, out reader);
         }
-              
+
+        public static bool GetAvoidanceReader(this Pawn pawn, out AvoidanceTracker.AvoidanceReader reader)
+        {
+            AvoidanceTracker tracker = pawn.Map.TryGetCompFast<AvoidanceTracker>();
+            return tracker.TryGetReader(pawn, out reader);
+        }
+
         public static UInt64 GetCombatFlags(this Thing thing)
         {
             return ((UInt64)1) << (thing.thingIDNumber % 64);

@@ -41,8 +41,7 @@ namespace CombatExtended.HarmonyCE
             {
                 tpsLevel = PerformanceTracker.TpsLevel;
                 tpsLow = PerformanceTracker.TpsCriticallyLow;
-                stopwatch.Start();
-                //newReq.ma
+                stopwatch.Start();                
                 verb = newReq.verb;
                 range = verb.EffectiveRange;                
                 pawn = newReq.caster;

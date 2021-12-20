@@ -56,7 +56,7 @@ namespace CombatExtended
             this.bucketCount = bucketCount;            
             grid = new ISignalGrid(map);
             
-            ticksUntilUpdate = updateInterval;
+            ticksUntilUpdate = Rand.Int % updateInterval;
             
             pool = new List<IThingSightRecord>[this.bucketCount];
             for (int i = 0; i < this.bucketCount; i++)
@@ -93,8 +93,7 @@ namespace CombatExtended
                 // clean up.
                 tmpRecords.Clear();
             }
-            float u = (2 - PerformanceTracker.TpsLevel);
-            ticksUntilUpdate = (int) (updateInterval * u * u);
+            ticksUntilUpdate = (int) Mathf.Lerp(2, updateInterval * 3, 1f - PerformanceTracker.TpsLevel);            
             curIndex++;
             if (curIndex >= bucketCount)
             {

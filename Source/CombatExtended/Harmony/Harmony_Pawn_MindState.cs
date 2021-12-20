@@ -15,7 +15,7 @@ namespace CombatExtended.HarmonyCE
         {
             public static void Prefix(Pawn_MindState __instance)
             {
-                if (__instance.pawn.Spawned)                
+                if (__instance.pawn.Spawned)
                     __instance.pawn.Map.GetAvoidanceTracker().Notify_Injury(__instance.pawn, __instance.pawn.Position);                
             }
         }

@@ -12,7 +12,7 @@ namespace CombatExtended.HarmonyCE
         {
             public static bool Prefix(Pawn pawn)
             {
-                return false;
+                return GenTicks.TicksGame - (pawn.mindState?.lastAttackTargetTick ?? -300) >= 300;
             }
         }
 
@@ -21,7 +21,7 @@ namespace CombatExtended.HarmonyCE
         {
             public static bool Prefix(Pawn pawn)
             {
-                return false;
+                return GenTicks.TicksGame - (pawn.mindState?.lastAttackTargetTick ?? -300) >= 300;
             }
         }
 
@@ -30,7 +30,7 @@ namespace CombatExtended.HarmonyCE
         {
             public static bool Prefix(Pawn pawn)
             {
-                return false;
+                return GenTicks.TicksGame - (pawn.mindState?.lastAttackTargetTick ?? -300) >= 300;
             }
         }
     }

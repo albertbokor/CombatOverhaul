@@ -83,9 +83,9 @@ namespace CombatExtended
                 stopwatch.Stop();
                 return;
             }
-            avgTickTimeMs = (avgTickTimeMs * 29f + deltaT) / 30f;
-            tpsLevel = Mathf.Clamp01((instance.ExpectedTps < 55f ? 0.25f : 1.0f) * (1f - instance.TpsDeficit / (instance.TargetTps + 1)));
-            tpsCriticallyLow = TpsLevel < 0.75f && instance.ExpectedTps <= 55f;
+            avgTickTimeMs = (avgTickTimeMs * 44f + deltaT) / 45f;
+            tpsLevel = Mathf.Clamp01((instance.ExpectedTps < 55f ? 0.5f : 1.0f) * (1f - instance.TpsDeficit / (instance.TargetTps + 1)));
+            tpsCriticallyLow = TpsLevel < 0.667f && instance.ExpectedTps <= 50f;
         }
     }
 }

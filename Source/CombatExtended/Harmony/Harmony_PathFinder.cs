@@ -40,7 +40,7 @@ namespace CombatExtended.HarmonyCE
 
         internal static bool Prefix(PathFinder __instance, ref PawnPath __result, IntVec3 start, LocalTargetInfo dest, TraverseParms traverseParms, PathEndMode peMode, out bool __state)
         {
-            if (traverseParms.pawn != null && traverseParms.pawn.Faction != null && traverseParms.pawn.RaceProps.Humanlike && traverseParms.pawn.RaceProps.intelligence == Intelligence.Humanlike)
+            if (traverseParms.pawn != null && traverseParms.pawn.Faction != null && (traverseParms.pawn.RaceProps.Humanlike || traverseParms.pawn.RaceProps.IsMechanoid || traverseParms.pawn.RaceProps.Insect))
             {
                 // prepare the performance parameters.
                 tpsLevel = PerformanceTracker.TpsLevel;
@@ -165,7 +165,7 @@ namespace CombatExtended.HarmonyCE
                     if (visibility > visibilityAtDest)
                         value += (int) (visibility * 45);
                 }
-                if (value > 0 && raiders && !tpsLow)
+                if (value > 0 && !tpsLow)
                 {
                     if (avoidanceReader != null)
                         value += (int)(avoidanceReader.GetPathing(index) * 25 + avoidanceReader.GetDanger(index) * 10);

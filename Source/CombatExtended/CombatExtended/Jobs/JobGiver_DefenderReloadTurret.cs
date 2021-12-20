@@ -26,6 +26,10 @@ namespace CombatExtended
             {
                 return null; // signals ThinkResult.NoJob.
             }
+            if(turret.Faction != pawn.Faction)
+            {
+                return null;
+            }            
             return JobGiverUtils_Reload.MakeReloadJob(pawn, turret);
         }
 
@@ -33,8 +37,9 @@ namespace CombatExtended
         {
             Predicate<Thing> _isTurretThatNeedsReloadingNow = (Thing t) =>
             {
-                var turret = t as Building_Turret;
+                var turret = t as Building_Turret;                
                 if (turret == null) { return false; }
+                if (t.Faction != pawn.Faction) { return false; }
                 if (!JobGiverUtils_Reload.CanReload(pawn, turret, forced: false, emergency: true)) { return false; }
                 return turret.ShouldReload(ammoReloadThreshold);
             };

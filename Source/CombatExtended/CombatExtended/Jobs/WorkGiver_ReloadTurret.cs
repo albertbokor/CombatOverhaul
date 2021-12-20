@@ -20,21 +20,25 @@ namespace CombatExtended
             CELogger.Message($"pawn: {pawn}. t: {t}. forced: {forced}");
             Building_Turret turret = t as Building_Turret;
 
-	    
 
+            if (pawn.RaceProps.IsMechanoid) return -1;
             if (!((turret as Building_TurretGunCE)?.Active ?? true)) return 1f;
             if (turret.GetAmmo()?.EmptyMagazine ?? false) return 9f;
-            if (turret.GetMannable()==null) return 5f;
+            if (turret.GetMannable() == null) return 5f;
             return 1f;
         }
 
         public override bool ShouldSkip(Pawn pawn, bool forced = false)
         {
+            if (pawn.RaceProps.IsMechanoid)
+            {
+                return true;
+            }
             if (forced)
             {
                 CELogger.Message("Job is forced. Not skipping.");
                 return false;
-            }
+            }            
             if (pawn.CurJob == null)
             {
                 CELogger.Message($"Pawn {pawn.ThingID} has no job. Not skipping.");
@@ -101,10 +105,18 @@ namespace CombatExtended
         /// <returns></returns>
         public override Job JobOnThing(Pawn pawn, Thing t, bool forced = false)
         {
-            Building_Turret turret = t as Building_Turret;
+            Building_Turret turret = t as Building_Turret;            
             if (turret == null)
             {
                 CELogger.Error($"{pawn} tried to make a reload job on a {t} which isn't a turret. This should never be reached.");
+            }
+            if(turret.Faction != pawn.Faction)
+            {
+                return null;
+            }
+            if (pawn.RaceProps.IsMechanoid)
+            {
+                return null;
             }
 
             // NOTE: The removal of the code that used to be here disables reloading turrets directly from one's inventory.

@@ -172,8 +172,5 @@ namespace CombatExtended.Compatibility
             }
 
         }
-
-
-	
     }
 }

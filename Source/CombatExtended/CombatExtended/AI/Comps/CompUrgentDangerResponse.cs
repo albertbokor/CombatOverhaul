@@ -90,15 +90,23 @@ namespace CombatExtended.AI
             {
                 cooldownTick = GenTicks.TicksGame + (int)(GenTicks.TickLongInterval * u * u);
                 return;
-            }
+            }            
             if ((sightReader = MapSightReader) == null)
             {
                 cooldownTick = GenTicks.TicksGame + (int)(GenTicks.TickLongInterval * u * u);
                 return;
             }
-            if (selPawn.jobs.curJob?.def == CE_JobDefOf.ReloadWeapon || selPawn.stances?.curStance is Stance_Warmup)
+            if(selPawn.mindState?.duty != null &&
+                (selPawn.mindState.duty.def == DutyDefOf.Breaching
+                || selPawn.mindState.duty.def == DutyDefOf.Sapper
+                || selPawn.mindState.duty.def == DutyDefOf.Kidnap
+                || (selPawn.mindState.duty.def.GetModExtension<UrgentDangerResponseDefExtension>()?.disable ?? false)))
+            {
+                cooldownTick = GenTicks.TicksGame + (int)(GenTicks.TickRareInterval * u * u);
                 return;
-
+            }
+            if (selPawn.jobs.curJob?.def == CE_JobDefOf.ReloadWeapon || selPawn.stances?.curStance is Stance_Warmup)
+                return;            
             Verb verb = selPawn.GetWeaponVerbWithFallback();
             if (verb == null || verb.IsMeleeAttack)
             {
@@ -189,33 +197,30 @@ namespace CombatExtended.AI
                     base.selPawn.jobs.StopAll();
                     base.selPawn.jobs.StartJob(job, JobCondition.InterruptForced);
                 }
-            }
-            if (!PerformanceTracker.TpsCriticallyLow)
+            }            
+            CastPositionRequest newReq = default(CastPositionRequest);
+            newReq.caster = selPawn;
+            newReq.target = enemy;
+            newReq.verb = verb;
+            newReq.maxRegions = 3;
+            newReq.maxRangeFromCaster = verb.verbProps.warmupTime * selPawn.GetStatValue(StatDefOf.MoveSpeed);
+            newReq.wantCoverFromTarget = verb.verbProps.range > 5f;
+            if (CastPositionFinder.TryFindCastPosition(newReq, out IntVec3 dest))
             {
-                CastPositionRequest newReq = default(CastPositionRequest);
-                newReq.caster = selPawn;
-                newReq.target = enemy;
-                newReq.verb = verb;
-                newReq.maxRegions = 3;
-                newReq.maxRangeFromCaster = verb.verbProps.warmupTime * selPawn.GetStatValue(StatDefOf.MoveSpeed);
-                newReq.wantCoverFromTarget = verb.verbProps.range > 5f;
-                if (CastPositionFinder.TryFindCastPosition(newReq, out IntVec3 dest))
+                cooldownTick = GenTicks.TicksGame + 240;
+                job = JobMaker.MakeJob(JobDefOf.Goto, dest);
+                if (job != null)
                 {
-                    cooldownTick = GenTicks.TicksGame + 240;
-                    job = JobMaker.MakeJob(JobDefOf.Goto, dest);
+                    base.selPawn.jobs.StopAll();
+                    base.selPawn.jobs.StartJob(job, JobCondition.InterruptForced);
+                    job = JobMaker.MakeJob(JobDefOf.Wait_Combat, dest, expiryInterval: verb.verbProps.warmupTime.SecondsToTicks() + verb.verbProps.burstShotCount * verb.verbProps.ticksBetweenBurstShots + 30, checkOverrideOnExpiry: true);
                     if (job != null)
                     {
-                        base.selPawn.jobs.StopAll();
-                        base.selPawn.jobs.StartJob(job, JobCondition.InterruptForced);
-                        job = JobMaker.MakeJob(JobDefOf.Wait_Combat, dest, expiryInterval: verb.verbProps.warmupTime.SecondsToTicks() + verb.verbProps.burstShotCount * verb.verbProps.ticksBetweenBurstShots + 30, checkOverrideOnExpiry: true);
-                        if (job != null)
-                        {
-                            selPawn.jobs.jobQueue.EnqueueFirst(job);
-                            return true;
-                        }
+                        selPawn.jobs.jobQueue.EnqueueFirst(job);
+                        return true;
                     }
                 }
-            }
+            }           
             return false;
         }     
     }
