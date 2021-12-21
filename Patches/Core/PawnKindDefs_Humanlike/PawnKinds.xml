@@ -67,7 +67,7 @@
     <value>
       <li Class="CombatExtended.LoadoutPropertiesExtension">
         <primaryMagazineCount>
-          <min>10</min>
+          <min>5</min>
           <max>30</max>
         </primaryMagazineCount>
         <shieldMoney>
@@ -83,11 +83,11 @@
             <min>150</min>
             <max>350</max>
           </sidearmMoney>
-          <weaponTags>
-            <li>CE_Sidearm_Melee</li>
+          <weaponTags>            
+            <li>CE_SMG</li>            
           </weaponTags>
-        </forcedSidearm>
-      </li>
+        </forcedSidearm>      
+      </li>      
     </value>
   </Operation>
 
@@ -96,7 +96,7 @@
     <value>
       <li Class="CombatExtended.LoadoutPropertiesExtension">
         <primaryMagazineCount>
-          <min>10</min>
+          <min>5</min>
           <max>30</max>
         </primaryMagazineCount>
         <forcedSidearm>
@@ -106,13 +106,14 @@
           </sidearmMoney>
           <weaponTags>
             <li>CE_Sidearm</li>
+            <li>CE_SMG</li>
           </weaponTags>
           <magazineCount>
             <min>2</min>
             <max>5</max>
           </magazineCount>
-        </forcedSidearm>
-      </li>
+        </forcedSidearm>        
+      </li>      
     </value>
   </Operation>
 
@@ -152,11 +153,11 @@
       <li Class="CombatExtended.LoadoutPropertiesExtension">
         <primaryMagazineCount>
           <min>2</min>
-          <max>4</max>
+          <max>6</max>
         </primaryMagazineCount>
         <shieldMoney>
           <min>200</min>
-          <max>600</max>
+          <max>900</max>
         </shieldMoney>
         <shieldTags>
           <li>OutlanderShield</li>
@@ -174,18 +175,32 @@
             </weaponTags>
           </li>
           <li>
-              <generateChance>0.075</generateChance>
-              <sidearmMoney>
-                <min>10</min>
-                <max>100</max>
-              </sidearmMoney>
-              <weaponTags>
-                <li>CE_FlareLauncher</li>
-              </weaponTags>
-              <magazineCount>
-                <min>1</min>
-                <max>3</max>
-              </magazineCount>
+            <generateChance>0.2</generateChance>
+            <sidearmMoney>
+              <min>80</min>
+              <max>120</max>
+            </sidearmMoney>
+            <weaponTags>
+              <li>CE_Sidearm</li>              
+            </weaponTags>
+            <magazineCount>
+              <min>0</min>
+              <max>3</max>
+            </magazineCount>
+          </li>
+          <li>
+            <generateChance>0.075</generateChance>
+            <sidearmMoney>
+              <min>10</min>
+              <max>100</max>
+            </sidearmMoney>
+            <weaponTags>
+              <li>CE_FlareLauncher</li>
+            </weaponTags>
+            <magazineCount>
+              <min>1</min>
+              <max>3</max>
+            </magazineCount>
           </li>
         </sidearms>
       </li>
@@ -228,6 +243,20 @@
               <li>CE_Sidearm</li>
             </weaponTags>
           </li>
+          <li>
+            <generateChance>0.5</generateChance>
+            <sidearmMoney>
+              <min>10</min>
+              <max>100</max>
+            </sidearmMoney>
+            <weaponTags>
+              <li>GrenadeSmoke</li>
+            </weaponTags>
+            <magazineCount>
+              <min>1</min>
+              <max>2</max>
+            </magazineCount>
+          </li>
         </sidearms>
       </li>
     </value>
@@ -264,7 +293,21 @@
             <weaponTags>
               <li>CE_Sidearm_Melee</li>
             </weaponTags>
-          </li>
+          </li> 
+          <li>
+            <generateChance>0.5</generateChance>
+            <sidearmMoney>
+              <min>10</min>
+              <max>200</max>
+            </sidearmMoney>
+            <weaponTags>
+              <li>GrenadeSmoke</li>
+            </weaponTags>
+            <magazineCount>
+              <min>1</min>
+              <max>2</max>
+            </magazineCount>
+          </li>     
         </sidearms>
       </li>
     </value>
@@ -327,8 +370,36 @@
               <max>800</max>
             </sidearmMoney>
             <weaponTags>
-              <li>CE_Sidearm_Melee</li>
+              <li>CE_Sidearm_Melee</li>              
             </weaponTags>
+          </li>
+          <li>
+            <generateChance>0.3</generateChance>
+            <sidearmMoney>
+              <min>80</min>
+              <max>120</max>
+            </sidearmMoney>
+            <weaponTags>
+              
+            </weaponTags>
+            <magazineCount>
+              <min>1</min>
+              <max>3</max>
+            </magazineCount>
+          </li>
+          <li>
+            <generateChance>0.5</generateChance>
+            <sidearmMoney>
+              <min>10</min>
+              <max>200</max>
+            </sidearmMoney>
+            <weaponTags>
+              <li>GrenadeSmoke</li>
+            </weaponTags>
+            <magazineCount>
+              <min>1</min>
+              <max>2</max>
+            </magazineCount>
           </li>
         </sidearms>
       </li>
@@ -426,7 +497,7 @@
     <value>
       <weaponMoney>
         <min>150</min>
-        <max>350</max>
+        <max>400</max>
       </weaponMoney>
     </value>
   </Operation>
@@ -447,8 +518,23 @@
               <max>100</max>
             </sidearmMoney>
             <weaponTags>
+              <li>CE_Sidearm_Melee</li>              
+            </weaponTags>
+          </li>
+          <li>
+            <generateChance>0.3</generateChance>
+            <sidearmMoney>
+              <min>80</min>
+              <max>120</max>
+            </sidearmMoney>
+            <weaponTags>
+              <li>CE_Sidearm</li>
               <li>CE_Sidearm_Melee</li>
             </weaponTags>
+            <magazineCount>
+              <min>1</min>
+              <max>3</max>
+            </magazineCount>
           </li>
           <li>
             <generateChance>0.15</generateChance>
@@ -463,7 +549,21 @@
               <min>2</min>
               <max>5</max>
             </magazineCount>
-          </li>         
+          </li>
+          <li>
+            <generateChance>0.5</generateChance>
+            <sidearmMoney>
+              <min>10</min>
+              <max>200</max>
+            </sidearmMoney>
+            <weaponTags>
+              <li>GrenadeSmoke</li>
+            </weaponTags>
+            <magazineCount>
+              <min>1</min>
+              <max>2</max>
+            </magazineCount>
+          </li>     
         </sidearms>
       </li>
     </value>

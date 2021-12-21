@@ -85,28 +85,25 @@ namespace CombatExtended.AI
             base.TickShort();
             if (disabled || cooldownTick > GenTicks.TicksGame || PerformanceTracker.TpsLevel < 0.1f)
                 return;
-            float u = 2 - PerformanceTracker.TpsLevel;
-            if (!selPawn.Spawned || selPawn.Downed || (selPawn.Faction?.IsPlayerSafe() ?? true))
-            {
-                cooldownTick = GenTicks.TicksGame + (int)(GenTicks.TickLongInterval * u * u);
-                return;
-            }            
-            if ((sightReader = MapSightReader) == null)
+            bool isPlayer = selPawn.Faction?.IsPlayerSafe() ?? true;
+            float u = (isPlayer ? 2f : 1f) * (2f - PerformanceTracker.TpsLevel);
+            if (!selPawn.Spawned || selPawn.Downed)
             {
                 cooldownTick = GenTicks.TicksGame + (int)(GenTicks.TickLongInterval * u * u);
                 return;
             }
-            if(selPawn.mindState?.duty != null &&
-                (selPawn.mindState.duty.def == DutyDefOf.Breaching
-                || selPawn.mindState.duty.def == DutyDefOf.Sapper
-                || selPawn.mindState.duty.def == DutyDefOf.Kidnap
-                || (selPawn.mindState.duty.def.GetModExtension<UrgentDangerResponseDefExtension>()?.disable ?? false)))
+            if ((sightReader = MapSightReader) == null || sightReader.GetEnemies(selPawn.Position) == 0)
+            {
+                cooldownTick = GenTicks.TicksGame + (int)(GenTicks.TickLongInterval * u * u);
+                return;
+            }
+            if(selPawn.mindState?.duty != null && (selPawn.mindState.duty.def == DutyDefOf.Breaching || selPawn.mindState.duty.def == DutyDefOf.Sapper || selPawn.mindState.duty.def == DutyDefOf.Kidnap || (selPawn.mindState.duty.def.GetModExtension<UrgentDangerResponseDefExtension>()?.disable ?? false)))
             {
                 cooldownTick = GenTicks.TicksGame + (int)(GenTicks.TickRareInterval * u * u);
                 return;
             }
             if (selPawn.jobs.curJob?.def == CE_JobDefOf.ReloadWeapon || selPawn.stances?.curStance is Stance_Warmup)
-                return;            
+                return;
             Verb verb = selPawn.GetWeaponVerbWithFallback();
             if (verb == null || verb.IsMeleeAttack)
             {
@@ -119,17 +116,13 @@ namespace CombatExtended.AI
             if (verb.EffectiveRange > 5 && selPawn.jobs.curJob?.def == JobDefOf.Goto && selPawn.jobs.curJob.targetA.Thing is Pawn other && other.Faction != null && other.Faction.HostileTo(selPawn.Faction) && other.jobs.curJob?.def == JobDefOf.AttackMelee)
             {
                 selPawn.jobs.StopAll(false, false);          
-                cooldownTick = (int)(GenTicks.TicksGame + 30 * (2 - awarness) * u * u);
+                cooldownTick = (int)(GenTicks.TicksGame + 40 * (2 - awarness) * u * u);
                 return;
             }
-
-            if (selPawn.mindState != null
-                && selPawn.mindState.enemyTarget != null
-                && (!(selPawn.mindState.enemyTarget is Pawn e) || !e.Dead || !e.Downed)
-                && selPawn.CanAttackEnemyNowFast(selPawn.mindState.enemyTarget, verb, sightReader)
+            if (selPawn.mindState != null && selPawn.mindState.enemyTarget != null && (!(selPawn.mindState.enemyTarget is Pawn e) || !e.Dead || !e.Downed) && selPawn.CanAttackEnemyNowFast(selPawn.mindState.enemyTarget, verb, sightReader)
                 && TryUrgentResponse(selPawn.mindState.enemyTarget, verb))
             {
-                cooldownTick = (int)(GenTicks.TicksGame + 540 * (2 - awarness) * u * u);
+                cooldownTick = (int)(GenTicks.TicksGame + 340 * (2 - awarness) * u * u);
                 return;
             }
             IntVec3 position = selPawn.Position;
@@ -147,23 +140,28 @@ namespace CombatExtended.AI
             foreach (Pawn enemy in position.PawnsInRange(Map, verb.EffectiveRange * awarness).Where(p => !p.Downed && (p.Faction?.HostileTo(selPawn.Faction) ?? false)))
             {
                 float distSqr = enemy.Position.DistanceToSquared(position);
-                if (distSqr < distMinSqr && ((enemy.GetCombatFlags() & curFlags) == curFlags || GenSight.LineOfSight(position, enemy.Position, Map)))
+                if (distSqr < distMinSqr && (enemy.GetCombatFlags() & curFlags) == curFlags)
                 {
                     nearest = enemy;
                     distMinSqr = distSqr;
-                }
+                }                
             }
             if(nearest == null)
             {
                 cooldownTick = GenTicks.TicksGame + (int)(40 * u * u);
                 return;
             }
-            TryUrgentResponse(nearest, verb);
-            cooldownTick = (int)(GenTicks.TicksGame + (540 * u * u) * (2 - awarness));
+            if (!isPlayer)
+            {
+                TryUrgentResponse(nearest, verb);
+                cooldownTick = (int)(GenTicks.TicksGame + (340 * u * u) * (2 - awarness));
+                return;
+            }
+            cooldownTick = (int)(GenTicks.TicksGame + (70 * u * u) * (2 - awarness));
         }
 
         private bool TryUrgentResponse(Thing enemy, Verb verb)
-        {
+        {                   
             if (Controller.settings.DebugDrawTargetedBy)
             {
                 Map.debugDrawer.FlashCell(selPawn.Position, 0.5f, $"R");
@@ -189,7 +187,7 @@ namespace CombatExtended.AI
             float f;            
             f = 1f - Mathf.Abs(1 - distSqr / (verb.EffectiveRange * verb.EffectiveRange * a * a));
             f = Mathf.Clamp01(f);
-            if (Rand.Chance(f) || enemyVerb == null || (enemyVerb.verbProps.warmupTime < verb.verbProps.warmupTime && (!enemyVerb.WarmingUp || !enemyVerb.CurrentTarget.HasThing || enemyVerb.CurrentTarget.Thing != selPawn)) || enemyVerb.IsMeleeAttack)
+            if ((Rand.Chance(f) || enemyVerb == null || (enemyVerb.verbProps.warmupTime < verb.verbProps.warmupTime && (!enemyVerb.WarmingUp || !enemyVerb.CurrentTarget.HasThing || enemyVerb.CurrentTarget.Thing != selPawn)) || enemyVerb.IsMeleeAttack))
             {
                 job = JobMaker.MakeJob(JobDefOf.Wait_Combat, expiryInterval: verb.verbProps.warmupTime.SecondsToTicks() + verb.verbProps.burstShotCount * verb.verbProps.ticksBetweenBurstShots + 30, checkOverrideOnExpiry: true);
                 if (job != null)
@@ -222,6 +220,6 @@ namespace CombatExtended.AI
                 }
             }           
             return false;
-        }     
+        }
     }
 }

@@ -100,14 +100,7 @@
       </bodyPartGroups>
       <layers>
         <li>Backpack</li>
-      </layers>
-      <tags>
-        <li>IndustrialBasic</li>
-        <li>IndustrialMilitaryBasic</li>
-      </tags>
-      <defaultOutfitTags>
-        <li>Soldier</li>
-      </defaultOutfitTags>
+      </layers>      
       <wornGraphicData>
         <renderUtilityAsPack>true</renderUtilityAsPack>
       </wornGraphicData>

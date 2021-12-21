@@ -30,6 +30,7 @@
     </statBases>
     <building>
       <isInert>true</isInert>
+      <ai_neverTrashThis>true</ai_neverTrashThis>
       <ai_chillDestination>false</ai_chillDestination>
       <blueprintGraphicData>
         <texPath>Things/Building/Linked/Sandbags_Blueprint_Atlas</texPath>
@@ -109,6 +110,7 @@
       <li>Stony</li>
     </stuffCategories>
     <building>
+      <ai_neverTrashThis>true</ai_neverTrashThis>
       <ai_chillDestination>false</ai_chillDestination>
       <isInert>true</isInert>
       <canPlaceOverWall>true</canPlaceOverWall>

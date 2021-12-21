@@ -12,15 +12,9 @@ namespace CombatExtended.AI
 {
     public static class AI_Utility
     {
-        private static readonly Dictionary<Pawn, CompTacticalManager> _compTactical = new Dictionary<Pawn, CompTacticalManager>(2048);
-
         public static CompTacticalManager GetTacticalManager(this Pawn pawn)
-        {
-            if (_compTactical.TryGetValue(pawn, out var comp))
-                return comp;
-            comp = pawn.TryGetComp<CompTacticalManager>();
-            if (comp != null) _compTactical[pawn] = comp;
-            return comp;
+        {            
+            return pawn.TryGetCompFast<CompTacticalManager>();
         }
 
         public static bool HiddingBehindCover(this Pawn pawn, LocalTargetInfo targetFacing)
