@@ -1,15 +1,12 @@
-# Combat Extended
-Combat Extended completely overhauls combat. It adds completely new shooting and melee mechanics, an inventory system and rebalances the health system. **Requires a new save.**
+# Combat Overhaul
+A [Combat Extended](https://github.com/CombatExtended-Continued/CombatExtended/) Fork.
 
-# Development Version
-**Do not download this repository if you aren't going to build it yourself!**
-It is automatically updated a few minutes after each PR is merged.  
-If you want the latest development snapshot, without building it yourself:  **https://combatextended.lp-programming.com/CombatExtended-latest.zip**
+**THIS MOD REQUIRES A NEW SAVE TO PLAY**
 
-If you want to build it yourself, see Building.md
+## Features
 
-# Features
-## Shooting
+### Shooting
+
 **Projectile rebalance:**
 - Vanilla percentage based shooting system is completely gone. Instead, CE uses a ballistic model where bullets fly along a trajectory and intersect hitboxes.
 - Range and damage has been completely rebalanced. No more raiders shrugging off dozens of bullets or sniping with pistols.
@@ -20,10 +17,12 @@ If you want to build it yourself, see Building.md
 - Weapons can switch between different aim and fire modes.
 - Pawns will crouch in combat when not moving, making them harder to hit.
 - Projectiles create suppression on near misses. As suppression builds up, pawns will run for cover (even against orders) and have significantly decreased accuracy. If suppression reaches a critical threshold pawns will hunker down in panic and become completely unresponsive.
-- Ranged weapons require ammo* and can switch between different ammo types such as armor-piercing and high-explosive rounds.
+- Ranged weapons require ammo and can switch between different ammo types such as armor-piercing and high-explosive rounds.
 
-  *Toggleable in options menu
-## Melee
+  *Toggleable in options menu*
+  
+### Melee
+
 **New melee system:**
 - New melee stats: critical hit and parry chance.
 - Critical hits produce different effects depending on the source of the attack: blunt weapons will stun the opponent, sharp weapons have twice as much armor penetration and animals cause knockdown.
@@ -32,7 +31,9 @@ If you want to build it yourself, see Building.md
 - In combat, critical hit and parry chance are compared against the opponent's to determine final hit chances. Don't expect your level 1 fighter to parry a level 20.
 - Different melee weapons provide bonuses to crit/parry/dodge.
 - Dodge has been rebalanced.
-## Armor
+
+### Armor
+
 **Armor rebalance:**
 - Vanilla percentage based armor system is gone. CE replaces it with a deflection-based model where projectiles have armor penetration which determines whether a bullet penetrates and how much it's damage is reduced. A rifle bullet will go straight through a synthread parka but will completely bounce off of legendary power armor.
 
@@ -40,7 +41,9 @@ If you want to build it yourself, see Building.md
 - New shields provide additional protection against ranged fire. Basic melee shields can be made at the smithy and will block arrows, researching machining gives access to modern ballistic shields with improved coverage and protection against gunfire.
 - In melee, shields increase parry chances.
 - Equipping a shield confers penalties to melee hit chance and shooting accuracy. It also prevents using two-handed weapons such as rifles, longswords and spears.
-## Inventory
+
+### Inventory
+
 **Inventory system:**
 - Pawns can pick up various items and carry them in their inventory for easy access.
 - Carrying capacity is limited by weight and bulk. High weight negatively affects movement speed. Bulk can be increased by equipping tactical vests and backpacks but will negatively affect workspeed.
@@ -50,7 +53,9 @@ If you want to build it yourself, see Building.md
 - By default, colonists will only pick up ammo for their equipped weapon.
 - Colonists can be assigned a loadout. Loadouts contain a list of things a colonist should automatically keep in his inventory, such as meals, ammo and sidearms.
 - Colonists with a loadout will automatically clear their inventory of surplus items and pick up anything they're missing. Use them to automate picking up ammo, grenades and other consumables.
-## Medical
+
+### Medical
+
 **Body part rebalance:**
 - RNG death on downed has been disabled. No more wimp visitors dying from one squirrel bite.
 - Body part coverage has been overhauled. Torso shots are significantly more likely to hit a vital organ.
@@ -65,7 +70,8 @@ If you want to build it yourself, see Building.md
 - Amount of reduction depends on medicine used and doctor skill. Don't expect the guy with 2 doctoring skill and herbal medicine to stop a destroyed lung from bleeding.
 
 
-## Supported Third-Party Mods
-CE comes with built-in support for a number of popular third-party mods, a [list of which can be found here](SupportedThirdPartyMods.md).
+### Supported Third-Party Mods
+
+To check the built-in support for third part mods, check our [supported mods list](SupportedThirdPartyMods.md)
 
 
