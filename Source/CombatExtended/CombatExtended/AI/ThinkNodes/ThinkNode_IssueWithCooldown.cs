@@ -14,6 +14,25 @@ namespace CombatExtended.AI
         /// If the cooldown should only start when a job is successfuly issued.
         /// </summary>
         public bool onSuccessOnly = true;
+        /// <summary>
+        /// Wether to throttle when the performance is low.
+        /// </summary>
+        public bool thottleIfTpsLow = false;
+
+        /// <summary>
+        /// The number of ticks needed between updates.
+        /// </summary>
+        private int CooldownTicks
+        {
+            get => thottleIfTpsLow ? (int)(cooldownTicks * (2f - PerformanceTracker.TpsLevel)) : cooldownTicks;
+        }
+        /// <summary>
+        /// Wether the cooldown should start only when a job was issued successfuly
+        /// </summary>
+        private bool OnSuccessOnly
+        {
+            get => (!thottleIfTpsLow || !PerformanceTracker.TpsCriticallyLow) && onSuccessOnly;
+        }
 
         public override ThinkResult TryIssueJobPackage(Pawn pawn, JobIssueParams jobParams)
         {
@@ -21,20 +40,15 @@ namespace CombatExtended.AI
             {
                 return ThinkResult.NoJob;
             }
-            if(GenTicks.TicksGame - GetCooldown(pawn) <= cooldownTicks)
-            {
-                if (!onSuccessOnly)
-                {
-                    SetCooldown(pawn);
-                }
+            if (GenTicks.TicksGame - GetCooldown(pawn) <= CooldownTicks)
+            {               
                 return ThinkResult.NoJob;
             }
             ThinkResult result = base.TryIssueJobPackage(pawn, jobParams);
-            if (result.IsValid || !onSuccessOnly)
-            {                
-                SetCooldown(pawn);
-                Log.Message("Cooldown started");
-            }            
+            if (result.IsValid || !OnSuccessOnly)
+            {
+                SetCooldown(pawn);                
+            }
             return result;
         }
 
@@ -48,7 +62,7 @@ namespace CombatExtended.AI
             if (pawn.mindState.thinkData.TryGetValue(base.UniqueSaveKey, out int val))
             {
                 return val;
-            }
+            }            
             return -1;
         }
 

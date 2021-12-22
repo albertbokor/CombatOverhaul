@@ -70,20 +70,21 @@
 						</visibileEnemies>
 						<subNodes>
 							<li Class="CombatExtended.AI.ThinkNode_IssueWithCooldown">
-								<cooldownTicks>300</cooldownTicks>
-								<onSuccessOnly>false</onSuccessOnly>
+								<cooldownTicks>450</cooldownTicks>
+								<onSuccessOnly>false</onSuccessOnly>								
 								<subNodes>
 									<li Class="CombatExtended.AI.ThinkNode_ConditionalInjuryNeedTendingNow">
 										<minTicksToDeath>35000</minTicksToDeath>
 										<subNodes>								
 											<li Class="JobGiver_SelfTend" />
-										</subNodes>									
+										</subNodes>			
 									</li>																						
 								</subNodes>
 							</li>
 							<li Class="CombatExtended.AI.ThinkNode_IssueWithCooldown">
-								<cooldownTicks>900</cooldownTicks>
+								<cooldownTicks>250</cooldownTicks>
 								<onSuccessOnly>false</onSuccessOnly>
+								<thottleIfTpsLow>true</thottleIfTpsLow>
 								<subNodes>
 									<li Class="CombatExtended.AI.JobGiver_AIRescue">
 										<maxDist>12</maxDist>

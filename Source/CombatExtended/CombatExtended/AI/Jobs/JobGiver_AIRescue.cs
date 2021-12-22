@@ -45,7 +45,7 @@ namespace CombatExtended.AI
             Faction faction = pawn.Faction;
             Predicate<Thing> validator = (thing) =>
             {
-                if(thing is Pawn p && p.Downed && p.Faction == faction && pawn.CanReserve(p, 1, -1) && (p.health?.HasHediffsNeedingTend() ?? false))
+                if(thing is Pawn p && p.Downed && p.Faction == faction && pawn.CanReserve(p) && (p.health?.HasHediffsNeedingTend() ?? false))
                 {
                     return sightReader.GetVisibility(p.Position) <= maxEnemyVisibility && avoidanceReader.GetDanger(p.Position) <= maxDanger;
                 }
@@ -62,7 +62,7 @@ namespace CombatExtended.AI
                 flooder.Flood(ally.Position, (cell, _, cost) =>
                 {
                     float visibility = sightReader.GetVisibility(cell);
-                    if (bestCost >= visibility)
+                    if (bestCost > visibility)
                     {
                         bestSpot = cell;
                         bestCost = visibility;
@@ -77,18 +77,29 @@ namespace CombatExtended.AI
                         return false;
                     }
                     return true;
-                }, maxDist);
-                Job tendJob = JobMaker.MakeJob(JobDefOf.TendPatient, ally);
-                tendJob.endAfterTendedOnce = true;                                
+                }, maxDist);                
                 if (bestSpot == ally.Position)
                 {
-                    return tendJob;
+                    return GetTendJob(ally);
                 }
-                pawn.jobs.jobQueue.EnqueueFirst(tendJob);
-                Job carryJob = JobMaker.MakeJob(CE_JobDefOf.CarryDownedPawn, ally, bestSpot);
+                Job carryJob = GetCarryJob(ally, bestSpot); 
+                pawn.jobs.jobQueue.EnqueueFirst(GetTendJob(ally));           
                 return carryJob;
             }
             return null;
+        }
+
+        private static Job GetTendJob(Pawn ally)
+        {
+            Job tendJob = JobMaker.MakeJob(JobDefOf.TendPatient, ally);
+            tendJob.endAfterTendedOnce = true;
+            return tendJob;
+        }
+
+        private static Job GetCarryJob(Pawn ally, IntVec3 position)
+        {
+            Job tendJob = JobMaker.MakeJob(CE_JobDefOf.CarryDownedPawn, ally, position);            
+            return tendJob;
         }
     }
 }
