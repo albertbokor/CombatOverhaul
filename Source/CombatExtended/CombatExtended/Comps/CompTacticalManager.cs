@@ -273,15 +273,14 @@ namespace CombatExtended
         {
             base.PostExposeData();
             try
-            {                
+            {
                 Scribe_Collections.Look(ref _tacticalComps, "tacticalComps", LookMode.Deep);
                 this.ValidateComps();
             }
             catch (Exception er)
             {
                 Log.Error($"CE: Error scribing {parent} {er}");
-                this._tacticalComps.Clear();
-                this.ValidateComps();
+                this._tacticalComps.Clear();                                
             }
         }
 

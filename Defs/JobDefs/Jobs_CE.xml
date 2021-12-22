@@ -15,6 +15,18 @@
 	</JobDef>
 
 	<JobDef>
+		<defName>CarryDownedPawn</defName>
+		<driverClass>CombatExtended.AI.JobDriver_CarryDownedPawn</driverClass>
+		<reportString>Carrying TargetA.</reportString>
+		<allowOpportunisticPrefix>false</allowOpportunisticPrefix>
+		<modExtensions>
+			<li Class="CombatExtended.JobDefExtensionCE">
+			  <isCrouchJob>false</isCrouchJob>
+			</li>
+		</modExtensions>
+	</JobDef>
+
+	<JobDef>
 		<defName>ModifyWeapon</defName>
 		<driverClass>CombatExtended.JobDriver_ModifyWeapon</driverClass>
 		<reportString>Applying modifications TargetB at TargetA.</reportString>		

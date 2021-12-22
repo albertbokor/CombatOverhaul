@@ -98,8 +98,8 @@ namespace CombatExtended
                 return;
 
             var pawns = Position.GetThingList(Map).Where(t => t is Pawn).ToList();
-	    var baseTargetSeverity = Mathf.Pow(density / LethalAirPPM, 1.25f);
-	    var baseSeverityRate = InhalationPerSec * density / MaxDensity;
+	        var baseTargetSeverity = Mathf.Pow(density / LethalAirPPM, 1.25f);
+	        var baseSeverityRate = InhalationPerSec * density / MaxDensity;
 
             foreach (Pawn pawn in pawns)
             {
@@ -110,47 +110,47 @@ namespace CombatExtended
                     continue;
                 }
                 pawn.TryGetComp<CompTacticalManager>()?.GetTacticalComp<CompGasMask>()?.Notify_ShouldEquipGasMask();
-		var sensitivity = pawn.GetStatValue(CE_StatDefOf.SmokeSensitivity);
-		var breathing = PawnCapacityUtility.CalculateCapacityLevel(pawn.health.hediffSet, PawnCapacityDefOf.Breathing);
-                float curSeverity = pawn.health.hediffSet.GetFirstHediffOfDef(CE_HediffDefOf.SmokeInhalation, false)?.Severity ?? 0f;
+		        var sensitivity = pawn.GetStatValue(CE_StatDefOf.SmokeSensitivity);
+		        var breathing = PawnCapacityUtility.CalculateCapacityLevel(pawn.health.hediffSet, PawnCapacityDefOf.Breathing);
+                        float curSeverity = pawn.health.hediffSet.GetFirstHediffOfDef(CE_HediffDefOf.SmokeInhalation, false)?.Severity ?? 0f;
 		
 
-		if (breathing < 0.01f)
-		{
-		    breathing = 0.01f;
-		}
-		var targetSeverity = sensitivity / breathing * baseTargetSeverity;
-		if (targetSeverity > 1.5f)
-		{
-		    targetSeverity = 1.5f;
-		}
+		        if (breathing < 0.01f)
+		        {
+		            breathing = 0.01f;
+		        }
+		        var targetSeverity = sensitivity / breathing * baseTargetSeverity;
+		        if (targetSeverity > 1.5f)
+		        {
+		            targetSeverity = 1.5f;
+		        }
 
-		var severityDelta = targetSeverity - curSeverity;
+		        var severityDelta = targetSeverity - curSeverity;
 		
-		bool downed = pawn.Downed;
-		bool awake = pawn.Awake();
+		        bool downed = pawn.Downed;
+		        bool awake = pawn.Awake();
 		
 		
-		var severityRate = baseSeverityRate * sensitivity / breathing * Mathf.Pow(severityDelta, 1.5f);
+		        var severityRate = baseSeverityRate * sensitivity / breathing * Mathf.Pow(severityDelta, 1.5f);
 		
-		if (downed)
-		{
-		    severityRate /= 100;
-		}
+		        if (downed)
+		        {
+		            severityRate /= 100;
+		        }
 
-		if (!awake)
-		{
-		    severityRate /= 2;
-		    if (curSeverity > 0.1)
-		    {
-			RestUtility.WakeUp(pawn);
-		    }
-		}
+		        if (!awake)
+		        {
+		            severityRate /= 2;
+		            if (curSeverity > 0.1)
+		            {
+			        RestUtility.WakeUp(pawn);
+		            }
+		        }
 
-		if (severityRate > 0 && severityDelta > 0)
-		{
-		    HealthUtility.AdjustSeverity(pawn, CE_HediffDefOf.SmokeInhalation, severityRate);
-		}
+		        if (severityRate > 0 && severityDelta > 0)
+		        {
+		            HealthUtility.AdjustSeverity(pawn, CE_HediffDefOf.SmokeInhalation, severityRate);
+		        }
             }
         }
 

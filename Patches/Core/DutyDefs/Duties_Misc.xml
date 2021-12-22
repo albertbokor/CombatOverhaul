@@ -31,7 +31,7 @@
 		</value>
 	</Operation>
 
-  <!-- ========== Patch siege duties ========== -->
+  	<!-- ========== Patch siege duties ========== -->
 
 	<Operation Class="PatchOperationAttributeSet">
 		<xpath>Defs/DutyDef/thinkNode/subNodes/li[@Class="JobGiver_ManTurretsNearSelf"]</xpath>
@@ -45,4 +45,40 @@
 		<value>CombatExtended.JobGiver_ManTurretsNearPointCE</value>
 	</Operation>
 
+	<!-- ========== Patch Trashing jobs ========== -->
+
+	<Operation Class="CombatExtended.PatchOperationWrap">
+		<xpath>Defs/DutyDef[defName="PrisonerAssaultColony" or defName="AssaultColony" or defName="Breaching"]/thinkNode/subNodes</xpath>
+		<nodes>
+			<li>li[@Class="JobGiver_AITrashColonyClose"]</li>
+			<li>li[@Class="JobGiver_AITrashBuildingsDistant"]</li>			
+		</nodes>
+		<with>
+			<li Class="CombatExtended.AI.ThinkNode_ConditionalCombatPosition">				
+				<subNodes>
+					<li Class="JobGiver_SelfTend" />
+					<fi_1 /> <!-- will place the first node here  -->
+					<fi_2 /> <!-- will place the second node here -->					
+				</subNodes>
+			</li>
+		</with>
+	</Operation>	
+
+	<Operation Class="CombatExtended.PatchOperationWrap">
+		<xpath>Defs/DutyDef[defName="AssaultColony"]/thinkNode/subNodes</xpath>
+		<nodes>
+			<li>li[@Class="JobGiver_AITrashBuildingsDistant"]</li>					
+		</nodes>
+		<with>
+			<li Class="CombatExtended.AI.ThinkNode_ConditionalCombatPosition">
+				<visibileEnemies>
+					<min>0</min>
+					<max>1</max>
+				</visibileEnemies>
+				<subNodes>
+					<fi_1 /> <!-- will place the first node here  -->					
+				</subNodes>
+			</li>
+		</with>
+	</Operation>
 </Patch>

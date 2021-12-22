@@ -3,6 +3,7 @@ using Verse;
 using RimWorld;
 using UnityEngine;
 using System.Collections.Generic;
+using CombatExtended.Utilities;
 
 namespace CombatExtended
 {
@@ -47,6 +48,22 @@ namespace CombatExtended
             landed = true;
             ticksToDetonation = def.projectile.explosionDelay;
             GenExplosion.NotifyNearbyPawnsOfDangerousExplosive(this, this.def.projectile.damageDef, this.launcher?.Faction);
+            bool isExplosive = true;
+            if (def.projectile is ProjectilePropertiesCE props)
+            {
+                isExplosive = props.damageDef == CE_DamageDefOf.Bomb || props.damageDef == DamageDefOf.Bomb;
+            }
+            if (isExplosive)
+            {
+                foreach (Pawn pawn in Position.PawnsInRange(Map, 7f))
+                {
+                    if (pawn.mindState != null)
+                    {
+                        pawn.mindState.knownExploder = this;
+                        pawn.jobs.StopAll();
+                    }
+                }
+            }
         }
     }
 }

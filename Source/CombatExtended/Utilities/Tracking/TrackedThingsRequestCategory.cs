@@ -35,6 +35,10 @@
         /// <summary>
         /// Defs that have ThingDef.IsMedicine return true 
         /// </summary>
-        Attachments = 64
+        Attachments = 64,
+        /// <summary>
+        /// Defs that have ThingDef.IsMedicine return true 
+        /// </summary>
+        Explosive = 128,
     }
 }

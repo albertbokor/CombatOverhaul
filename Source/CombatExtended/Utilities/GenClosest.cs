@@ -35,6 +35,12 @@ namespace CombatExtended.Utilities
             return tracker.ThingsInRangeOf(TrackedThingsRequestCategory.Pawns, cell, range).Select(t => t as Pawn);
         }
 
+        public static IEnumerable<Thing> ExplosiveInRange(this IntVec3 cell, Map map, float range)
+        {
+            ThingsTracker tracker = map.GetThingTracker();
+            return tracker.ThingsInRangeOf(TrackedThingsRequestCategory.Explosive, cell, range);
+        }
+
         public static IEnumerable<Pawn> HostilesInRange(this IntVec3 cell, Map map, Faction faction, float range)
         {
             ThingsTracker tracker = map.GetThingTracker();

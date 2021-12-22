@@ -52,7 +52,8 @@ namespace CombatExtended.Utilities
         private ThingsTrackingModel ammoTracker;
         private ThingsTrackingModel medicineTracker;
         private ThingsTrackingModel flaresTracker;
-        private ThingsTrackingModel attachmentTracker;        
+        private ThingsTrackingModel attachmentTracker;
+        private ThingsTrackingModel explosiveTracker;
 
         public ThingsTracker(Map map) : base(map)
         {
@@ -62,7 +63,8 @@ namespace CombatExtended.Utilities
             apparelTracker = new ThingsTrackingModel(null, map, this);
             medicineTracker = new ThingsTrackingModel(null, map, this);
             flaresTracker = new ThingsTrackingModel(null, map, this);
-            attachmentTracker = new ThingsTrackingModel(null, map, this); ;            
+            attachmentTracker = new ThingsTrackingModel(null, map, this);
+            explosiveTracker = new ThingsTrackingModel(null, map, this);
 
             trackers = new ThingsTrackingModel[DefDatabase<ThingDef>.AllDefs.Max((def) => def.index) + 1][];
             for (int i = 0; i < trackers.Length; i++)
@@ -81,7 +83,9 @@ namespace CombatExtended.Utilities
             foreach (var def in DefDatabase<AmmoDef>.AllDefs)
                 trackers[def.index][1] = ammoTracker;
             foreach (var def in DefDatabase<AttachmentDef>.AllDefs)
-                trackers[def.index][1] = attachmentTracker;            
+                trackers[def.index][1] = attachmentTracker;
+            foreach (var def in DefDatabase<ThingDef>.AllDefs.Where(d => d.thingClass == typeof(ProjectileCE_Explosive)))
+                trackers[def.index][1] = explosiveTracker;
 
             if (validDefs != null)
                 return;
@@ -233,6 +237,8 @@ namespace CombatExtended.Utilities
                     return flaresTracker;
                 case TrackedThingsRequestCategory.Attachments:
                     return attachmentTracker;
+                case TrackedThingsRequestCategory.Explosive:
+                    return explosiveTracker;
                 default:
                     throw new NotSupportedException();
             }

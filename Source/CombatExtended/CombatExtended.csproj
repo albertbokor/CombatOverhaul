@@ -50,7 +50,11 @@
 		<None Remove="CombatExtended\WorldObjects\" />
 		<None Remove="CombatExtended\GenStep\" />
 		<None Remove="CombatExtended\Animators\" />
-		<None Remove="CombatExtended\SightGrid\" />
+		<Compile Remove="CombatExtended\AI\Comps\CompOpportunisticSwitch.cs" />
+		<Compile Remove="CombatExtended\AI\Comps\CompFireSelection.cs" />
+		<Compile Remove="CombatExtended\AI\Comps\CompTend.cs" />
+		<Compile Remove="CombatExtended\AI\Comps\CompUrgentWeaponPickup.cs" />
+		<None Remove="CombatExtended\AI\ThinkNodes\" />
 	</ItemGroup>
 	<ItemGroup>
 		<Compile Remove="CombatExtended\Comps\CompProperties_SquadBrain.cs" />
@@ -70,6 +74,10 @@
 	</ItemGroup>
 	<ItemGroup>
 		<None Include="CombatExtended\ThinkNodes\ThinkNode_ConditionalNoJob.cs" />
+		<None Include="CombatExtended\AI\Comps\CompOpportunisticSwitch.cs" Condition=" '$(EnableDefaultCompileItems)' == 'true' " />
+		<None Include="CombatExtended\AI\Comps\CompFireSelection.cs" Condition=" '$(EnableDefaultCompileItems)' == 'true' " />
+		<None Include="CombatExtended\AI\Comps\CompTend.cs" Condition=" '$(EnableDefaultCompileItems)' == 'true' " />
+		<None Include="CombatExtended\AI\Comps\CompUrgentWeaponPickup.cs" Condition=" '$(EnableDefaultCompileItems)' == 'true' " />
 	</ItemGroup>
 	<ItemGroup>
 		<Reference Include="VFESecurity">
@@ -107,7 +115,7 @@
 		<Folder Include="CombatExtended\WorldObjects\" />
 		<Folder Include="CombatExtended\GenStep\" />
 		<Folder Include="CombatExtended\Animators\" />
-		<Folder Include="CombatExtended\SightGrid\" />
+		<Folder Include="CombatExtended\AI\ThinkNodes\" />
 	</ItemGroup>
 	<ItemGroup>
 		<PackageReference Include="Krafs.Publicizer" Version="1.0.1">

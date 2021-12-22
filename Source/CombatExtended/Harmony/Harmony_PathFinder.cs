@@ -14,15 +14,7 @@ namespace CombatExtended.HarmonyCE
 {
     [HarmonyPatch(typeof(PathFinder), nameof(PathFinder.FindPath), new[] { typeof(IntVec3), typeof(LocalTargetInfo), typeof(TraverseParms), typeof(PathEndMode), typeof(PathFinderCostTuning) })]
     internal static class Harmony_PathFinder_FindPath
-    {
-        private static class PerfParams
-        {
-            public static Stopwatch stopwatch = new Stopwatch();
-            public static float runs = 1.0f;
-            public static float avg = 1.0f;
-            public static float avgTimeBetweenRuns = 1.0f;            
-        }
-
+    {        
         private static Pawn pawn;
         private static Map map;
         private static PathFinder instance;
@@ -33,10 +25,10 @@ namespace CombatExtended.HarmonyCE
         private static bool crouching;        
         private static bool raiders;
         private static bool tpsLow;
-        private static float tpsLevel;
+        private static int counter;
+        private static float tpsLevel;        
         private static float visibilityAtDest;        
-        private static float counter = 0;           
-        private static Stopwatch stopwatch = new Stopwatch();        
+        private static float factionMultiplier = 1.0f;        
 
         internal static bool Prefix(PathFinder __instance, ref PawnPath __result, IntVec3 start, LocalTargetInfo dest, TraverseParms traverseParms, PathEndMode peMode, out bool __state)
         {
@@ -50,17 +42,40 @@ namespace CombatExtended.HarmonyCE
                 instance = __instance;
                 map = __instance.map;
                 pawn = traverseParms.pawn;
-                
+
+                // fix for player pawns and drafted pawns 
+                factionMultiplier = pawn.Faction.IsPlayer ? (pawn.Drafted ? 0.25f : 0.5f) : 1.0f;
                 // retrive CE elements
                 avoidanceTracker = pawn.Map.GetAvoidanceTracker();
-                lightingTracker = map.IsNightTime() ? map.GetLightingTracker() : null;                
+                lightingTracker = map.IsNightTime() ? map.GetLightingTracker() : null;
                 avoidanceTracker.TryGetReader(pawn, out avoidanceReader);
                 pawn.Map.GetSightTracker().TryGetReader(pawn, out sightReader);
 
                 // get the visibility at the destination
                 if (sightReader != null)
-                    visibilityAtDest = sightReader.GetVisibility(dest.Cell) / 2f;
-
+                {
+                    visibilityAtDest = sightReader.GetVisibility(dest.Cell);
+                    Verb verb = pawn.GetWeaponVerbWithFallback();
+                    if (verb != null)
+                    {
+                        if (verb.verbProps.range > 20)
+                        {
+                            visibilityAtDest *= 0.25f;
+                        }
+                        else if (verb.verbProps.range > 10)
+                        {
+                            visibilityAtDest *= 0.425f;
+                        }
+                        else
+                        {
+                            visibilityAtDest *= 0.675f;
+                        }
+                    }
+                    else
+                    {
+                        visibilityAtDest *= 0.50f;
+                    }
+                }
                 // get wether this is a raider
                 raiders = pawn.Faction?.HostileTo(Faction.OfPlayerSilentFail) ?? true;
 
@@ -70,8 +85,7 @@ namespace CombatExtended.HarmonyCE
                 {
                     __state = true;
                     crouching = comp?.IsCrouchWalking ?? false;
-                    counter = 0;
-                    stopwatch.Restart();
+                    counter = 0;                   
                     return true;
                 }
                 //
@@ -88,27 +102,10 @@ namespace CombatExtended.HarmonyCE
         public static void Postfix(PathFinder __instance, PawnPath __result, bool __state)
         {
             if (__state)
-            {
-                stopwatch.Stop();                                
-                float t = (float)stopwatch.ElapsedTicks / Stopwatch.Frequency * 1000f;
-                PerfParams.runs++;
-                PerfParams.avg = t * 0.15f + PerfParams.avg * 0.85f;
-                if (PerfParams.runs == 0)
-                {
-                    PerfParams.stopwatch.Start();
-                }
-                else
-                {
-                    PerfParams.stopwatch.Stop();
-                    PerfParams.avgTimeBetweenRuns = PerfParams.avgTimeBetweenRuns * 0.25f + (float)PerfParams.stopwatch.ElapsedTicks / Stopwatch.Frequency * 1000f * 0.85f;
-                    PerfParams.stopwatch.Restart();
-                }                
-                //Log.Message($"tps level <color=orange>{Math.Round(PerformanceTracker.TpsLevel, 3)}</color>: run {PerfParams.runs} took <color=red>{Math.Round(t, 2)} Ms</color>.\nThe current rolling average is <color=orange>{Math.Round(PerfParams.avg, 2)} Ms</color> with " +
-                //    $"<color=yellow>{Math.Round(PerfParams.avgTimeBetweenRuns, 2)}</color> between runs.\n");
-
+            {              
                 if (avoidanceTracker != null)
                     avoidanceTracker.Notify_PathFound(pawn, __result);
-            }            
+            }
             Reset();
         }
 
@@ -176,16 +173,16 @@ namespace CombatExtended.HarmonyCE
                 {
                     if (avoidanceReader != null)
                         value += (int)(avoidanceReader.GetPathing(index) * 15);
-                }             
+                }
                 if (value > 10f)
-                {                    
+                {
                     counter++;
                     //
                     // TODO make this into a maxcost -= something system
-                    var l1 = 450 * (1f - Mathf.Lerp(0f, 0.75f, counter / (openNum + 1f))) * (1f - Mathf.Min(openNum, 14000f) / (20000f)) * tpsLevel;                    
-                    var l2 = 250 * (1f - Mathf.Clamp01(PathFinder.calcGrid[parentIndex].knownCost / 10000)) * tpsLevel;
-                    // we use this so the game doesn't die                
-                    return (int)Mathf.Min(value, l1 + l2);
+                    var l1 = 450 * (1f - Mathf.Lerp(0f, 0.75f, counter / (openNum + 1f))) * (1f - Mathf.Min(openNum, 5000) / (7500));                    
+                    var l2 = 250 * (1f - Mathf.Clamp01(PathFinder.calcGrid[parentIndex].knownCost / 2500));
+                    // we use this so the game doesn't die   
+                    return (int)(Mathf.Min(value, l1 + l2) * factionMultiplier * tpsLevel);
                 }
             }            
             return 0;
