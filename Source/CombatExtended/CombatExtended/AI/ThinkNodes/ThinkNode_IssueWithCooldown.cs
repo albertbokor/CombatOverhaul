@@ -45,7 +45,7 @@ namespace CombatExtended.AI
         /// <returns>the tick when cooldown started</returns>
         private int GetCooldown(Pawn pawn)
         {
-            if(pawn.mindState.thinkData.TryGetValue(base.UniqueSaveKey, out int val))
+            if (pawn.mindState.thinkData.TryGetValue(base.UniqueSaveKey, out int val))
             {
                 return val;
             }

@@ -61,10 +61,11 @@ namespace CombatExtended.AI
                 IntVec3 bestSpot = ally.Position;                                
                 flooder.Flood(ally.Position, (cell, _, cost) =>
                 {
-                    if(bestCost < sightReader.GetVisibility(cell))
+                    float visibility = sightReader.GetVisibility(cell);
+                    if (bestCost >= visibility)
                     {
                         bestSpot = cell;
-                        bestCost = cost;
+                        bestCost = visibility;
                     }
                 }, (cell) =>
                 {
