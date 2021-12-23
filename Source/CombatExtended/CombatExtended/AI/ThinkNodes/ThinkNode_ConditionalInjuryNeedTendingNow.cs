@@ -11,6 +11,13 @@ namespace CombatExtended.AI
         /// </summary>
         public int minTicksToDeath = 30000;
 
+        public override ThinkNode DeepCopy(bool resolve = true)
+        {
+            ThinkNode_ConditionalInjuryNeedTendingNow copy = (ThinkNode_ConditionalInjuryNeedTendingNow) base.DeepCopy(resolve);
+            copy.minTicksToDeath = minTicksToDeath;            
+            return copy;
+        }
+
         public override bool Satisfied(Pawn pawn)
         {
             if (!(pawn.health?.HasHediffsNeedingTend() ?? false))

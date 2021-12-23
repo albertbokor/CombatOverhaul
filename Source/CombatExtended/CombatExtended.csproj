@@ -50,11 +50,10 @@
 		<None Remove="CombatExtended\WorldObjects\" />
 		<None Remove="CombatExtended\GenStep\" />
 		<None Remove="CombatExtended\Animators\" />
-		<Compile Remove="CombatExtended\AI\Comps\CompOpportunisticSwitch.cs" />
-		<Compile Remove="CombatExtended\AI\Comps\CompFireSelection.cs" />
 		<Compile Remove="CombatExtended\AI\Comps\CompTend.cs" />
 		<Compile Remove="CombatExtended\AI\Comps\CompUrgentWeaponPickup.cs" />
 		<None Remove="CombatExtended\AI\ThinkNodes\" />
+		<Compile Remove="CombatExtended\AI\Comps\CompFireSelection.cs" />
 	</ItemGroup>
 	<ItemGroup>
 		<Compile Remove="CombatExtended\Comps\CompProperties_SquadBrain.cs" />
@@ -74,10 +73,9 @@
 	</ItemGroup>
 	<ItemGroup>
 		<None Include="CombatExtended\ThinkNodes\ThinkNode_ConditionalNoJob.cs" />
-		<None Include="CombatExtended\AI\Comps\CompOpportunisticSwitch.cs" Condition=" '$(EnableDefaultCompileItems)' == 'true' " />
-		<None Include="CombatExtended\AI\Comps\CompFireSelection.cs" Condition=" '$(EnableDefaultCompileItems)' == 'true' " />
 		<None Include="CombatExtended\AI\Comps\CompTend.cs" Condition=" '$(EnableDefaultCompileItems)' == 'true' " />
 		<None Include="CombatExtended\AI\Comps\CompUrgentWeaponPickup.cs" Condition=" '$(EnableDefaultCompileItems)' == 'true' " />
+		<None Include="CombatExtended\AI\Comps\CompFireSelection.cs" Condition=" '$(EnableDefaultCompileItems)' == 'true' " />
 	</ItemGroup>
 	<ItemGroup>
 		<Reference Include="VFESecurity">

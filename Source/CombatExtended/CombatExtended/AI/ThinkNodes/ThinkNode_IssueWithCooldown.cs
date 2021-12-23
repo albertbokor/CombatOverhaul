@@ -34,6 +34,15 @@ namespace CombatExtended.AI
             get => (!thottleIfTpsLow || !PerformanceTracker.TpsCriticallyLow) && onSuccessOnly;
         }
 
+        public override ThinkNode DeepCopy(bool resolve = true)
+        {
+            ThinkNode_IssueWithCooldown copy = (ThinkNode_IssueWithCooldown) base.DeepCopy(resolve);
+            copy.cooldownTicks = cooldownTicks;
+            copy.onSuccessOnly = onSuccessOnly;
+            copy.thottleIfTpsLow = thottleIfTpsLow;
+            return copy;
+        }
+
         public override ThinkResult TryIssueJobPackage(Pawn pawn, JobIssueParams jobParams)
         {
             if (pawn.mindState == null)

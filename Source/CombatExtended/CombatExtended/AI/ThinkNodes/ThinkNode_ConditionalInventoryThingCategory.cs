@@ -1,25 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using Verse;
 using Verse.AI;
 
 namespace CombatExtended.AI
 {
-	public class ThinkNode_ConditionalInventory : ThinkNode_Conditional
+	public class ThinkNode_ConditionalInventoryThingCategory : ThinkNode_Conditional
 	{
         /// <summary>
-        /// The list of items that needs to be checked.
+        /// The list of item catergories to test for.
         /// </summary>
-        public List<ThingDefCount> items;
+        public List<ThingCategoryDefCount> categories = new List<ThingCategoryDefCount>();
 
         public override ThinkNode DeepCopy(bool resolve = true)
         {
-            ThinkNode_ConditionalInventory copy = (ThinkNode_ConditionalInventory) base.DeepCopy(resolve);
-            copy.items = items.ToList();
+            ThinkNode_ConditionalInventoryThingCategory copy = (ThinkNode_ConditionalInventoryThingCategory)base.DeepCopy(resolve);
+            copy.categories = categories.ToList();
             return copy;
-        }       
+        }
 
         public override ThinkResult TryIssueJobPackage(Pawn pawn, JobIssueParams jobParams)
         {
@@ -35,16 +34,16 @@ namespace CombatExtended.AI
         }
 
         public override bool Satisfied(Pawn pawn)
-        {            
-            for(int i = 0;i < items.Count; i++)
+        {
+            for (int i = 0; i < categories.Count; i++)
             {
-                ThingDefCount defCount = items[i];
-                if(pawn.inventory.Count(defCount.ThingDef) < defCount.count)
+                ThingCategoryDefCount category = categories[i];
+                if (pawn.inventory.Count((t) => t.HasThingCategory(category.category)) < category.count)
                 {
                     return true;
                 }
             }
-            return false;
+            return true;
         }
     }
 }

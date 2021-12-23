@@ -7,6 +7,8 @@ namespace CombatExtended.AI
 {
 	public class ThinkNode_ConditionalCombatPosition : ThinkNode_Conditional
 	{
+        private SightTracker.SightReader reader;
+
         /// <summary>
         /// The visibile enemy count range
         /// </summary>
@@ -19,12 +21,37 @@ namespace CombatExtended.AI
         /// Wether to use visibility for the evaluation.
         /// </summary>
         public bool useVisibility = false;
-        
+
+        public override ThinkNode DeepCopy(bool resolve = true)
+        {
+            ThinkNode_ConditionalCombatPosition copy = (ThinkNode_ConditionalCombatPosition) base.DeepCopy(resolve);
+            copy.requiresCover = requiresCover;
+            copy.visibileEnemies = visibileEnemies;
+            copy.useVisibility = useVisibility;
+            return copy;
+        }
+
+        public override ThinkResult TryIssueJobPackage(Pawn pawn, JobIssueParams jobParams)
+        {
+            if (pawn.Faction == null)
+            {
+                return ThinkResult.NoJob;
+            }
+            pawn.GetSightReader(out reader);
+            if (reader == null)
+            {
+                return ThinkResult.NoJob;
+            }
+            ThinkResult result = base.TryIssueJobPackage(pawn, jobParams);
+            reader = null;
+            return result;
+        }
+
         public override bool Satisfied(Pawn pawn)
         {
             pawn.GetSightReader(out SightTracker.SightReader reader);            
             if (reader == null)
-                return false;
+                return invert;
             IntVec3 pos = pawn.Position;
             if (!visibileEnemies.Includes(!useVisibility ? (int)reader.GetEnemies(pos) : Mathf.CeilToInt(reader.GetVisibility(pos))))
                 return false;

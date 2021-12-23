@@ -137,7 +137,7 @@ namespace CombatExtended.AI
                     if (targetType == TargetType.Turret)
                     {
                     }
-                    if (CompInventory.TryFindRandomAOEWeapon(out ThingWithComps weapon, checkAmmo: true, predicate: (g) => g.def.Verbs?.Any(t => t.range >= distance + 3) ?? false))
+                    if (CompInventory.TryFindRandomAOEWeapon(out ThingWithComps weapon, checkAmmo: true, predicate: (g) => g.def.Verbs?.Any(t => t.range >= distance + 1) ?? false))
                     {
                         lastOpportunisticSwitch = GenTicks.TicksGame;
 
@@ -157,7 +157,7 @@ namespace CombatExtended.AI
             bool TargetingPawns(Thing thing, float distance, out TargetType targetType)
             {
                 targetType = TargetType.None;
-                if (thing is Pawn pawn && (distance > 8 || selPawn.HiddingBehindCover(pawn.positionInt)) && TargetIsSquad(pawn))
+                if (thing is Pawn pawn && (distance > 3 || selPawn.HiddingBehindCover(pawn.positionInt)) && TargetIsSquad(pawn))
                 {
                     targetType = TargetType.Pawn;
                     return true;
@@ -167,7 +167,7 @@ namespace CombatExtended.AI
             bool TargetingTurrets(Thing thing, float distance, out TargetType targetType)
             {
                 targetType = TargetType.None;
-                if (thing is Building_Turret && (distance > 8 || selPawn.HiddingBehindCover(thing.positionInt)))
+                if (thing is Building_Turret && (distance > 3 || selPawn.HiddingBehindCover(thing.positionInt)))
                 {
                     targetType = TargetType.Turret;
                     return true;

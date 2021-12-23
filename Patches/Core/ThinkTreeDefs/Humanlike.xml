@@ -70,27 +70,28 @@
 						</visibileEnemies>
 						<subNodes>
 							<li Class="CombatExtended.AI.ThinkNode_IssueWithCooldown">
-								<cooldownTicks>450</cooldownTicks>
-								<onSuccessOnly>false</onSuccessOnly>								
-								<subNodes>
+							  <cooldownTicks>350</cooldownTicks>
+      					<onSuccessOnly>false</onSuccessOnly>
+								<thottleIfTpsLow>true</thottleIfTpsLow>
+								<subNodes>								
 									<li Class="CombatExtended.AI.ThinkNode_ConditionalInjuryNeedTendingNow">
-										<minTicksToDeath>35000</minTicksToDeath>
-										<subNodes>								
+										<minTicksToDeath>35000</minTicksToDeath>      
+										<subNodes>
 											<li Class="JobGiver_SelfTend" />
-										</subNodes>			
-									</li>																						
+										</subNodes>
+									</li>
 								</subNodes>
 							</li>
 							<li Class="CombatExtended.AI.ThinkNode_IssueWithCooldown">
-								<cooldownTicks>250</cooldownTicks>
-								<onSuccessOnly>false</onSuccessOnly>
+							  <cooldownTicks>450</cooldownTicks>
+      					<onSuccessOnly>false</onSuccessOnly>
 								<thottleIfTpsLow>true</thottleIfTpsLow>
 								<subNodes>
 									<li Class="CombatExtended.AI.JobGiver_AIRescue">
-										<maxDist>12</maxDist>
+										<maxDist>8</maxDist>
 										<maxEnemyVisibility>1.5</maxEnemyVisibility>
 										<maxDanger>4</maxDanger>
-									</li>
+									</li>									
 								</subNodes>
 							</li>
 						</subNodes>
@@ -98,6 +99,7 @@
 				</subNodes>
 			</li>
 		</value>
+		<order>Append</order>
 	</Operation>
 
 </Patch>

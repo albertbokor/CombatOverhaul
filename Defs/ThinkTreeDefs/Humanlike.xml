@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+  <!-- ========== Check or Grab medicine sub tree ========== -->
+
+  <ThinkTreeDef>
+    <defName>CETree_TakeOrGetMedicine</defName>        
+    <thinkRoot Class="CombatExtended.AI.ThinkNode_ConditionalInventoryThingCategory">
+      <categories>
+        <li>														
+          <category>Medicine</category>
+          <count>1</count>
+        </li>
+      </categories>
+      <subNodes>
+        <li Class="CombatExtended.AI.JobGiver_FindOrTakeCategory">          
+          <itemCategory>Medicine</itemCategory>          
+          <maxAmount>1</maxAmount>
+          <maxDist>8</maxDist>
+        </li>
+      </subNodes>
+    </thinkRoot>
+  </ThinkTreeDef>
+
+
+</Defs>

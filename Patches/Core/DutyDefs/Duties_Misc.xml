@@ -45,7 +45,7 @@
 		<value>CombatExtended.JobGiver_ManTurretsNearPointCE</value>
 	</Operation>
 
-	<!-- ========== Patch Trashing jobs ========== -->
+	<!-- ========== Patch Trashing jobs 			  ======= -->	
 
 	<Operation Class="CombatExtended.PatchOperationWrap">
 		<xpath>Defs/DutyDef[defName="PrisonerAssaultColony" or defName="AssaultColony" or defName="Breaching"]/thinkNode/subNodes</xpath>
@@ -60,7 +60,7 @@
 					<fi_1 /> <!-- will place the first node here  -->
 					<fi_2 /> <!-- will place the second node here -->					
 				</subNodes>
-			</li>
+			</li>					
 		</with>
 	</Operation>	
 

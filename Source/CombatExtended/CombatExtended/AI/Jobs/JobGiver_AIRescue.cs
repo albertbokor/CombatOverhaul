@@ -20,6 +20,15 @@ namespace CombatExtended.AI
         /// </summary>
         public float maxDanger = 0f;
 
+        public override ThinkNode DeepCopy(bool resolve = true)
+        {
+            JobGiver_AIRescue copy = (JobGiver_AIRescue) base.DeepCopy(resolve);
+            copy.maxDist = maxDist;
+            copy.maxEnemyVisibility = maxEnemyVisibility;
+            copy.maxDanger = maxDanger;
+            return copy;
+        }
+
         public override Job TryGiveJob(Pawn pawn)
         {
             if (pawn.RaceProps.intelligence != Intelligence.Humanlike)
