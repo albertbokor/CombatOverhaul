@@ -45,7 +45,7 @@
 		<label>.44-40 Winchester cartridge (FMJ)</label>
 		<graphicData>
 			<texPath>Things/Ammo/Rifle/FMJ</texPath>
-			<graphicClass>Graphic_StackCount</graphicClass>
+			<graphicClass>CombatExtended.Graphic_StackCountRanged</graphicClass>
 		</graphicData>
 		<statBases>
 			<MarketValue>0.11</MarketValue>
@@ -60,7 +60,7 @@
 		<label>.44-40 Winchester cartridge (AP)</label>
 		<graphicData>
 			<texPath>Things/Ammo/Rifle/AP</texPath>
-			<graphicClass>Graphic_StackCount</graphicClass>
+			<graphicClass>CombatExtended.Graphic_StackCountRanged</graphicClass>
 		</graphicData>
 		<statBases>
 			<MarketValue>0.11</MarketValue>
@@ -74,7 +74,7 @@
 		<label>.44-40 Winchester cartridge (HP)</label>
 		<graphicData>
 			<texPath>Things/Ammo/Rifle/HP</texPath>
-			<graphicClass>Graphic_StackCount</graphicClass>
+			<graphicClass>CombatExtended.Graphic_StackCountRanged</graphicClass>
 		</graphicData>
 		<statBases>
 			<MarketValue>0.11</MarketValue>
@@ -88,7 +88,7 @@
     <label>.44-40 Winchester cartridge (AP-I)</label>
     <graphicData>
       <texPath>Things/Ammo/Rifle/Incendiary</texPath>
-      <graphicClass>Graphic_StackCount</graphicClass>
+      <graphicClass>CombatExtended.Graphic_StackCountRanged</graphicClass>
     </graphicData>
     <statBases>
       <MarketValue>0.16</MarketValue>
@@ -102,7 +102,7 @@
     <label>.44-40 Winchester cartridge (HE)</label>
     <graphicData>
       <texPath>Things/Ammo/Rifle/HE</texPath>
-      <graphicClass>Graphic_StackCount</graphicClass>
+      <graphicClass>CombatExtended.Graphic_StackCountRanged</graphicClass>
     </graphicData>
     <statBases>
       <MarketValue>0.25</MarketValue>
@@ -116,7 +116,7 @@
     <label>.44-40 Winchester cartridge (Sabot)</label>
     <graphicData>
       <texPath>Things/Ammo/Rifle/Sabot</texPath>
-      <graphicClass>Graphic_StackCount</graphicClass>
+      <graphicClass>CombatExtended.Graphic_StackCountRanged</graphicClass>
     </graphicData>
     <statBases>
       <MarketValue>0.12</MarketValue>

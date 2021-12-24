@@ -1,14 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Defs>
 
-	<ThingCategoryDef>
-		<defName>Ammo40x53mmGrenades</defName>
-		<label>40x53mm Grenade</label>
-		<parent>AmmoGrenades</parent>
+  <ThingCategoryDef>
+    <defName>Ammo40x53mmGrenades</defName>
+    <label>40x53mm Grenade</label>
+    <parent>AmmoGrenades</parent>
     <iconPath>UI/Icons/ThingCategories/CaliberGrenade</iconPath>
-	</ThingCategoryDef>
-	
-	<!-- ==================== AmmoSet ========================== -->
+  </ThingCategoryDef>
+
+  <!-- ==================== AmmoSet ========================== -->
 
   <CombatExtended.AmmoSetDef>
     <defName>AmmoSet_40x53mmGrenade</defName>
@@ -16,22 +16,22 @@
     <ammoTypes>
       <Ammo_40x53mmGrenade_HE>Bullet_40x53mmGrenade_HE</Ammo_40x53mmGrenade_HE>
       <Ammo_40x53mmGrenade_EMP>Bullet_40x53mmGrenade_EMP</Ammo_40x53mmGrenade_EMP>
-			<Ammo_40x53mmGrenade_Smoke>Bullet_40x53mmGrenade_Smoke</Ammo_40x53mmGrenade_Smoke>	        
+      <Ammo_40x53mmGrenade_Smoke>Bullet_40x53mmGrenade_Smoke</Ammo_40x53mmGrenade_Smoke>
     </ammoTypes>
   </CombatExtended.AmmoSetDef>
-	
-	<!-- ==================== Ammo ========================== -->
+
+  <!-- ==================== Ammo ========================== -->
 
   <ThingDef Class="CombatExtended.AmmoDef" Name="40x53mmGrenadeBase" ParentName="AmmoBase" Abstract="True">
     <description>High velocity grenade fired from mounted and crew-served grenade launchers.</description>
     <statBases>
-	  <Mass>0.375</Mass>
-	  <Bulk>0.46</Bulk>
+      <Mass>0.375</Mass>
+      <Bulk>0.46</Bulk>
     </statBases>
-	<tradeTags>
-	  <li>CE_AutoEnableTrade</li>
-	  <li>CE_AutoEnableCrafting_TableMachining</li>
-	</tradeTags>
+    <tradeTags>
+      <li>CE_AutoEnableTrade</li>
+      <li>CE_AutoEnableCrafting_TableMachining</li>
+    </tradeTags>
     <thingCategories>
       <li>Ammo40x53mmGrenades</li>
     </thingCategories>
@@ -50,7 +50,7 @@
       <MarketValue>2.89</MarketValue>
     </statBases>
     <ammoClass>GrenadeHE</ammoClass>
-	<detonateProjectile>Bullet_40x53mmGrenade_HE</detonateProjectile>
+    <detonateProjectile>Bullet_40x53mmGrenade_HE</detonateProjectile>
   </ThingDef>
 
   <ThingDef Class="CombatExtended.AmmoDef" ParentName="40x53mmGrenadeBase">
@@ -65,14 +65,14 @@
     </statBases>
     <ammoClass>GrenadeEMP</ammoClass>
     <comps>
-	  <li Class="CombatExtended.CompProperties_ExplosiveCE">
-		<damageAmountBase>5</damageAmountBase>
-		<explosiveDamageType>Bomb</explosiveDamageType>
-		<explosiveRadius>0.75</explosiveRadius>
-	  </li>
-	  <li Class="CombatExtended.CompProperties_Fragments">
-		<fragments>
-			<Fragment_Large>1</Fragment_Large>
+      <li Class="CombatExtended.CompProperties_ExplosiveCE">
+        <damageAmountBase>5</damageAmountBase>
+        <explosiveDamageType>Bomb</explosiveDamageType>
+        <explosiveRadius>0.75</explosiveRadius>
+      </li>
+      <li Class="CombatExtended.CompProperties_Fragments">
+        <fragments>
+          <Fragment_Large>1</Fragment_Large>
         </fragments>
       </li>
     </comps>
@@ -88,61 +88,62 @@
     <statBases>
       <MarketValue>2.35</MarketValue>
     </statBases>
-    <ammoClass>Smoke</ammoClass><generateAllowChance>0</generateAllowChance>
+    <ammoClass>Smoke</ammoClass>
+    <generateAllowChance>0</generateAllowChance>
     <comps>
-	  <li Class="CombatExtended.CompProperties_ExplosiveCE">
-		<damageAmountBase>5</damageAmountBase>
-		<explosiveDamageType>Bomb</explosiveDamageType>
-		<explosiveRadius>0.75</explosiveRadius>
-	  </li>
-	  <li Class="CombatExtended.CompProperties_Fragments">
-		<fragments>
-			<Fragment_Large>1</Fragment_Large>
+      <li Class="CombatExtended.CompProperties_ExplosiveCE">
+        <damageAmountBase>5</damageAmountBase>
+        <explosiveDamageType>Bomb</explosiveDamageType>
+        <explosiveRadius>0.75</explosiveRadius>
+      </li>
+      <li Class="CombatExtended.CompProperties_Fragments">
+        <fragments>
+          <Fragment_Large>1</Fragment_Large>
         </fragments>
       </li>
     </comps>
   </ThingDef>
 
-	<!-- ================== Projectiles ================== -->
+  <!-- ================== Projectiles ================== -->
 
-	<ThingDef Name="Base40x53mmGrenadeBullet" ParentName="BaseBullet" Abstract="true">
-		<thingClass>CombatExtended.ProjectileCE_Explosive</thingClass>
-		<graphicData>
-			<texPath>Things/Projectile/Bullet_Big</texPath>
-			<graphicClass>Graphic_Single</graphicClass>
-		</graphicData>
-		<projectile Class="CombatExtended.ProjectilePropertiesCE">
-			<speed>49</speed>
-		</projectile>
-	</ThingDef>
+  <ThingDef Name="Base40x53mmGrenadeBullet" ParentName="BaseBullet" Abstract="true">
+    <thingClass>CombatExtended.ProjectileCE_Explosive</thingClass>
+    <graphicData>
+      <texPath>Things/Projectile/Bullet_Big</texPath>
+      <graphicClass>Graphic_Single</graphicClass>
+    </graphicData>
+    <projectile Class="CombatExtended.ProjectilePropertiesCE">
+      <speed>49</speed>
+    </projectile>
+  </ThingDef>
 
-	<ThingDef ParentName="Base40x53mmGrenadeBullet">
-		<defName>Bullet_40x53mmGrenade_HE</defName>
-		<label>40x53mm grenade (HE)</label>
-		<projectile Class="CombatExtended.ProjectilePropertiesCE">
-			<explosionRadius>1</explosionRadius >
-			<damageDef>Bomb</damageDef>
-			<damageAmountBase>20</damageAmountBase>
+  <ThingDef ParentName="Base40x53mmGrenadeBullet">
+    <defName>Bullet_40x53mmGrenade_HE</defName>
+    <label>40x53mm grenade (HE)</label>
+    <projectile Class="CombatExtended.ProjectilePropertiesCE">
+      <explosionRadius>1</explosionRadius >
+      <damageDef>Bomb</damageDef>
+      <damageAmountBase>20</damageAmountBase>
       <applyDamageToExplosionCellsNeighbors>true</applyDamageToExplosionCellsNeighbors>
-		</projectile>
-		<comps>
-			<li Class="CombatExtended.CompProperties_Fragments">
-				<fragments>
+    </projectile>
+    <comps>
+      <li Class="CombatExtended.CompProperties_Fragments">
+        <fragments>
           <Fragment_Small>35</Fragment_Small>
-				</fragments>
-			</li>
-		</comps>
-		</ThingDef>
+        </fragments>
+      </li>
+    </comps>
+  </ThingDef>
 
-	<ThingDef ParentName="Base40x53mmGrenadeBullet">
-		<defName>Bullet_40x53mmGrenade_EMP</defName>
-		<label>40x53mm grenade (EMP)</label>
-		<projectile Class="CombatExtended.ProjectilePropertiesCE">
-			<explosionRadius>1.5</explosionRadius>
-			<damageDef>EMP</damageDef>
-			<damageAmountBase>20</damageAmountBase>
-		</projectile>
-	</ThingDef>
+  <ThingDef ParentName="Base40x53mmGrenadeBullet">
+    <defName>Bullet_40x53mmGrenade_EMP</defName>
+    <label>40x53mm grenade (EMP)</label>
+    <projectile Class="CombatExtended.ProjectilePropertiesCE">
+      <explosionRadius>1.5</explosionRadius>
+      <damageDef>EMP</damageDef>
+      <damageAmountBase>20</damageAmountBase>
+    </projectile>
+  </ThingDef>
 
   <ThingDef ParentName="Base40x53mmGrenadeBullet">
     <defName>Bullet_40x53mmGrenade_Smoke</defName>
@@ -155,7 +156,7 @@
     </projectile>
   </ThingDef>
 
-	<!-- ==================== Recipes ========================== -->
+  <!-- ==================== Recipes ========================== -->
 
   <RecipeDef ParentName="AmmoRecipeBase">
     <defName>MakeAmmo_40x53mmGrenade_HE</defName>
@@ -198,7 +199,7 @@
     <products>
       <Ammo_40x53mmGrenade_HE>100</Ammo_40x53mmGrenade_HE>
     </products>
-    <workAmount>11600</workAmount>    
+    <workAmount>11600</workAmount>
   </RecipeDef>
 
   <RecipeDef ParentName="AmmoRecipeBase">
@@ -233,7 +234,7 @@
     <products>
       <Ammo_40x53mmGrenade_EMP>100</Ammo_40x53mmGrenade_EMP>
     </products>
-    <workAmount>13600</workAmount>      
+    <workAmount>13600</workAmount>
   </RecipeDef>
 
   <RecipeDef ParentName="AmmoRecipeBase">
@@ -265,13 +266,13 @@
           </thingDefs>
         </filter>
         <count>2</count>
-      </li>      
+      </li>
     </ingredients>
     <fixedIngredientFilter>
       <thingDefs>
         <li>Steel</li>
         <li>Prometheum</li>
-        <li>ComponentIndustrial</li>        
+        <li>ComponentIndustrial</li>
       </thingDefs>
     </fixedIngredientFilter>
     <products>

@@ -47,7 +47,7 @@
 		<label>12.7x55mm AR cartridge (FMJ)</label>
 		<graphicData>
 			<texPath>Things/Ammo/Rifle/FMJ</texPath>
-			<graphicClass>Graphic_StackCount</graphicClass>
+			<graphicClass>CombatExtended.Graphic_StackCountRanged</graphicClass>
 		</graphicData>
 		<statBases>
 			<MarketValue>0.33</MarketValue>
@@ -61,7 +61,7 @@
 		<label>12.7x55mm AR cartridge (AP)</label>
 		<graphicData>
 			<texPath>Things/Ammo/Rifle/AP</texPath>
-			<graphicClass>Graphic_StackCount</graphicClass>
+			<graphicClass>CombatExtended.Graphic_StackCountRanged</graphicClass>
 		</graphicData>
 		<statBases>
 			<MarketValue>0.33</MarketValue>
@@ -75,7 +75,7 @@
 		<label>12.7x55mm AR cartridge (HP)</label>
 		<graphicData>
 			<texPath>Things/Ammo/Rifle/HP</texPath>
-			<graphicClass>Graphic_StackCount</graphicClass>
+			<graphicClass>CombatExtended.Graphic_StackCountRanged</graphicClass>
 		</graphicData>
 		<statBases>
 			<MarketValue>0.33</MarketValue>
@@ -90,7 +90,7 @@
 		<label>12.7x55mm AR cartridge (AP-I)</label>
 		<graphicData>
 			<texPath>Things/Ammo/Rifle/Incendiary</texPath>
-			<graphicClass>Graphic_StackCount</graphicClass>
+			<graphicClass>CombatExtended.Graphic_StackCountRanged</graphicClass>
 		</graphicData>
 		<statBases>
 			<MarketValue>0.52</MarketValue>
@@ -104,7 +104,7 @@
 		<label>12.7x55mm AR cartridge (HE)</label>
 		<graphicData>
 			<texPath>Things/Ammo/Rifle/HE</texPath>
-			<graphicClass>Graphic_StackCount</graphicClass>
+			<graphicClass>CombatExtended.Graphic_StackCountRanged</graphicClass>
 		</graphicData>
 		<statBases>
 			<MarketValue>0.91</MarketValue>
@@ -118,7 +118,7 @@
 		<label>12.7x55mm AR cartridge (Sabot)</label>
 		<graphicData>
 			<texPath>Things/Ammo/Rifle/Sabot</texPath>
-			<graphicClass>Graphic_StackCount</graphicClass>
+			<graphicClass>CombatExtended.Graphic_StackCountRanged</graphicClass>
 		</graphicData>
 		<statBases>
 			<MarketValue>0.39</MarketValue>

@@ -44,7 +44,7 @@
     <label>7.92x94mm Patronen cartridge (FMJ)</label>
     <graphicData>
       <texPath>Things/Ammo/HighCaliber/FMJ</texPath>
-      <graphicClass>Graphic_StackCount</graphicClass>
+      <graphicClass>CombatExtended.Graphic_StackCountRanged</graphicClass>
     </graphicData>
     <statBases>
       <MarketValue>0.50</MarketValue>
@@ -58,7 +58,7 @@
     <label>7.92x94mm Patronen cartridge (AP-I)</label>
     <graphicData>
       <texPath>Things/Ammo/HighCaliber/Incendiary</texPath>
-      <graphicClass>Graphic_StackCount</graphicClass>
+      <graphicClass>CombatExtended.Graphic_StackCountRanged</graphicClass>
     </graphicData>
     <statBases>
       <MarketValue>0.56</MarketValue>
@@ -72,7 +72,7 @@
     <label>7.92x94mm Patronen cartridge (HE)</label>
     <graphicData>
       <texPath>Things/Ammo/HighCaliber/HE</texPath>
-      <graphicClass>Graphic_StackCount</graphicClass>
+      <graphicClass>CombatExtended.Graphic_StackCountRanged</graphicClass>
     </graphicData>
     <statBases>
       <MarketValue>0.71</MarketValue>
@@ -86,7 +86,7 @@
     <label>7.92x94mm Patronen cartridge (Sabot)</label>
     <graphicData>
       <texPath>Things/Ammo/HighCaliber/Sabot</texPath>
-      <graphicClass>Graphic_StackCount</graphicClass>
+      <graphicClass>CombatExtended.Graphic_StackCountRanged</graphicClass>
     </graphicData>
     <statBases>
       <MarketValue>0.53</MarketValue>

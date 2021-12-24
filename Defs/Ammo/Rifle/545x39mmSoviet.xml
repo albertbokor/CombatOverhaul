@@ -45,7 +45,7 @@
 		<label>5.45x39mm Soviet cartridge (FMJ)</label>
 		<graphicData>
 			<texPath>Things/Ammo/Rifle/FMJ</texPath>
-			<graphicClass>Graphic_StackCount</graphicClass>
+			<graphicClass>CombatExtended.Graphic_StackCountRanged</graphicClass>
 		</graphicData>
 		<statBases>
 			<MarketValue>0.05</MarketValue>
@@ -59,7 +59,7 @@
 		<label>5.45x39mm Soviet cartridge (AP)</label>
 		<graphicData>
 			<texPath>Things/Ammo/Rifle/AP</texPath>
-			<graphicClass>Graphic_StackCount</graphicClass>
+			<graphicClass>CombatExtended.Graphic_StackCountRanged</graphicClass>
 		</graphicData>
 		<statBases>
 			<MarketValue>0.05</MarketValue>
@@ -73,7 +73,7 @@
 		<label>5.45x39mm Soviet cartridge (HP)</label>
 		<graphicData>
 			<texPath>Things/Ammo/Rifle/HP</texPath>
-			<graphicClass>Graphic_StackCount</graphicClass>
+			<graphicClass>CombatExtended.Graphic_StackCountRanged</graphicClass>
 		</graphicData>
 		<statBases>
 			<MarketValue>0.05</MarketValue>
@@ -87,7 +87,7 @@
 		<label>5.45x39mm Soviet cartridge (AP-I)</label>
 		<graphicData>
 			<texPath>Things/Ammo/Rifle/Incendiary</texPath>
-			<graphicClass>Graphic_StackCount</graphicClass>
+			<graphicClass>CombatExtended.Graphic_StackCountRanged</graphicClass>
 		</graphicData>
 		<statBases>
 			<MarketValue>0.07</MarketValue>
@@ -101,7 +101,7 @@
 		<label>5.45x39mm Soviet cartridge (HE)</label>
 		<graphicData>
 			<texPath>Things/Ammo/Rifle/HE</texPath>
-			<graphicClass>Graphic_StackCount</graphicClass>
+			<graphicClass>CombatExtended.Graphic_StackCountRanged</graphicClass>
 		</graphicData>
 		<statBases>
 			<MarketValue>0.14</MarketValue>
@@ -115,7 +115,7 @@
 		<label>5.45x39mm Soviet cartridge (Sabot)</label>
 		<graphicData>
 			<texPath>Things/Ammo/Rifle/Sabot</texPath>
-			<graphicClass>Graphic_StackCount</graphicClass>
+			<graphicClass>CombatExtended.Graphic_StackCountRanged</graphicClass>
 		</graphicData>
 		<statBases>
 			<MarketValue>0.07</MarketValue>

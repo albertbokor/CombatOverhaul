@@ -53,7 +53,7 @@
 		<label>.45 Colt cartridge (FMJ)</label>
 		<graphicData>
 			<texPath>Things/Ammo/Pistol/FMJ</texPath>
-			<graphicClass>Graphic_StackCount</graphicClass>
+			<graphicClass>CombatExtended.Graphic_StackCountRanged</graphicClass>
 		</graphicData>
 		<statBases>
 			<MarketValue>0.1</MarketValue>
@@ -67,7 +67,7 @@
 		<label>.45 Colt cartridge (AP)</label>
 		<graphicData>
 			<texPath>Things/Ammo/Pistol/AP</texPath>
-			<graphicClass>Graphic_StackCount</graphicClass>
+			<graphicClass>CombatExtended.Graphic_StackCountRanged</graphicClass>
 		</graphicData>
 		<statBases>
 			<MarketValue>0.1</MarketValue>
@@ -81,7 +81,7 @@
 		<label>.45 Colt cartridge (HP)</label>
 		<graphicData>
 			<texPath>Things/Ammo/Pistol/HP</texPath>
-			<graphicClass>Graphic_StackCount</graphicClass>
+			<graphicClass>CombatExtended.Graphic_StackCountRanged</graphicClass>
 		</graphicData>
 		<statBases>
 			<MarketValue>0.1</MarketValue>

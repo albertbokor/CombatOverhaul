@@ -46,7 +46,7 @@
 		<label>.454 Casull cartridge (FMJ)</label>
 		<graphicData>
 			<texPath>Things/Ammo/Pistol/FMJ</texPath>
-			<graphicClass>Graphic_StackCount</graphicClass>
+			<graphicClass>CombatExtended.Graphic_StackCountRanged</graphicClass>
 		</graphicData>
 		<statBases>
 			<MarketValue>0.14</MarketValue>
@@ -60,7 +60,7 @@
 		<label>.454 Casull cartridge (AP)</label>
 		<graphicData>
 			<texPath>Things/Ammo/Pistol/AP</texPath>
-			<graphicClass>Graphic_StackCount</graphicClass>
+			<graphicClass>CombatExtended.Graphic_StackCountRanged</graphicClass>
 		</graphicData>
 		<statBases>
 			<MarketValue>0.14</MarketValue>
@@ -74,7 +74,7 @@
 		<label>.454 Casull cartridge (HP)</label>
 		<graphicData>
 			<texPath>Things/Ammo/Pistol/HP</texPath>
-			<graphicClass>Graphic_StackCount</graphicClass>
+			<graphicClass>CombatExtended.Graphic_StackCountRanged</graphicClass>
 		</graphicData>
 		<statBases>
 			<MarketValue>0.14</MarketValue>

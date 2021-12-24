@@ -15,7 +15,6 @@
     <label>12 Gauge</label>
     <ammoTypes>
       <Ammo_12Gauge_Buck>Bullet_12Gauge_Buck</Ammo_12Gauge_Buck>
-      <!-- <Ammo_12Gauge_Bird>Bullet_12Gauge_Bird</Ammo_12Gauge_Bird> -->
       <Ammo_12Gauge_Slug>Bullet_12Gauge_Slug</Ammo_12Gauge_Slug>
       <Ammo_12Gauge_Beanbag>Bullet_12Gauge_Beanbag</Ammo_12Gauge_Beanbag>
       <Ammo_12Gauge_ElectroSlug>Bullet_12Gauge_ElectroSlug</Ammo_12Gauge_ElectroSlug>
@@ -37,7 +36,7 @@
     <thingCategories>
       <li>Ammo12Gauge</li>
     </thingCategories>
-    <stackLimit>5000</stackLimit>
+    <stackLimit>400</stackLimit>
   </ThingDef>
 
   <ThingDef Class="CombatExtended.AmmoDef" ParentName="12GaugeBase">
@@ -45,7 +44,7 @@
     <label>12 gauge shell (Buck)</label>
     <graphicData>
       <texPath>Things/Ammo/Shotgun/Shot</texPath>
-      <graphicClass>Graphic_StackCount</graphicClass>
+      <graphicClass>CombatExtended.Graphic_StackCountRanged</graphicClass>
     </graphicData>
     <statBases>
       <MarketValue>0.1</MarketValue>
@@ -54,26 +53,12 @@
     <cookOffProjectile>Bullet_12Gauge_Buck</cookOffProjectile>
   </ThingDef>
 
-  <!-- <ThingDef Class="CombatExtended.AmmoDef" ParentName="12GaugeBase"> -->
-  <!-- <defName>Ammo_12Gauge_Bird</defName> -->
-  <!-- <label>12 gauge shell (Bird)</label> -->
-  <!-- <graphicData> -->
-  <!-- <texPath>Things/Ammo/Shotgun/Shot</texPath> -->
-  <!-- <graphicClass>Graphic_StackCount</graphicClass> -->
-  <!-- </graphicData> -->
-  <!-- <statBases> -->
-  <!-- <MarketValue>0.15</MarketValue> -->
-  <!-- </statBases> -->
-  <!-- <ammoClass>BirdShot</ammoClass> -->
-  <!-- <cookOffProjectile>Bullet_12Gauge_Bird</cookOffProjectile> -->
-  <!-- </ThingDef> -->
-
   <ThingDef Class="CombatExtended.AmmoDef" ParentName="12GaugeBase">
     <defName>Ammo_12Gauge_Slug</defName>
     <label>12 gauge shell (Slug)</label>
     <graphicData>
       <texPath>Things/Ammo/Shotgun/Slug</texPath>
-      <graphicClass>Graphic_StackCount</graphicClass>
+      <graphicClass>CombatExtended.Graphic_StackCountRanged</graphicClass>
     </graphicData>
     <statBases>
       <Mass>0.048</Mass>
@@ -89,7 +74,7 @@
     <generateAllowChance>0</generateAllowChance>
     <graphicData>
       <texPath>Things/Ammo/Shotgun/Beanbag</texPath>
-      <graphicClass>Graphic_StackCount</graphicClass>
+      <graphicClass>CombatExtended.Graphic_StackCountRanged</graphicClass>
     </graphicData>
     <statBases>
       <Mass>0.059</Mass>
@@ -104,7 +89,7 @@
     <label>12 gauge shell (EMP)</label>
     <graphicData>
       <texPath>Things/Ammo/Shotgun/EMP</texPath>
-      <graphicClass>Graphic_StackCount</graphicClass>
+      <graphicClass>CombatExtended.Graphic_StackCountRanged</graphicClass>
     </graphicData>
     <statBases>
       <Mass>0.054</Mass>

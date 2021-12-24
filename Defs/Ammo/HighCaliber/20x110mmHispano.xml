@@ -1,13 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Defs>
 
-    <ThingCategoryDef>
-      <defName>Ammo20x110mmHispano</defName>
-      <label>20x110mm Hispano</label>
-      <parent>AmmoHighCaliber</parent>
-      <iconPath>UI/Icons/ThingCategories/CaliberHighCaliber</iconPath>
-    </ThingCategoryDef>
-  
+  <ThingCategoryDef>
+    <defName>Ammo20x110mmHispano</defName>
+    <label>20x110mm Hispano</label>
+    <parent>AmmoHighCaliber</parent>
+    <iconPath>UI/Icons/ThingCategories/CaliberHighCaliber</iconPath>
+  </ThingCategoryDef>
+
   <!-- ==================== AmmoSet ========================== -->
 
   <CombatExtended.AmmoSetDef>
@@ -17,17 +17,17 @@
       <Ammo_20x110mmHispano_FMJ>Bullet_20x110mmHispano_FMJ</Ammo_20x110mmHispano_FMJ>
       <Ammo_20x110mmHispano_Incendiary>Bullet_20x110mmHispano_Incendiary</Ammo_20x110mmHispano_Incendiary>
       <Ammo_20x110mmHispano_HE>Bullet_20x110mmHispano_HE</Ammo_20x110mmHispano_HE>
-	    <Ammo_20x110mmHispano_Sabot>Bullet_20x110mmHispano_Sabot</Ammo_20x110mmHispano_Sabot>	        
+      <Ammo_20x110mmHispano_Sabot>Bullet_20x110mmHispano_Sabot</Ammo_20x110mmHispano_Sabot>
     </ammoTypes>
   </CombatExtended.AmmoSetDef>
-  
+
   <!-- ==================== Ammo ========================== -->
 
   <ThingDef Class="CombatExtended.AmmoDef" Name="Ammo20x110mmHispanoBase" ParentName="SmallAmmoBase" Abstract="True">
     <description>Large caliber cartridge used by autocannons and a handful of anti-tank rifles.</description>
     <statBases>
-    <Mass>0.257</Mass>
-    <Bulk>0.27</Bulk>
+      <Mass>0.257</Mass>
+      <Bulk>0.27</Bulk>
     </statBases>
     <tradeTags>
       <li>CE_AutoEnableTrade</li>
@@ -36,7 +36,7 @@
     <thingCategories>
       <li>Ammo20x110mmHispano</li>
     </thingCategories>
-    <stackLimit>2000</stackLimit>
+    <stackLimit>400</stackLimit>
   </ThingDef>
 
   <ThingDef Class="CombatExtended.AmmoDef" ParentName="Ammo20x110mmHispanoBase">
@@ -44,7 +44,7 @@
     <label>20x110mm Hispano cartridge (FMJ)</label>
     <graphicData>
       <texPath>Things/Ammo/HighCaliber/FMJ</texPath>
-      <graphicClass>Graphic_StackCount</graphicClass>
+      <graphicClass>CombatExtended.Graphic_StackCountRanged</graphicClass>
     </graphicData>
     <statBases>
       <MarketValue>1.04</MarketValue>
@@ -58,7 +58,7 @@
     <label>20x110mm Hispano cartridge (AP-I)</label>
     <graphicData>
       <texPath>Things/Ammo/HighCaliber/Incendiary</texPath>
-      <graphicClass>Graphic_StackCount</graphicClass>
+      <graphicClass>CombatExtended.Graphic_StackCountRanged</graphicClass>
     </graphicData>
     <statBases>
       <MarketValue>1.45</MarketValue>
@@ -72,7 +72,7 @@
     <label>20x110mm Hispano cartridge (HE)</label>
     <graphicData>
       <texPath>Things/Ammo/HighCaliber/HE</texPath>
-      <graphicClass>Graphic_StackCount</graphicClass>
+      <graphicClass>CombatExtended.Graphic_StackCountRanged</graphicClass>
     </graphicData>
     <statBases>
       <MarketValue>2.22</MarketValue>
@@ -87,11 +87,11 @@
     <label>20x110mm Hispano cartridge (Sabot)</label>
     <graphicData>
       <texPath>Things/Ammo/HighCaliber/Sabot</texPath>
-      <graphicClass>Graphic_StackCount</graphicClass>
+      <graphicClass>CombatExtended.Graphic_StackCountRanged</graphicClass>
     </graphicData>
     <statBases>
       <MarketValue>1.16</MarketValue>
-	    <Mass>0.205</Mass>
+      <Mass>0.205</Mass>
     </statBases>
     <ammoClass>Sabot</ammoClass>
     <cookOffProjectile>Bullet_20x110mmHispano_Sabot</cookOffProjectile>
@@ -153,16 +153,16 @@
     </projectile>
   </ThingDef>
 
-   <ThingDef ParentName="Base20x110mmHispanoBullet">
+  <ThingDef ParentName="Base20x110mmHispanoBullet">
     <defName>Bullet_20x110mmHispano_Sabot</defName>
     <label>14.5x114mm bullet (Sabot)</label>
     <projectile Class="CombatExtended.ProjectilePropertiesCE">
-	    <speed>254</speed>
+      <speed>254</speed>
       <damageAmountBase>35</damageAmountBase>
       <armorPenetrationSharp>70</armorPenetrationSharp>
       <armorPenetrationBlunt>1113.92</armorPenetrationBlunt>
     </projectile>
-  </ThingDef> 
+  </ThingDef>
   <!-- ==================== Recipes ========================== -->
 
   <RecipeDef ParentName="AmmoRecipeBase">
@@ -291,13 +291,13 @@
           </thingDefs>
         </filter>
         <count>14</count>
-      </li>	  
+      </li>
     </ingredients>
     <fixedIngredientFilter>
       <thingDefs>
-		    <li>Chemfuel</li>	  
+        <li>Chemfuel</li>
         <li>Steel</li>
-		    <li>Uranium</li>
+        <li>Uranium</li>
       </thingDefs>
     </fixedIngredientFilter>
     <products>

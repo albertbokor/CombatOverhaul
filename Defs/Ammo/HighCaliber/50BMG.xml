@@ -17,7 +17,7 @@
       <Ammo_50BMG_FMJ>Bullet_50BMG_FMJ</Ammo_50BMG_FMJ>
       <Ammo_50BMG_Incendiary>Bullet_50BMG_Incendiary</Ammo_50BMG_Incendiary>
       <Ammo_50BMG_HE>Bullet_50BMG_HE</Ammo_50BMG_HE>
-      <Ammo_50BMG_Sabot>Bullet_50BMG_Sabot</Ammo_50BMG_Sabot>	  
+      <Ammo_50BMG_Sabot>Bullet_50BMG_Sabot</Ammo_50BMG_Sabot>
     </ammoTypes>
   </CombatExtended.AmmoSetDef>
 
@@ -36,7 +36,7 @@
     <thingCategories>
       <li>Ammo50BMG</li>
     </thingCategories>
-    <stackLimit>5000</stackLimit>
+    <stackLimit>400</stackLimit>
   </ThingDef>
 
   <ThingDef Class="CombatExtended.AmmoDef" ParentName="Ammo50BMGBase">
@@ -44,7 +44,7 @@
     <label>.50 BMG cartridge (FMJ)</label>
     <graphicData>
       <texPath>Things/Ammo/HighCaliber/FMJ</texPath>
-      <graphicClass>Graphic_StackCount</graphicClass>
+      <graphicClass>CombatExtended.Graphic_StackCountRanged</graphicClass>
     </graphicData>
     <statBases>
       <MarketValue>0.48</MarketValue>
@@ -58,11 +58,11 @@
     <label>.50 BMG cartridge (AP-I)</label>
     <graphicData>
       <texPath>Things/Ammo/HighCaliber/Incendiary</texPath>
-      <graphicClass>Graphic_StackCount</graphicClass>
+      <graphicClass>CombatExtended.Graphic_StackCountRanged</graphicClass>
     </graphicData>
     <statBases>
       <MarketValue>0.59</MarketValue>
-	  <Mass>0.112</Mass>
+      <Mass>0.112</Mass>
     </statBases>
     <ammoClass>IncendiaryAP</ammoClass>
     <cookOffProjectile>Bullet_50BMG_Incendiary</cookOffProjectile>
@@ -73,7 +73,7 @@
     <label>.50 BMG cartridge (AP-HE)</label>
     <graphicData>
       <texPath>Things/Ammo/HighCaliber/HE</texPath>
-      <graphicClass>Graphic_StackCount</graphicClass>
+      <graphicClass>CombatExtended.Graphic_StackCountRanged</graphicClass>
     </graphicData>
     <statBases>
       <MarketValue>1</MarketValue>
@@ -81,22 +81,22 @@
     <ammoClass>ExplosiveAP</ammoClass>
     <cookOffProjectile>Bullet_50BMG_HE</cookOffProjectile>
   </ThingDef>
- 
+
   <ThingDef Class="CombatExtended.AmmoDef" ParentName="Ammo50BMGBase">
     <defName>Ammo_50BMG_Sabot</defName>
     <label>.50 BMG cartridge (Sabot)</label>
     <graphicData>
       <texPath>Things/Ammo/HighCaliber/Sabot</texPath>
-      <graphicClass>Graphic_StackCount</graphicClass>
+      <graphicClass>CombatExtended.Graphic_StackCountRanged</graphicClass>
     </graphicData>
     <statBases>
       <MarketValue>0.52</MarketValue>
-	  <Mass>0.095</Mass>
+      <Mass>0.095</Mass>
     </statBases>
     <ammoClass>Sabot</ammoClass>
     <cookOffProjectile>Bullet_50BMG_Sabot</cookOffProjectile>
   </ThingDef>
-  
+
   <!-- ================== Projectiles ================== -->
 
   <ThingDef Name="Base50BMGBullet" ParentName="BaseBullet" Abstract="true">
@@ -136,7 +136,7 @@
       </secondaryDamage>
     </projectile>
   </ThingDef>
-  
+
   <ThingDef ParentName="Base50BMGBullet">
     <defName>Bullet_50BMG_HE</defName>
     <label>.50 BMG bullet (AP-HE)</label>
@@ -157,13 +157,13 @@
     <defName>Bullet_50BMG_Sabot</defName>
     <label>.50 BMG bullet (Sabot)</label>
     <projectile Class="CombatExtended.ProjectilePropertiesCE">
-      <damageAmountBase>19</damageAmountBase>	
+      <damageAmountBase>19</damageAmountBase>
       <armorPenetrationSharp>49</armorPenetrationSharp>
       <armorPenetrationBlunt>341.780</armorPenetrationBlunt>
       <speed>244</speed>
     </projectile>
   </ThingDef>
-  
+
   <!-- ==================== Recipes ========================== -->
 
   <RecipeDef ParentName="AmmoRecipeBase">
@@ -226,7 +226,7 @@
     </products>
     <workAmount>6200</workAmount>
   </RecipeDef>
-  
+
   <RecipeDef ParentName="AdvancedAmmoRecipeBase">
     <defName>MakeAmmo_50BMG_HE</defName>
     <label>make .50 BMG (AP-HE) cartridge x200</label>
@@ -261,7 +261,7 @@
     </products>
     <workAmount>8800</workAmount>
   </RecipeDef>
-  
+
   <RecipeDef ParentName="AdvancedAmmoRecipeBase">
     <defName>MakeAmmo_50BMG_Sabot</defName>
     <label>make .50 BMG (Sabot) cartridge x200</label>
@@ -291,13 +291,13 @@
           </thingDefs>
         </filter>
         <count>5</count>
-      </li>		  
+      </li>
     </ingredients>
     <fixedIngredientFilter>
       <thingDefs>
         <li>Steel</li>
         <li>Uranium</li>
-        <li>Chemfuel</li>		
+        <li>Chemfuel</li>
       </thingDefs>
     </fixedIngredientFilter>
     <products>

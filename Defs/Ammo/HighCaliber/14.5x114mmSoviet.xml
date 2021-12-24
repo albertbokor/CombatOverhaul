@@ -17,7 +17,7 @@
       <Ammo_145x114mm_FMJ>Bullet_145x114mm_FMJ</Ammo_145x114mm_FMJ>
       <Ammo_145x114mm_Incendiary>Bullet_145x114mm_Incendiary</Ammo_145x114mm_Incendiary>
       <Ammo_145x114mm_HE>Bullet_145x114mm_HE</Ammo_145x114mm_HE>
-	  <Ammo_145x114mm_Sabot>Bullet_145x114mm_Sabot</Ammo_145x114mm_Sabot>	  
+      <Ammo_145x114mm_Sabot>Bullet_145x114mm_Sabot</Ammo_145x114mm_Sabot>
     </ammoTypes>
   </CombatExtended.AmmoSetDef>
 
@@ -36,7 +36,7 @@
     <thingCategories>
       <li>Ammo145x114mm</li>
     </thingCategories>
-    <stackLimit>2000</stackLimit>
+    <stackLimit>400</stackLimit>
   </ThingDef>
 
   <ThingDef Class="CombatExtended.AmmoDef" ParentName="Ammo145x114mmBase">
@@ -44,7 +44,7 @@
     <label>14.5x114mm cartridge (FMJ)</label>
     <graphicData>
       <texPath>Things/Ammo/HighCaliber/FMJ</texPath>
-      <graphicClass>Graphic_StackCount</graphicClass>
+      <graphicClass>CombatExtended.Graphic_StackCountRanged</graphicClass>
     </graphicData>
     <statBases>
       <MarketValue>0.76</MarketValue>
@@ -58,7 +58,7 @@
     <label>14.5x114mm cartridge (AP-I)</label>
     <graphicData>
       <texPath>Things/Ammo/HighCaliber/Incendiary</texPath>
-      <graphicClass>Graphic_StackCount</graphicClass>
+      <graphicClass>CombatExtended.Graphic_StackCountRanged</graphicClass>
     </graphicData>
     <statBases>
       <MarketValue>0.98</MarketValue>
@@ -72,7 +72,7 @@
     <label>14.5x114mm cartridge (HE)</label>
     <graphicData>
       <texPath>Things/Ammo/HighCaliber/HE</texPath>
-      <graphicClass>Graphic_StackCount</graphicClass>
+      <graphicClass>CombatExtended.Graphic_StackCountRanged</graphicClass>
     </graphicData>
     <statBases>
       <MarketValue>1.43</MarketValue>
@@ -86,11 +86,11 @@
     <label>14.5x114mm cartridge (Sabot)</label>
     <graphicData>
       <texPath>Things/Ammo/HighCaliber/Sabot</texPath>
-      <graphicClass>Graphic_StackCount</graphicClass>
+      <graphicClass>CombatExtended.Graphic_StackCountRanged</graphicClass>
     </graphicData>
     <statBases>
       <MarketValue>0.85</MarketValue>
-	  <Mass>0.159</Mass>
+      <Mass>0.159</Mass>
     </statBases>
     <ammoClass>Sabot</ammoClass>
     <cookOffProjectile>Bullet_145x114mm_Sabot</cookOffProjectile>
@@ -151,12 +151,12 @@
       </secondaryDamage>
     </projectile>
   </ThingDef>
-  
+
   <ThingDef ParentName="Base145x114mmBullet">
     <defName>Bullet_145x114mm_Sabot</defName>
     <label>14.5x114mm bullet (Sabot)</label>
     <projectile Class="CombatExtended.ProjectilePropertiesCE">
-	  <speed>300</speed>
+      <speed>300</speed>
       <damageAmountBase>27</damageAmountBase>
       <armorPenetrationSharp>63</armorPenetrationSharp>
       <armorPenetrationBlunt>820.360</armorPenetrationBlunt>
@@ -289,13 +289,13 @@
           </thingDefs>
         </filter>
         <count>8</count>
-      </li>	  
+      </li>
     </ingredients>
     <fixedIngredientFilter>
       <thingDefs>
-		<li>Chemfuel</li>	  
+        <li>Chemfuel</li>
         <li>Steel</li>
-		<li>Uranium</li>
+        <li>Uranium</li>
       </thingDefs>
     </fixedIngredientFilter>
     <products>
@@ -303,5 +303,5 @@
     </products>
     <workAmount>9800</workAmount>
   </RecipeDef>
-  
+
 </Defs>

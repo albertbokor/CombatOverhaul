@@ -35,7 +35,7 @@
     <thingCategories>
       <li>Ammo8x35mmCharged</li>
     </thingCategories>
-    <stackLimit>5000</stackLimit>	
+    <stackLimit>500</stackLimit>
   </ThingDef>
 
   <ThingDef Class="CombatExtended.AmmoDef" ParentName="8x35mmChargedBase">
@@ -166,7 +166,7 @@
           </thingDefs>
         </filter>
         <count>10</count>
-      </li>	  
+      </li>
       <li>
         <filter>
           <thingDefs>
@@ -179,14 +179,14 @@
     <fixedIngredientFilter>
       <thingDefs>
         <li>Plasteel</li>
-        <li>Steel</li>		
+        <li>Steel</li>
         <li>ComponentIndustrial</li>
       </thingDefs>
     </fixedIngredientFilter>
     <products>
       <Ammo_8x35mmCharged>500</Ammo_8x35mmCharged>
     </products>
-    <workAmount>19000</workAmount>		
+    <workAmount>19000</workAmount>
   </RecipeDef>
 
   <RecipeDef ParentName="ChargeAmmoRecipeBase">
@@ -210,7 +210,7 @@
           </thingDefs>
         </filter>
         <count>10</count>
-      </li>	  
+      </li>
       <li>
         <filter>
           <thingDefs>
@@ -223,14 +223,14 @@
     <fixedIngredientFilter>
       <thingDefs>
         <li>Plasteel</li>
-        <li>Steel</li>		
+        <li>Steel</li>
         <li>ComponentIndustrial</li>
       </thingDefs>
     </fixedIngredientFilter>
     <products>
       <Ammo_8x35mmCharged_AP>500</Ammo_8x35mmCharged_AP>
     </products>
-    <workAmount>19000</workAmount>		
+    <workAmount>19000</workAmount>
   </RecipeDef>
 
   <RecipeDef ParentName="ChargeAmmoRecipeBase">
@@ -254,7 +254,7 @@
           </thingDefs>
         </filter>
         <count>10</count>
-      </li>	  
+      </li>
       <li>
         <filter>
           <thingDefs>
@@ -267,14 +267,14 @@
     <fixedIngredientFilter>
       <thingDefs>
         <li>Plasteel</li>
-        <li>Steel</li>		
+        <li>Steel</li>
         <li>ComponentIndustrial</li>
       </thingDefs>
     </fixedIngredientFilter>
     <products>
       <Ammo_8x35mmCharged_Ion>500</Ammo_8x35mmCharged_Ion>
     </products>
-    <workAmount>19000</workAmount>	
+    <workAmount>19000</workAmount>
   </RecipeDef>
 
 </Defs>

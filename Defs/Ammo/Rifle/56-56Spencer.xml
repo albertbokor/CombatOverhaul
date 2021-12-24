@@ -45,7 +45,7 @@
 		<label>56-56 Spencer cartridge (FMJ)</label>
 		<graphicData>
 			<texPath>Things/Ammo/Rifle/FMJ</texPath>
-			<graphicClass>Graphic_StackCount</graphicClass>
+			<graphicClass>CombatExtended.Graphic_StackCountRanged</graphicClass>
 		</graphicData>
 		<statBases>
 			<MarketValue>0.14</MarketValue>
@@ -59,7 +59,7 @@
 		<label>.56-56 Spencer cartridge (AP)</label>
 		<graphicData>
 			<texPath>Things/Ammo/Rifle/AP</texPath>
-			<graphicClass>Graphic_StackCount</graphicClass>
+			<graphicClass>CombatExtended.Graphic_StackCountRanged</graphicClass>
 		</graphicData>
 		<statBases>
 			<MarketValue>0.14</MarketValue>
@@ -73,7 +73,7 @@
 		<label>.56-56 Spencer cartridge (HP)</label>
 		<graphicData>
 			<texPath>Things/Ammo/Rifle/HP</texPath>
-			<graphicClass>Graphic_StackCount</graphicClass>
+			<graphicClass>CombatExtended.Graphic_StackCountRanged</graphicClass>
 		</graphicData>
 		<statBases>
 			<MarketValue>0.14</MarketValue>
@@ -87,7 +87,7 @@
     <label>.56-56 Spencer cartridge (AP-I)</label>
     <graphicData>
       <texPath>Things/Ammo/Rifle/Incendiary</texPath>
-      <graphicClass>Graphic_StackCount</graphicClass>
+      <graphicClass>CombatExtended.Graphic_StackCountRanged</graphicClass>
     </graphicData>
     <statBases>
       <MarketValue>0.22</MarketValue>
@@ -101,7 +101,7 @@
     <label>.56-56 Spencer cartridge (HE)</label>
     <graphicData>
       <texPath>Things/Ammo/Rifle/HE</texPath>
-      <graphicClass>Graphic_StackCount</graphicClass>
+      <graphicClass>CombatExtended.Graphic_StackCountRanged</graphicClass>
     </graphicData>
     <statBases>
       <MarketValue>0.37</MarketValue>
@@ -115,7 +115,7 @@
     <label>.56-56 Spencer cartridge (Sabot)</label>
     <graphicData>
       <texPath>Things/Ammo/Rifle/Sabot</texPath>
-      <graphicClass>Graphic_StackCount</graphicClass>
+      <graphicClass>CombatExtended.Graphic_StackCountRanged</graphicClass>
     </graphicData>
     <statBases>
       <MarketValue>0.17</MarketValue>

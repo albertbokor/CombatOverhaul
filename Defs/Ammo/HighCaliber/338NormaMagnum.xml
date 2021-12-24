@@ -1,13 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Defs>
-	
-	<ThingCategoryDef>
-      <defName>Ammo338Norma</defName>
-      <label>.338 Norma Magnum</label>
-      <parent>AmmoHighCaliber</parent>
-      <iconPath>UI/Icons/ThingCategories/CaliberHighCaliber</iconPath>
-    </ThingCategoryDef>
-	
+
+  <ThingCategoryDef>
+    <defName>Ammo338Norma</defName>
+    <label>.338 Norma Magnum</label>
+    <parent>AmmoHighCaliber</parent>
+    <iconPath>UI/Icons/ThingCategories/CaliberHighCaliber</iconPath>
+  </ThingCategoryDef>
+
   <!-- ==================== AmmoSet ========================== -->
 
   <CombatExtended.AmmoSetDef>
@@ -15,13 +15,13 @@
     <label>.338 Norma Magnum</label>
     <ammoTypes>
       <Ammo_338Norma_FMJ>Bullet_338Norma_FMJ</Ammo_338Norma_FMJ>
-<!--  <Ammo_338Norma_HP>Bullet_338Norma_HP</Ammo_338Norma_HP>-->
+      <!--  <Ammo_338Norma_HP>Bullet_338Norma_HP</Ammo_338Norma_HP>-->
       <Ammo_338Norma_Incendiary>Bullet_338Norma_Incendiary</Ammo_338Norma_Incendiary>
-	    <Ammo_338Norma_HE>Bullet_338Norma_HE</Ammo_338Norma_HE>
-	    <Ammo_338Norma_Sabot>Bullet_338Norma_Sabot</Ammo_338Norma_Sabot>      
+      <Ammo_338Norma_HE>Bullet_338Norma_HE</Ammo_338Norma_HE>
+      <Ammo_338Norma_Sabot>Bullet_338Norma_Sabot</Ammo_338Norma_Sabot>
     </ammoTypes>
   </CombatExtended.AmmoSetDef>
-  
+
   <!-- ==================== Ammo ========================== -->
 
   <ThingDef Class="CombatExtended.AmmoDef" Name="Ammo338NormaBase" ParentName="AmmoBase" Abstract="True">
@@ -30,13 +30,14 @@
       <Mass>0.047</Mass>
       <Bulk>0.05</Bulk>
     </statBases>
-  	<tradeTags>
+    <tradeTags>
       <li>CE_AutoEnableTrade</li>
       <li>CE_AutoEnableCrafting</li>
-  	</tradeTags>
+    </tradeTags>
     <thingCategories>
       <li>Ammo338Norma</li>
     </thingCategories>
+    <stackLimit>400</stackLimit>
   </ThingDef>
 
   <ThingDef Class="CombatExtended.AmmoDef" ParentName="Ammo338NormaBase">
@@ -44,12 +45,12 @@
     <label>.338 Norma Magnum cartridge (FMJ)</label>
     <graphicData>
       <texPath>Things/Ammo/HighCaliber/FMJ</texPath>
-      <graphicClass>Graphic_StackCount</graphicClass>
+      <graphicClass>CombatExtended.Graphic_StackCountRanged</graphicClass>
     </graphicData>
     <statBases>
       <MarketValue>0.2</MarketValue>
     </statBases>
-  	<ammoClass>FullMetalJacket</ammoClass>
+    <ammoClass>FullMetalJacket</ammoClass>
     <cookOffProjectile>Bullet_338Norma_FMJ</cookOffProjectile>
   </ThingDef>
 
@@ -58,7 +59,7 @@
     <label>.338 Norma Magnum cartridge (HP)</label>
     <graphicData>
       <texPath>Things/Ammo/HighCaliber/HE</texPath>
-      <graphicClass>Graphic_StackCount</graphicClass>
+      <graphicClass>CombatExtended.Graphic_StackCountRanged</graphicClass>
     </graphicData>
     <statBases>
       <MarketValue>0.24</MarketValue>
@@ -72,7 +73,7 @@
     <label>.338 Norma Magnum cartridge (AP-I)</label>
     <graphicData>
       <texPath>Things/Ammo/HighCaliber/Incendiary</texPath>
-      <graphicClass>Graphic_StackCount</graphicClass>
+      <graphicClass>CombatExtended.Graphic_StackCountRanged</graphicClass>
     </graphicData>
     <statBases>
       <MarketValue>0.27</MarketValue>
@@ -86,7 +87,7 @@
     <label>.338 Norma Magnum cartridge (HE)</label>
     <graphicData>
       <texPath>Things/Ammo/HighCaliber/HE</texPath>
-      <graphicClass>Graphic_StackCount</graphicClass>
+      <graphicClass>CombatExtended.Graphic_StackCountRanged</graphicClass>
     </graphicData>
     <statBases>
       <MarketValue>0.46</MarketValue>
@@ -94,17 +95,17 @@
     <ammoClass>ExplosiveAP</ammoClass>
     <cookOffProjectile>Bullet_338Norma_HE</cookOffProjectile>
   </ThingDef>
-  
+
   <ThingDef Class="CombatExtended.AmmoDef" ParentName="Ammo338NormaBase">
     <defName>Ammo_338Norma_Sabot</defName>
     <label>.338 Norma Magnum cartridge (Sabot)</label>
     <graphicData>
       <texPath>Things/Ammo/HighCaliber/Sabot</texPath>
-      <graphicClass>Graphic_StackCount</graphicClass>
+      <graphicClass>CombatExtended.Graphic_StackCountRanged</graphicClass>
     </graphicData>
     <statBases>
       <MarketValue>0.26</MarketValue>
-	    <Mass>0.039</Mass>
+      <Mass>0.039</Mass>
     </statBases>
     <ammoClass>Sabot</ammoClass>
     <cookOffProjectile>Bullet_338Norma_Sabot</cookOffProjectile>
@@ -120,7 +121,7 @@
     <projectile Class="CombatExtended.ProjectilePropertiesCE">
       <damageDef>Bullet</damageDef>
       <speed>243</speed>
-			<dropsCasings>true</dropsCasings>
+      <dropsCasings>true</dropsCasings>
     </projectile>
   </ThingDef>
 
@@ -174,7 +175,7 @@
       </secondaryDamage>
     </projectile>
   </ThingDef>
-  
+
   <ThingDef ParentName="Base338NormaBullet">
     <defName>Bullet_338Norma_Sabot</defName>
     <label>.338 Norma Magnum bullet (Sabot)</label>
@@ -182,7 +183,7 @@
       <damageAmountBase>13</damageAmountBase>
       <armorPenetrationSharp>39</armorPenetrationSharp>
       <armorPenetrationBlunt>162.46</armorPenetrationBlunt>
-     <speed>273</speed>	  
+      <speed>273</speed>
     </projectile>
   </ThingDef>
 
@@ -309,7 +310,7 @@
     </products>
     <workAmount>4000</workAmount>
   </RecipeDef>
-  
+
   <RecipeDef ParentName="AdvancedAmmoRecipeBase">
     <defName>MakeAmmo_338Norma_Sabot</defName>
     <label>make .338 Norma Magnum (Sabot) cartridge x200</label>
@@ -339,13 +340,13 @@
           </thingDefs>
         </filter>
         <count>3</count>
-      </li>		  
+      </li>
     </ingredients>
     <fixedIngredientFilter>
       <thingDefs>
         <li>Steel</li>
         <li>Uranium</li>
-        <li>Chemfuel</li>		
+        <li>Chemfuel</li>
       </thingDefs>
     </fixedIngredientFilter>
     <products>

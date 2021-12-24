@@ -35,7 +35,7 @@
     <thingCategories>
       <li>Ammo6x18mmCharged</li>
     </thingCategories>
-    <stackLimit>5000</stackLimit>	
+    <stackLimit>500</stackLimit>
   </ThingDef>
 
   <ThingDef Class="CombatExtended.AmmoDef" ParentName="6x18mmChargedBase">
@@ -163,7 +163,7 @@
           </thingDefs>
         </filter>
         <count>4</count>
-      </li>	  
+      </li>
       <li>
         <filter>
           <thingDefs>
@@ -176,7 +176,7 @@
     <fixedIngredientFilter>
       <thingDefs>
         <li>Plasteel</li>
-        <li>Steel</li>		
+        <li>Steel</li>
         <li>ComponentIndustrial</li>
       </thingDefs>
     </fixedIngredientFilter>
@@ -207,7 +207,7 @@
           </thingDefs>
         </filter>
         <count>4</count>
-      </li>	  
+      </li>
       <li>
         <filter>
           <thingDefs>
@@ -220,7 +220,7 @@
     <fixedIngredientFilter>
       <thingDefs>
         <li>Plasteel</li>
-        <li>Steel</li>		
+        <li>Steel</li>
         <li>ComponentIndustrial</li>
       </thingDefs>
     </fixedIngredientFilter>
@@ -251,7 +251,7 @@
           </thingDefs>
         </filter>
         <count>4</count>
-      </li>	  
+      </li>
       <li>
         <filter>
           <thingDefs>
@@ -264,7 +264,7 @@
     <fixedIngredientFilter>
       <thingDefs>
         <li>Plasteel</li>
-        <li>Steel</li>		
+        <li>Steel</li>
         <li>ComponentIndustrial</li>
       </thingDefs>
     </fixedIngredientFilter>

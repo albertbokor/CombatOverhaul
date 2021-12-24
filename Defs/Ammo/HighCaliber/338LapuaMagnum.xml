@@ -15,10 +15,10 @@
     <label>.338 Lapua Magnum</label>
     <ammoTypes>
       <Ammo_338Lapua_FMJ>Bullet_338Lapua_FMJ</Ammo_338Lapua_FMJ>
-<!--       <Ammo_338Lapua_HP>Bullet_338Lapua_HP</Ammo_338Lapua_HP> -->
+      <!--       <Ammo_338Lapua_HP>Bullet_338Lapua_HP</Ammo_338Lapua_HP> -->
       <Ammo_338Lapua_Incendiary>Bullet_338Lapua_Incendiary</Ammo_338Lapua_Incendiary>
-	    <Ammo_338Lapua_HE>Bullet_338Lapua_HE</Ammo_338Lapua_HE>
-	    <Ammo_338Lapua_Sabot>Bullet_338Lapua_Sabot</Ammo_338Lapua_Sabot>
+      <Ammo_338Lapua_HE>Bullet_338Lapua_HE</Ammo_338Lapua_HE>
+      <Ammo_338Lapua_Sabot>Bullet_338Lapua_Sabot</Ammo_338Lapua_Sabot>
     </ammoTypes>
   </CombatExtended.AmmoSetDef>
 
@@ -37,6 +37,7 @@
     <thingCategories>
       <li>Ammo338Lapua</li>
     </thingCategories>
+    <stackLimit>400</stackLimit>
   </ThingDef>
 
   <ThingDef Class="CombatExtended.AmmoDef" ParentName="Ammo338LapuaBase">
@@ -44,7 +45,7 @@
     <label>.338 Lapua Magnum cartridge (FMJ)</label>
     <graphicData>
       <texPath>Things/Ammo/HighCaliber/FMJ</texPath>
-      <graphicClass>Graphic_StackCount</graphicClass>
+      <graphicClass>CombatExtended.Graphic_StackCountRanged</graphicClass>
     </graphicData>
     <statBases>
       <MarketValue>0.2</MarketValue>
@@ -53,12 +54,12 @@
     <cookOffProjectile>Bullet_338Lapua_FMJ</cookOffProjectile>
   </ThingDef>
 
-<!--   <ThingDef Class="CombatExtended.AmmoDef" ParentName="Ammo338LapuaBase">
+  <!--   <ThingDef Class="CombatExtended.AmmoDef" ParentName="Ammo338LapuaBase">
     <defName>Ammo_338Lapua_HP</defName>
     <label>.338 Lapua Magnum cartridge (HP)</label>
     <graphicData>
       <texPath>Things/Ammo/HighCaliber/HE</texPath>
-      <graphicClass>Graphic_StackCount</graphicClass>
+      <graphicClass>CombatExtended.Graphic_StackCountRanged</graphicClass>
     </graphicData>
     <statBases>
       <MarketValue>0.2</MarketValue>
@@ -72,7 +73,7 @@
     <label>.338 Lapua Magnum cartridge (AP-I)</label>
     <graphicData>
       <texPath>Things/Ammo/HighCaliber/Incendiary</texPath>
-      <graphicClass>Graphic_StackCount</graphicClass>
+      <graphicClass>CombatExtended.Graphic_StackCountRanged</graphicClass>
     </graphicData>
     <statBases>
       <MarketValue>0.27</MarketValue>
@@ -80,13 +81,13 @@
     <ammoClass>IncendiaryAP</ammoClass>
     <cookOffProjectile>Bullet_338Lapua_Incendiary</cookOffProjectile>
   </ThingDef>
-  
+
   <ThingDef Class="CombatExtended.AmmoDef" ParentName="Ammo338LapuaBase">
     <defName>Ammo_338Lapua_HE</defName>
     <label>.338 Lapua Magnum cartridge (HE)</label>
     <graphicData>
       <texPath>Things/Ammo/HighCaliber/HE</texPath>
-      <graphicClass>Graphic_StackCount</graphicClass>
+      <graphicClass>CombatExtended.Graphic_StackCountRanged</graphicClass>
     </graphicData>
     <statBases>
       <MarketValue>0.41</MarketValue>
@@ -94,17 +95,17 @@
     <ammoClass>ExplosiveAP</ammoClass>
     <cookOffProjectile>Bullet_338Lapua_HE</cookOffProjectile>
   </ThingDef>
-  
+
   <ThingDef Class="CombatExtended.AmmoDef" ParentName="Ammo338LapuaBase">
     <defName>Ammo_338Lapua_Sabot</defName>
     <label>.338 Lapua Magnum cartridge (Sabot)</label>
     <graphicData>
       <texPath>Things/Ammo/HighCaliber/Sabot</texPath>
-      <graphicClass>Graphic_StackCount</graphicClass>
+      <graphicClass>CombatExtended.Graphic_StackCountRanged</graphicClass>
     </graphicData>
     <statBases>
       <MarketValue>0.21</MarketValue>
-	    <Mass>0.037</Mass>
+      <Mass>0.037</Mass>
     </statBases>
     <ammoClass>Sabot</ammoClass>
     <cookOffProjectile>Bullet_338Lapua_Sabot</cookOffProjectile>
@@ -134,7 +135,7 @@
     </projectile>
   </ThingDef>
 
-<!--   <ThingDef ParentName="Base338LapuaBullet">
+  <!--   <ThingDef ParentName="Base338LapuaBullet">
     <defName>Bullet_338Lapua_HP</defName>
     <label>.338 Lapua Magnum bullet (HP)</label>
     <projectile Class="CombatExtended.ProjectilePropertiesCE">
@@ -159,7 +160,7 @@
       </secondaryDamage>
     </projectile>
   </ThingDef>
-  
+
   <ThingDef ParentName="Base338LapuaBullet">
     <defName>Bullet_338Lapua_HE</defName>
     <label>.338 Lapua Magnum bullet (HE)</label>
@@ -175,7 +176,7 @@
       </secondaryDamage>
     </projectile>
   </ThingDef>
-  
+
   <ThingDef ParentName="Base338LapuaBullet">
     <defName>Bullet_338Lapua_Sabot</defName>
     <label>.338 Lapua Magnum bullet (Sabot)</label>
@@ -183,7 +184,7 @@
       <damageAmountBase>14</damageAmountBase>
       <armorPenetrationSharp>39</armorPenetrationSharp>
       <armorPenetrationBlunt>173.980</armorPenetrationBlunt>
-     <speed>273</speed>	  
+      <speed>273</speed>
     </projectile>
   </ThingDef>
 
@@ -215,7 +216,7 @@
     <workAmount>2000</workAmount>
   </RecipeDef>
 
-<!--   <RecipeDef ParentName="AmmoRecipeBase">
+  <!--   <RecipeDef ParentName="AmmoRecipeBase">
     <defName>MakeAmmo_338Lapua_HP</defName>
     <label>make .338 Lapua Magnum (HP) cartridge x200</label>
     <description>Craft 200 .338 Lapua Magnum (HP) cartridges.</description>
@@ -275,7 +276,7 @@
     </products>
     <workAmount>2800</workAmount>
   </RecipeDef>
-  
+
   <RecipeDef ParentName="AdvancedAmmoRecipeBase">
     <defName>MakeAmmo_338Lapua_HE</defName>
     <label>make .338 Lapua Magnum (HE) cartridge x200</label>
@@ -310,7 +311,7 @@
     </products>
     <workAmount>3600</workAmount>
   </RecipeDef>
-  
+
   <RecipeDef ParentName="AdvancedAmmoRecipeBase">
     <defName>MakeAmmo_338Lapua_Sabot</defName>
     <label>make .338 Lapua Magnum (Sabot) cartridge x200</label>
@@ -340,13 +341,13 @@
           </thingDefs>
         </filter>
         <count>2</count>
-      </li>		  
+      </li>
     </ingredients>
     <fixedIngredientFilter>
       <thingDefs>
         <li>Steel</li>
         <li>Uranium</li>
-        <li>Chemfuel</li>		
+        <li>Chemfuel</li>
       </thingDefs>
     </fixedIngredientFilter>
     <products>

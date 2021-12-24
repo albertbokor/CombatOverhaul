@@ -8,11 +8,11 @@
     <description>Shaped charge warhead. Detonates on impact, creating a super-heated stream of molten metal that punches through enemy armor.</description>
   </CombatExtended.AmmoCategoryDef>
 
-   <CombatExtended.AmmoCategoryDef>
+  <CombatExtended.AmmoCategoryDef>
     <defName>RocketThermobaric</defName>
     <label>thermobaric</label>
     <description>Disperses and subsequently ignites a fuel-air explosive mix, creating a powerful explosion and potentially igniting flammable objects.</description>
-	<advanced>true</advanced>
+    <advanced>true</advanced>
   </CombatExtended.AmmoCategoryDef>
 
   <CombatExtended.AmmoCategoryDef>

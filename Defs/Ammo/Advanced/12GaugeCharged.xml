@@ -1,14 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Defs>
 
-    <ThingCategoryDef>
-      <defName>Ammo12GaugeCharged</defName>
-      <label>12Gauge Charged</label>
-      <parent>AmmoAdvanced</parent>
-      <iconPath>UI/Icons/ThingCategories/CaliberCharge</iconPath>
-    </ThingCategoryDef>
-	
-	<!-- ==================== AmmoSet ========================== -->
+  <ThingCategoryDef>
+    <defName>Ammo12GaugeCharged</defName>
+    <label>12Gauge Charged</label>
+    <parent>AmmoAdvanced</parent>
+    <iconPath>UI/Icons/ThingCategories/CaliberCharge</iconPath>
+  </ThingCategoryDef>
+
+  <!-- ==================== AmmoSet ========================== -->
 
   <CombatExtended.AmmoSetDef>
     <defName>AmmoSet_12GaugeCharged</defName>
@@ -19,14 +19,14 @@
       <Ammo_12GaugeCharged_Ion>Bullet_12GaugeCharged_Ion</Ammo_12GaugeCharged_Ion>
     </ammoTypes>
   </CombatExtended.AmmoSetDef>
-	
-	<!-- ==================== Ammo ========================== -->
+
+  <!-- ==================== Ammo ========================== -->
 
   <ThingDef Class="CombatExtended.AmmoDef" Name="12GaugeChargedBase" ParentName="SmallAmmoBase" Abstract="True">
     <description>Multi-pellet charge shot cartridge designed for shotgun-type weapons.</description>
     <statBases>
-	  <Mass>0.034</Mass>
-	  <Bulk>0.07</Bulk>
+      <Mass>0.034</Mass>
+      <Bulk>0.07</Bulk>
     </statBases>
     <tradeTags>
       <li>CE_AutoEnableTrade</li>
@@ -35,6 +35,7 @@
     <thingCategories>
       <li>Ammo12GaugeCharged</li>
     </thingCategories>
+    <stackLimit>500</stackLimit>
   </ThingDef>
 
   <ThingDef Class="CombatExtended.AmmoDef" ParentName="12GaugeChargedBase">
@@ -46,7 +47,7 @@
     </graphicData>
     <statBases>
       <MarketValue>2.8</MarketValue>
-	    <Mass>0.028</Mass>      
+      <Mass>0.028</Mass>
     </statBases>
     <ammoClass>BuckShot</ammoClass>
   </ThingDef>
@@ -59,7 +60,7 @@
       <graphicClass>Graphic_StackCount</graphicClass>
     </graphicData>
     <statBases>
-      <MarketValue>2.8</MarketValue>       
+      <MarketValue>2.8</MarketValue>
     </statBases>
     <ammoClass>Slug</ammoClass>
   </ThingDef>
@@ -75,10 +76,10 @@
       <MarketValue>2.8</MarketValue>
     </statBases>
     <ammoClass>Ionized</ammoClass>
-	<generateAllowChance>0.25</generateAllowChance>
+    <generateAllowChance>0.25</generateAllowChance>
   </ThingDef>
-	
-	<!-- ================== Projectiles ================== -->
+
+  <!-- ================== Projectiles ================== -->
 
   <ThingDef Name="Base12GaugeChargedBullet" ParentName="BaseBullet" Abstract="true">
     <graphicData>
@@ -102,7 +103,7 @@
           <amount>3</amount>
         </li>
       </secondaryDamage>
-      <armorPenetrationSharp>8</armorPenetrationSharp>      
+      <armorPenetrationSharp>8</armorPenetrationSharp>
       <armorPenetrationBlunt>14.4</armorPenetrationBlunt>
       <pelletCount>6</pelletCount>
       <spreadMult>17.8</spreadMult>
@@ -120,7 +121,7 @@
           <amount>12</amount>
         </li>
       </secondaryDamage>
-      <armorPenetrationSharp>10</armorPenetrationSharp>      
+      <armorPenetrationSharp>10</armorPenetrationSharp>
       <armorPenetrationBlunt>90</armorPenetrationBlunt>
     </projectile>
   </ThingDef>
@@ -136,15 +137,15 @@
           <amount>5</amount>
         </li>
       </secondaryDamage>
-      <armorPenetrationSharp>8</armorPenetrationSharp>      
+      <armorPenetrationSharp>8</armorPenetrationSharp>
       <armorPenetrationBlunt>14.4</armorPenetrationBlunt>
       <pelletCount>6</pelletCount>
       <spreadMult>17.8</spreadMult>
       <empShieldBreakChance>0.025</empShieldBreakChance>
     </projectile>
   </ThingDef>
-  
-	<!-- ==================== Recipes ========================== -->
+
+  <!-- ==================== Recipes ========================== -->
 
   <RecipeDef ParentName="ChargeAmmoRecipeBase">
     <defName>MakeAmmo_12GaugeCharged</defName>
@@ -167,7 +168,7 @@
           </thingDefs>
         </filter>
         <count>8</count>
-      </li>	      
+      </li>
       <li>
         <filter>
           <thingDefs>
@@ -180,14 +181,14 @@
     <fixedIngredientFilter>
       <thingDefs>
         <li>Plasteel</li>
-        <li>Steel</li>         
+        <li>Steel</li>
         <li>ComponentIndustrial</li>
       </thingDefs>
     </fixedIngredientFilter>
     <products>
       <Ammo_12GaugeCharged>200</Ammo_12GaugeCharged>
     </products>
-    <workAmount>20800</workAmount>		    
+    <workAmount>20800</workAmount>
   </RecipeDef>
 
   <RecipeDef ParentName="ChargeAmmoRecipeBase">
@@ -211,7 +212,7 @@
           </thingDefs>
         </filter>
         <count>8</count>
-      </li>	      
+      </li>
       <li>
         <filter>
           <thingDefs>
@@ -224,14 +225,14 @@
     <fixedIngredientFilter>
       <thingDefs>
         <li>Plasteel</li>
-        <li>Steel</li>         
+        <li>Steel</li>
         <li>ComponentIndustrial</li>
       </thingDefs>
     </fixedIngredientFilter>
     <products>
       <Ammo_12GaugeCharged_Slug>200</Ammo_12GaugeCharged_Slug>
     </products>
-    <workAmount>20800</workAmount>		     
+    <workAmount>20800</workAmount>
   </RecipeDef>
 
   <RecipeDef ParentName="ChargeAmmoRecipeBase">
@@ -255,7 +256,7 @@
           </thingDefs>
         </filter>
         <count>8</count>
-      </li>	      
+      </li>
       <li>
         <filter>
           <thingDefs>
@@ -268,14 +269,14 @@
     <fixedIngredientFilter>
       <thingDefs>
         <li>Plasteel</li>
-        <li>Steel</li>         
+        <li>Steel</li>
         <li>ComponentIndustrial</li>
       </thingDefs>
     </fixedIngredientFilter>
     <products>
       <Ammo_12GaugeCharged_Ion>200</Ammo_12GaugeCharged_Ion>
     </products>
-    <workAmount>20800</workAmount>	    
+    <workAmount>20800</workAmount>
   </RecipeDef>
-	
+
 </Defs>

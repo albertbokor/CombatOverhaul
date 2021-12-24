@@ -32,7 +32,7 @@
     <tradeTags>
       <li>CE_AutoEnableTrade_Sellable</li>
     </tradeTags>
-    <stackLimit>5000</stackLimit>	
+    <stackLimit>500</stackLimit>
   </ThingDef>
 
   <ThingDef Class="CombatExtended.AmmoDef" ParentName="5x35mmChargedBase">

@@ -16,9 +16,9 @@
 		<ammoTypes>
 			<Ammo_50mmGS50Grenade_HE>Bullet_50mmGS50Grenade_HE</Ammo_50mmGS50Grenade_HE>
 			<Ammo_50mmGS50Grenade_EMP>Bullet_50mmGS50Grenade_EMP</Ammo_50mmGS50Grenade_EMP>
-			<Ammo_50mmGS50Grenade_Smoke>Bullet_50mmGS50Grenade_Smoke</Ammo_50mmGS50Grenade_Smoke>	  			
+			<Ammo_50mmGS50Grenade_Smoke>Bullet_50mmGS50Grenade_Smoke</Ammo_50mmGS50Grenade_Smoke>
 		</ammoTypes>
-	</CombatExtended.AmmoSetDef> 
+	</CombatExtended.AmmoSetDef>
 
 	<!-- ==================== Ammo ========================== -->
 
@@ -51,7 +51,7 @@
 		</statBases>
 		<ammoClass>GrenadeHE</ammoClass>
 		<detonateProjectile>Bullet_50mmGS50Grenade_HE</detonateProjectile>
-	</ThingDef>  
+	</ThingDef>
 
 	<ThingDef Class="CombatExtended.AmmoDef" ParentName="50mmGS50GrenadeBase">
 		<defName>Ammo_50mmGS50Grenade_EMP</defName>
@@ -65,42 +65,42 @@
 		</statBases>
 		<ammoClass>GrenadeEMP</ammoClass>
 		<comps>
-		  <li Class="CombatExtended.CompProperties_ExplosiveCE">
-			<damageAmountBase>5</damageAmountBase>
-			<explosiveDamageType>Bomb</explosiveDamageType>
-			<explosiveRadius>0.5</explosiveRadius>
-		  </li>
-		  <li Class="CombatExtended.CompProperties_Fragments">
-			<fragments>
-				<Fragment_Large>1</Fragment_Large>
-			</fragments>
-		  </li>
+			<li Class="CombatExtended.CompProperties_ExplosiveCE">
+				<damageAmountBase>5</damageAmountBase>
+				<explosiveDamageType>Bomb</explosiveDamageType>
+				<explosiveRadius>0.5</explosiveRadius>
+			</li>
+			<li Class="CombatExtended.CompProperties_Fragments">
+				<fragments>
+					<Fragment_Large>1</Fragment_Large>
+				</fragments>
+			</li>
 		</comps>
-	</ThingDef>  
+	</ThingDef>
 
 	<ThingDef Class="CombatExtended.AmmoDef" ParentName="50mmGS50GrenadeBase">
 		<defName>Ammo_50mmGS50Grenade_Smoke</defName>
 		<label>50mmGS50 grenade (Smoke)</label>
 		<graphicData>
-		<texPath>Things/Ammo/GrenadeLauncher/GS50_SMK</texPath>
-		<graphicClass>Graphic_StackCount</graphicClass>
+			<texPath>Things/Ammo/GrenadeLauncher/GS50_SMK</texPath>
+			<graphicClass>Graphic_StackCount</graphicClass>
 		</graphicData>
 		<statBases>
-		<MarketValue>3.38</MarketValue>
+			<MarketValue>3.38</MarketValue>
 		</statBases>
 		<ammoClass>Smoke</ammoClass>
 		<generateAllowChance>0</generateAllowChance>
 		<comps>
-		  <li Class="CombatExtended.CompProperties_ExplosiveCE">
-			<damageAmountBase>5</damageAmountBase>
-			<explosiveDamageType>Bomb</explosiveDamageType>
-			<explosiveRadius>0.5</explosiveRadius>
-		  </li>
-		  <li Class="CombatExtended.CompProperties_Fragments">
-			<fragments>
-				<Fragment_Large>1</Fragment_Large>
-			</fragments>
-		  </li>
+			<li Class="CombatExtended.CompProperties_ExplosiveCE">
+				<damageAmountBase>5</damageAmountBase>
+				<explosiveDamageType>Bomb</explosiveDamageType>
+				<explosiveRadius>0.5</explosiveRadius>
+			</li>
+			<li Class="CombatExtended.CompProperties_Fragments">
+				<fragments>
+					<Fragment_Large>1</Fragment_Large>
+				</fragments>
+			</li>
 		</comps>
 	</ThingDef>
 
@@ -151,10 +151,10 @@
 		<defName>Bullet_50mmGS50Grenade_Smoke</defName>
 		<label>50mmGS50 grenade (Smoke)</label>
 		<projectile Class="CombatExtended.ProjectilePropertiesCE">
-		<explosionRadius>2</explosionRadius>
-		<damageDef>Smoke</damageDef>
-		<postExplosionSpawnThingDef>Gas_Smoke</postExplosionSpawnThingDef>
-		<preExplosionSpawnChance>1</preExplosionSpawnChance>
+			<explosionRadius>2</explosionRadius>
+			<damageDef>Smoke</damageDef>
+			<postExplosionSpawnThingDef>Gas_Smoke</postExplosionSpawnThingDef>
+			<preExplosionSpawnChance>1</preExplosionSpawnChance>
 		</projectile>
 	</ThingDef>
 
@@ -199,9 +199,9 @@
 			</thingDefs>
 		</fixedIngredientFilter>
 		<products>
-		<Ammo_50mmGS50Grenade_HE>50</Ammo_50mmGS50Grenade_HE>
+			<Ammo_50mmGS50Grenade_HE>50</Ammo_50mmGS50Grenade_HE>
 		</products>
-		<workAmount>7800</workAmount>		
+		<workAmount>7800</workAmount>
 	</RecipeDef>
 
 	<RecipeDef ParentName="AmmoRecipeBase">
@@ -234,9 +234,9 @@
 				<li>ComponentIndustrial</li>
 			</thingDefs>
 		</fixedIngredientFilter>
-		<workAmount>9400</workAmount>		
+		<workAmount>9400</workAmount>
 		<products>
-		<Ammo_50mmGS50Grenade_EMP>50</Ammo_50mmGS50Grenade_EMP>
+			<Ammo_50mmGS50Grenade_EMP>50</Ammo_50mmGS50Grenade_EMP>
 		</products>
 	</RecipeDef>
 
@@ -246,40 +246,40 @@
 		<description>Craft 100 50mmGS50 smoke grenades.</description>
 		<jobString>Making 50mmGS50 smoke grenades.</jobString>
 		<ingredients>
-		<li>
-			<filter>
-			<thingDefs>
-				<li>Steel</li>
-			</thingDefs>
-			</filter>
-			<count>46</count>
-		</li>
-		<li>
-			<filter>
-			<thingDefs>
-				<li>Prometheum</li>
-			</thingDefs>
-			</filter>
-			<count>2</count>
-		</li>
-		<li>
-			<filter>
-			<thingDefs>
-				<li>ComponentIndustrial</li>
-			</thingDefs>
-			</filter>
-			<count>2</count>
-		</li>      
+			<li>
+				<filter>
+					<thingDefs>
+						<li>Steel</li>
+					</thingDefs>
+				</filter>
+				<count>46</count>
+			</li>
+			<li>
+				<filter>
+					<thingDefs>
+						<li>Prometheum</li>
+					</thingDefs>
+				</filter>
+				<count>2</count>
+			</li>
+			<li>
+				<filter>
+					<thingDefs>
+						<li>ComponentIndustrial</li>
+					</thingDefs>
+				</filter>
+				<count>2</count>
+			</li>
 		</ingredients>
 		<fixedIngredientFilter>
-		<thingDefs>
-			<li>Steel</li>
-			<li>Prometheum</li>
-			<li>ComponentIndustrial</li>        
-		</thingDefs>
+			<thingDefs>
+				<li>Steel</li>
+				<li>Prometheum</li>
+				<li>ComponentIndustrial</li>
+			</thingDefs>
 		</fixedIngredientFilter>
 		<products>
-		<Ammo_50mmGS50Grenade_Smoke>100</Ammo_50mmGS50Grenade_Smoke>
+			<Ammo_50mmGS50Grenade_Smoke>100</Ammo_50mmGS50Grenade_Smoke>
 		</products>
 		<workAmount>6600</workAmount>
 	</RecipeDef>
