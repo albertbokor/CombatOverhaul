@@ -26,7 +26,7 @@
     <thingCategories>
       <li>AmmoLaserChargePack</li>
     </thingCategories>
-    <stackLimit>5000</stackLimit>	
+    <stackLimit>1000</stackLimit>	
   </ThingDef>
 
   <ThingDef Class="CombatExtended.AmmoDef" ParentName="LaserChargePackBase">

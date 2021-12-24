@@ -35,7 +35,6 @@
     <thingCategories>
       <li>Ammo6x18mmCharged</li>
     </thingCategories>
-    <stackLimit>500</stackLimit>
   </ThingDef>
 
   <ThingDef Class="CombatExtended.AmmoDef" ParentName="6x18mmChargedBase">
