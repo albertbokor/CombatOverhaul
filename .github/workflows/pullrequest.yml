@@ -1,6 +1,9 @@
-name: Build
+# Workflow
+name: Build Pull Request
+
 env:
   SLN_PATH: Source/
+
 on:
   workflow_dispatch:
     inputs:
@@ -8,55 +11,53 @@ on:
         description: PR Number
         required: true
   pull_request_target:
-    branches: [ master, Development, staging ]
+    branches: [ master ]
 
 jobs:
   build:
     name: Build on ubuntu-latest
     runs-on: ubuntu-latest
-
     steps:
+    # Check Repository
     - name: Checkout Repository
       uses: actions/checkout@v2
 
-    # Setup dot net
+    # Setup .NET
     - name: Setup Dotnet
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 3.1.x    
+        dotnet-version: 5.0.x    
 
-    # Build artifact
-    - name: Building
+    # Build Mod
+    - name: Build Mod
       run: |
         dotnet restore ${{ env.SLN_PATH }}
         dotnet build ${{ env.SLN_PATH }} --configuration Debug --no-restore
+        
+    # Pack Build
+    - name: Package Build
+      run: |
+        mkdir CombatOverhaul
+        cp -r About/ Assemblies/ Defs/ Languages/ Patches/ Royalty/ Ideology/ Sounds/ Source/ Textures/ LoadFolders.xml README.md SupportedThirdPartyMods.md CombatOverhaul
+        zip -9 -r CombatOverhaul.zip CombatOverhaul
     
-    # Upload artifact
-    - name: Upload Mod Files
+    # Upload Package
+    - name: Upload Package
       uses: actions/upload-artifact@v2
       with:
-        name: combatrealism
-        path: |
-          About/
-          Assemblies/
-          Defs/
-          Ideology/
-          Languages/
-          Media/
-          Patches/
-          Royalty/
-          Sounds/
-          Textures/
-          Source/
-          LoadFolders.xml
-
+        name: CombatOverhaul
+        path: CombatOverhaul.zip
+          
+    # Create Comment
     - name: Create comment
       uses: peter-evans/create-or-update-comment@v1
       with:
         issue-number: ${{ github.event.pull_request.number }}${{ github.event.inputs.PR }}
         body: |
-          You can download the built mod for this PR here in the artifacts section (at the bottom of the page): https://github.com/CombatRealism/CombatRealism/actions/runs/${{ github.run_id }}
-
+          You can download the built mod for this PR here: 
+          https://github.com/CombatOverhaul/CombatOverhaul/actions/runs/${{github.run_id}}
+    
+    # Add Label
     - name: Add Label
       uses: actions-ecosystem/action-add-labels@v1
       with:
