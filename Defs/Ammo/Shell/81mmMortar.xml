@@ -41,7 +41,7 @@
     <stackLimit>25</stackLimit>
     <cookOffFlashScale>30</cookOffFlashScale>
     <cookOffSound>MortarBomb_Explode</cookOffSound>
-	  <isMortarAmmo>true</isMortarAmmo>          
+	<isMortarAmmo>true</isMortarAmmo>
   </ThingDef>
 
   <ThingDef Class="CombatExtended.AmmoDef" Name="81mmMortarShellBaseCraftableBase" ParentName="81mmMortarShellBase" Abstract="True">
@@ -57,14 +57,14 @@
     <label>81mm mortar shell (HE)</label>
     <graphicData>
       <texPath>Things/Ammo/Mortar/HE</texPath>
-      <graphicClass>Graphic_Single</graphicClass>
+      <graphicClass>Graphic_StackCount</graphicClass>
     </graphicData>
     <statBases>
       <MarketValue>55.09</MarketValue>
       <Mass>5.27</Mass>
       <Bulk>8.17</Bulk>
     </statBases>
-    <ammoClass>GrenadeHE</ammoClass>     
+    <ammoClass>GrenadeHE</ammoClass>
 	<detonateProjectile>Bullet_81mmMortarShell_HE</detonateProjectile>
     <comps>
 		<!-- Vanilla values -->
@@ -85,7 +85,7 @@
     <label>81mm mortar shell (Incendiary)</label>
     <graphicData>
       <texPath>Things/Ammo/Mortar/Incendiary</texPath>
-      <graphicClass>Graphic_Single</graphicClass>
+      <graphicClass>Graphic_StackCount</graphicClass>
     </graphicData>
     <statBases>
       <MarketValue>42.34</MarketValue>
@@ -113,7 +113,7 @@
     <label>81mm mortar shell (EMP)</label>
     <graphicData>
       <texPath>Things/Ammo/Mortar/EMP</texPath>
-      <graphicClass>Graphic_Single</graphicClass>
+      <graphicClass>Graphic_StackCount</graphicClass>
     </graphicData>
     <statBases>
       <MarketValue>112.42</MarketValue>
@@ -146,7 +146,7 @@
     <label>81mm mortar shell (Foam)</label>
     <graphicData>
       <texPath>Things/Ammo/Mortar/Firefoam</texPath>
-      <graphicClass>Graphic_Single</graphicClass>
+      <graphicClass>Graphic_StackCount</graphicClass>
     </graphicData>
     <statBases>
       <MarketValue>37.03</MarketValue>
@@ -178,7 +178,7 @@
     <label>81mm mortar shell (Smoke)</label>
     <graphicData>
       <texPath>Things/Ammo/Mortar/Smoke</texPath>
-      <graphicClass>Graphic_Single</graphicClass>
+      <graphicClass>Graphic_StackCount</graphicClass>
     </graphicData>
     <statBases>
       <MarketValue>37.03</MarketValue>
@@ -206,7 +206,7 @@
     <label>81mm mortar shell (Anti)</label>
     <graphicData>
       <texPath>Things/Ammo/Mortar/Antigrain</texPath>
-      <graphicClass>Graphic_Single</graphicClass>
+      <graphicClass>Graphic_StackCount</graphicClass>
     </graphicData>
     <statBases>
       <MarketValue>1500</MarketValue>
@@ -259,14 +259,10 @@
       <soundImpactAnticipate>MortarRound_PreImpact</soundImpactAnticipate>
       <soundAmbient>MortarRound_Ambient</soundAmbient>
       <flyOverhead>true</flyOverhead>
-      <dropsCasings>false</dropsCasings>
+      <dropsCasings>true</dropsCasings>
       <casingMoteDefname>Mote_BigShell</casingMoteDefname>
-	    <gravityFactor>5</gravityFactor>
-      <shellingProps>
-        <tilesPerTick>0.06</tilesPerTick>
-        <range>12</range>
-      </shellingProps>
-    </projectile>    
+	  <gravityFactor>5</gravityFactor>
+    </projectile>
   </ThingDef>
 
   <ThingDef ParentName="Base81mmMortarShell">
@@ -286,9 +282,6 @@
       <soundExplode>MortarBomb_Explode</soundExplode>
       <applyDamageToExplosionCellsNeighbors>true</applyDamageToExplosionCellsNeighbors>
       <ai_IsIncendiary>true</ai_IsIncendiary>
-      <shellingProps>        
-        <damage>0.025</damage>
-      </shellingProps>
     </projectile>
     <comps>
 	  <li Class="CombatExtended.CompProperties_Fragments">
@@ -317,9 +310,6 @@
       <preExplosionSpawnThingDef>FilthPrometheum</preExplosionSpawnThingDef>
       <preExplosionSpawnChance>0.15</preExplosionSpawnChance>
       <soundExplode>MortarIncendiary_Explode</soundExplode>
-      <shellingProps>        
-        <damage>0.015</damage>
-      </shellingProps>
     </projectile>
   </ThingDef>
 
@@ -408,9 +398,6 @@
       <soundExplode>Explosion_GiantBomb</soundExplode>
       <soundImpactAnticipate>MortarRound_PreImpact</soundImpactAnticipate>
       <soundAmbient>MortarRound_Ambient</soundAmbient>
-      <shellingProps>        
-        <damage>0.35</damage>
-      </shellingProps>
     </projectile>
   </ThingDef>
 

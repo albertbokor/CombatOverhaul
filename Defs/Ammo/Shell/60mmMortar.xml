@@ -58,7 +58,7 @@
     <label>60mm mortar shell (HE)</label>
     <graphicData>
       <texPath>Things/Ammo/Mortar/HE</texPath>
-      <graphicClass>Graphic_Single</graphicClass>
+      <graphicClass>Graphic_StackCount</graphicClass>
     </graphicData>
     <statBases>
       <MarketValue>29.2</MarketValue>
@@ -72,7 +72,7 @@
     <label>60mm mortar shell (Incendiary)</label>
     <graphicData>
       <texPath>Things/Ammo/Mortar/Incendiary</texPath>
-      <graphicClass>Graphic_Single</graphicClass>
+      <graphicClass>Graphic_StackCount</graphicClass>
     </graphicData>
     <statBases>
       <MarketValue>23.47</MarketValue>
@@ -96,7 +96,7 @@
     <label>60mm mortar shell (EMP)</label>
     <graphicData>
       <texPath>Things/Ammo/Mortar/EMP</texPath>
-      <graphicClass>Graphic_Single</graphicClass>
+      <graphicClass>Graphic_StackCount</graphicClass>
     </graphicData>
     <statBases>
       <MarketValue>46.94</MarketValue>
@@ -117,7 +117,7 @@
     <generateAllowChance>0</generateAllowChance>	
     <graphicData>
       <texPath>Things/Ammo/Mortar/Firefoam</texPath>
-      <graphicClass>Graphic_Single</graphicClass>
+      <graphicClass>Graphic_StackCount</graphicClass>
     </graphicData>
     <statBases>
       <MarketValue>23.97</MarketValue>
@@ -142,7 +142,7 @@
     <generateAllowChance>0</generateAllowChance>	    
     <graphicData>
       <texPath>Things/Ammo/Mortar/Smoke</texPath>
-      <graphicClass>Graphic_Single</graphicClass>
+      <graphicClass>Graphic_StackCount</graphicClass>
     </graphicData>
     <statBases>
       <MarketValue>22.20</MarketValue>
@@ -181,10 +181,6 @@
       <flyOverhead>true</flyOverhead>
       <dropsCasings>false</dropsCasings>
 	  <gravityFactor>5</gravityFactor>
-    <shellingProps>
-      <tilesPerTick>0.05</tilesPerTick>
-      <range>8</range>
-    </shellingProps>    
     </projectile>
   </ThingDef>
 
@@ -204,7 +200,7 @@
       <flyOverhead>true</flyOverhead>
       <soundExplode>MortarBomb_Explode</soundExplode>
       <applyDamageToExplosionCellsNeighbors>true</applyDamageToExplosionCellsNeighbors>
-      <ai_IsIncendiary>true</ai_IsIncendiary>      
+      <ai_IsIncendiary>true</ai_IsIncendiary>
     </projectile>
     <comps>
       <li Class="CombatExtended.CompProperties_Fragments">
@@ -232,7 +228,7 @@
       <flyOverhead>true</flyOverhead>
       <preExplosionSpawnThingDef>FilthPrometheum</preExplosionSpawnThingDef>
       <preExplosionSpawnChance>0.15</preExplosionSpawnChance>
-      <soundExplode>MortarIncendiary_Explode</soundExplode>    
+      <soundExplode>MortarIncendiary_Explode</soundExplode>
     </projectile>
   </ThingDef>
 
