@@ -18,6 +18,14 @@ jobs:
     # Check Repository
     - name: Checkout Repository
       uses: actions/checkout@v2
+      
+    # Get Timestamp
+    - name: Get Timestamp
+      id: get-timestamp
+      uses: nanzm/get-time-action@v1.1
+      with:
+        timeZone: 0
+        format: 'YY.MM.DD-HHmm'
 
     # Setup .NET
     - name: Setup Dotnet
@@ -37,14 +45,6 @@ jobs:
         mkdir CombatOverhaul
         cp -r About/ Assemblies/ Defs/ Languages/ Patches/ Royalty/ Ideology/ Sounds/ Source/ Textures/ LoadFolders.xml README.md SupportedThirdPartyMods.md CombatOverhaul
         zip -9 -r CombatOverhaul.zip CombatOverhaul
-    
-    # Get Timestamp
-    - name: Get Timestamp
-      id: get-timestamp
-      uses: nanzm/get-time-action@v1.1
-      with:
-        timeZone: 0
-        format: 'YY.MM.DD-HHmm'
         
     # Upload to Dropbox
     - uses: deka0106/upload-to-dropbox@v2
