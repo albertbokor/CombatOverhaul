@@ -57,7 +57,7 @@ jobs:
     - name: Create comment
       uses: peter-evans/create-or-update-comment@v1
       with:
-        issue-number: ${{ github.event.pull_request.number }}${{ github.event.inputs.PR }}
+        issue-number: ${{ github.event.pull_request.title }}${{ github.event.inputs.PR }}
         body: |
           To download the built mod for this PR, visit this link and select the folder matching the ID for this pull request.
           https://www.dropbox.com/sh/91mxs0dlfygfolo/AADVuwZX455cdRNfJbS4QnTma?dl=0
