@@ -25,7 +25,7 @@ jobs:
       uses: nanzm/get-time-action@v1.1
       with:
         timeZone: 0
-        format: 'YY.MM.DD-HHmm'
+        format: 'DD.MM.YY-HHmm'
 
     # Setup .NET
     - name: Setup Dotnet
