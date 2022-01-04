@@ -1,9 +1,6 @@
 # Workflow
 name: Build Pull Request
 
-env:
-  SLN_PATH: Source/
-
 on:
   workflow_dispatch:
     inputs:
@@ -31,8 +28,8 @@ jobs:
     # Build Mod
     - name: Build Mod
       run: |
-        dotnet restore ${{ env.SLN_PATH }}
-        dotnet build ${{ env.SLN_PATH }} --configuration Debug --no-restore
+        dotnet restore Source/
+        dotnet build Source/ --configuration Debug --no-restore
         
     # Pack Build
     - name: Package Build
@@ -41,12 +38,20 @@ jobs:
         cp -r About/ Assemblies/ Defs/ Languages/ Patches/ Royalty/ Ideology/ Sounds/ Source/ Textures/ LoadFolders.xml README.md SupportedThirdPartyMods.md CombatOverhaul
         zip -9 -r CombatOverhaul.zip CombatOverhaul
     
-    # Upload Package
-    - name: Upload Package
-      uses: actions/upload-artifact@v2
+    # Get Timestamp
+    - name: Get Timestamp
+      id: get-timestamp
+      uses: nanzm/get-time-action@v1.1
       with:
-        name: CombatOverhaul
-        path: CombatOverhaul.zip
+        timeZone: 0
+        format: 'YY.MM.DD-HHmm'
+        
+    # Upload to Dropbox
+    - uses: deka0106/upload-to-dropbox@v2
+      with:
+        dropbox_access_token: ${{secrets.DROPBOX_TOKEN}}
+        src: CombatOverhaul.zip
+        dest: /Combat Overhaul/${{github.event.pull_request.number}}/CombatOverhaul-${{ steps.get-timestamp.outputs.time }}.zip
           
     # Create Comment
     - name: Create comment
@@ -54,8 +59,8 @@ jobs:
       with:
         issue-number: ${{ github.event.pull_request.number }}${{ github.event.inputs.PR }}
         body: |
-          You can download the built mod for this PR here: 
-          https://github.com/CombatOverhaul/CombatOverhaul/actions/runs/${{github.run_id}}
+          To download the built mod for this PR, visit this link and select the folder matching the ID for this pull request.
+          https://www.dropbox.com/sh/91mxs0dlfygfolo/AADVuwZX455cdRNfJbS4QnTma?dl=0
     
     # Add Label
     - name: Add Label
