@@ -51,7 +51,7 @@ jobs:
       with:
         dropbox_access_token: ${{ secrets.DROPBOX_TOKEN }}
         src: CombatOverhaul.zip
-        dest: '/Pull Requests/${{ github.event.pull_request.title }}${{ github.event.inputs.PR }}/CombatOverhaul-${{ steps.get-timestamp.outputs.time }}.zip'
+        dest: '/Pull Requests/#${{ github.event.pull_request.number }}$${{ github.event.inputs.PR }} ${{ github.event.pull_request.title }}/CombatOverhaul-${{ steps.get-timestamp.outputs.time }}.zip'
           
     # Create Comment
     - name: Create comment
