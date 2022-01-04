@@ -51,7 +51,7 @@ jobs:
       with:
         dropbox_access_token: ${{secrets.DROPBOX_TOKEN}}
         src: CombatOverhaul.zip
-        dest: /Combat Overhaul/#${{github.event.pull_request.number}}${{github.event.inputs.PR}}/CombatOverhaul-${{ steps.get-timestamp.outputs.time }}.zip
+        dest: /Pull Requests/Pull \#${{github.event.pull_request.number}}${{github.event.inputs.PR}}/CombatOverhaul-${{ steps.get-timestamp.outputs.time }}.zip
           
     # Create Comment
     - name: Create comment
@@ -60,7 +60,7 @@ jobs:
         issue-number: ${{ github.event.pull_request.number }}${{ github.event.inputs.PR }}
         body: |
           To download the built mod for this PR, visit this link and select the folder matching the ID for this pull request.
-          https://www.dropbox.com/sh/91mxs0dlfygfolo/AADVuwZX455cdRNfJbS4QnTma?dl=0
+          https://www.dropbox.com/sh/g4sw8yv65vidcs2/AACxj_4SYngi-VQ36bN79Hiya?dl=0
     
     # Add Label
     - name: Add Label
