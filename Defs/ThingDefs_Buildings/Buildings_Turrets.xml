@@ -29,6 +29,7 @@
     <fillPercent>0.85</fillPercent>
     <castEdgeShadows>false</castEdgeShadows>
     <hasTooltip>true</hasTooltip>
+    <designationCategory>Security</designationCategory>
     <terrainAffordanceNeeded>Light</terrainAffordanceNeeded>
     <building>
       <ai_combatDangerous>true</ai_combatDangerous>
@@ -47,7 +48,6 @@
   </ThingDef>
 
   <ThingDef Name="TurretAutoBase" ParentName="TurretBase" Abstract="True">
-    <designationCategory>Security</designationCategory>
     <comps>
       <li Class="CompProperties_Flickable"/>
       <li Class="CompProperties_Breakdownable"/>
@@ -62,25 +62,6 @@
         <manWorkType>Violent</manWorkType>
       </li>
     </comps>
-    <recipeMaker>
-      <workSpeedStat>GeneralLaborSpeed</workSpeedStat>
-      <workSkill>Crafting</workSkill>
-      <effectWorking>Smith</effectWorking>
-      <soundWorking>Recipe_Smith</soundWorking>
-    </recipeMaker>
-  </ThingDef>
-
-  <ThingDef Name="TurretMannedCraftableBase" ParentName="TurretMannedBase" Abstract="True">
-    <recipeMaker>
-      <workSpeedStat>GeneralLaborSpeed</workSpeedStat>
-      <workSkill>Crafting</workSkill>
-      <effectWorking>Smith</effectWorking>
-      <soundWorking>Recipe_Smith</soundWorking>
-      <recipeUsers>
-        <li>TableMachining</li>
-      </recipeUsers>
-      <unfinishedThingDef>UnfinishedTurretGun</unfinishedThingDef>
-    </recipeMaker>
   </ThingDef>
 
   <!--=============== Blaster Turret ===============-->
@@ -185,7 +166,7 @@
 
   <!--=============== M240B ===============-->
 
-  <ThingDef ParentName="TurretMannedCraftableBase">
+  <ThingDef ParentName="TurretMannedBase">
     <defName>Turret_M240B</defName>
     <label>M240B</label>
     <constructionSkillPrerequisite>6</constructionSkillPrerequisite>
@@ -213,14 +194,14 @@
       <li>PlaceWorker_ShowTurretRadius</li>
     </placeWorkers>
     <minifiedDef>MinifiedThing</minifiedDef>
-    <recipeMaker>
-      <researchPrerequisite>PrecisionRifling</researchPrerequisite>
-    </recipeMaker>
+    <researchPrerequisites>
+      <li>CE_TurretHeavyWeapons</li>
+    </researchPrerequisites>
   </ThingDef>
 
   <!--=============== KPV ===============-->
 
-  <ThingDef ParentName="TurretMannedCraftableBase">
+  <ThingDef ParentName="TurretMannedBase">
     <defName>Turret_KPV</defName>
     <label>KPV machine gun</label>
     <constructionSkillPrerequisite>7</constructionSkillPrerequisite>
@@ -247,15 +228,15 @@
       <li>PlaceWorker_TurretTop</li>
       <li>PlaceWorker_ShowTurretRadius</li>
     </placeWorkers>
-    <recipeMaker>
-      <researchPrerequisite>CE_TurretHeavyWeapons</researchPrerequisite>
-    </recipeMaker>
+    <researchPrerequisites>
+      <li>CE_TurretHeavyWeapons</li>
+    </researchPrerequisites>
     <minifiedDef>MinifiedThing</minifiedDef>
   </ThingDef>
 
   <!--=============== AGS-30 ===============-->
 
-  <ThingDef ParentName="TurretMannedCraftableBase">
+  <ThingDef ParentName="TurretMannedBase">
     <defName>Turret_AGSThirty</defName>
     <label>AGS-30</label>
     <constructionSkillPrerequisite>6</constructionSkillPrerequisite>
@@ -282,9 +263,9 @@
       <li>PlaceWorker_TurretTop</li>
       <li>PlaceWorker_ShowTurretRadius</li>
     </placeWorkers>
-    <recipeMaker>
-      <researchPrerequisite>CE_TurretHeavyWeapons</researchPrerequisite>
-    </recipeMaker>
+    <researchPrerequisites>
+      <li>CE_TurretHeavyWeapons</li>
+    </researchPrerequisites>
     <minifiedDef>MinifiedThing</minifiedDef>
   </ThingDef>
 
@@ -328,7 +309,6 @@
     <researchPrerequisites>
       <li>CE_TurretHeavyWeapons</li>
     </researchPrerequisites>
-    <designationCategory>Security</designationCategory>
   </ThingDef>
 
 </Defs>
