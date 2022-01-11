@@ -35,9 +35,7 @@ jobs:
 
     # Build Mod
     - name: Build Mod
-      run: |
-        dotnet restore Source/
-        dotnet build Source/ --configuration Debug --no-restore
+      run: dotnet build Source --configuration Debug
         
     # Pack Build
     - name: Package Build
