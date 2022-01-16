@@ -1,10 +1,8 @@
 name: Release Drafter
 
 on:
-  push:
-    branches:
-      - Development
-  workflow_dispatch:
+  pull_request_target:
+    branches: [ Development ]
 
 jobs:
   update_release_draft:
