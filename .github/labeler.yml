@@ -1,0 +1,19 @@
+"Compatibility":
+  - Patches/**/*
+  - Ideology/**/*
+  - Royalty/**/*
+
+"Internal":
+  - .github/**/*
+  - About/*
+  - Defs/**/*
+  - Languages/**/*
+  - Sounds/**/*
+  - Source/**/*
+  - Textures/**/*
+
+"XML":
+  - */**/*.xml
+
+"C#":
+  - Source/**/*.cs

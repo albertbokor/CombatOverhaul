@@ -1,0 +1,34 @@
+name-template: $RESOLVED_VERSION
+tag-template: $RESOLVED_VERSION
+template: |
+  ## What's Changed
+  $CHANGES
+category-template: '### $TITLE'
+categories:
+  - title: 'Features'
+    label: 'Feature'
+
+  - title: 'Bug Fixes'
+    label: 'Bugfix'
+    
+  - title: 'Compatibility'
+    labels: 'Compatibility'
+    
+  - title: 'Internal'
+    label: 'Internal'
+change-template: '- $TITLE (#$NUMBER)'
+no-changes-template: '- No changes'
+version-resolver:
+  major:
+    labels:
+      - 'Rimworld'
+  minor:
+    labels:
+      - 'Feature'
+  patch:
+    labels:
+      - 'Bugfix'
+      - 'Compatibility'
+      - 'Miscellaneous'
+      - 'Internal'
+  default: patch

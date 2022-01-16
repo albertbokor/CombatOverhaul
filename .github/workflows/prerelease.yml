@@ -1,0 +1,66 @@
+name: Build Pre-Release
+
+on:
+  push:
+    branches:
+      - Development
+  workflow_dispatch:
+
+jobs:
+  release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    steps:          
+      - name: Get Timestamp
+        id: get-timestamp
+        uses: nanzm/get-time-action@v1.1
+        with:
+          timeZone: 0
+          format: 'YY.MM.DD.HHmm'
+        
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: pre-${{ steps.get-timestamp.outputs.time }}
+          release_name: Combat Overhaul Preview Build ${{ steps.get-timestamp.outputs.time }}
+          body: |
+            Preview build of commit [${{ github.sha }}](https://github.com/${{ github.repository }}/commit/${{ github.sha }})
+          draft: false
+          prerelease: true
+
+  build:
+    name: Build Assembly
+    runs-on: ubuntu-latest
+    needs: release
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        
+      - name: Setup Dotnet
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 6.0.x    
+        
+      - name: Build Artifact
+        run: |
+          dotnet build Source
+        
+      - name: Package Mod
+        run: |
+          mkdir CombatOverhaul
+          cp -r Assemblies/ About/ Defs/ Languages/ Patches/ Royalty/ Ideology/ Sounds/ Textures/ LoadFolders.xml README.md SupportedThirdPartyMods.md CombatOverhaul
+          zip -9 -r CombatOverhaul.zip CombatOverhaul
+          
+      - name: Upload Package
+        id: upload-package
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: CombatOverhaul.zip
+          asset_name: CombatOverhaul-${{ steps.get-timestamp.outputs.time }}.zip
+          asset_content_type: application/octet-stream
