@@ -35,7 +35,7 @@ jobs:
         uses: nanzm/get-time-action@v1.1
         with:
           timeZone: 0
-          format: 'YY.MM.DD.HHmm'
+          format: 'YYMMDD.HHmm'
 
       - name: Package Mod
         run: |
