@@ -11,9 +11,3 @@
   - Sounds/**/*
   - Source/**/*
   - Textures/**/*
-
-"XML":
-  - */**/*.xml
-
-"C#":
-  - Source/**/*.cs

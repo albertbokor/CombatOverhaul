@@ -1,12 +1,13 @@
 name: PR Labeler
 
 on:
-  - pull_request_target
   workflow_dispatch:
     inputs:
       PR:
         description: PR Number
         required: true
+  pull_request_target:
+    branch: Development
 
 jobs:
   label:
